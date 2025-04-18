@@ -1,0 +1,54 @@
+version: '3'
+
+vars:
+  PACKAGE_NAME: cpt
+  R_CMD: R
+
+tasks:
+  default:
+    desc: Display available tasks
+    cmds:
+      - task --list
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf "{{.PACKAGE_NAME}}.Rcheck"
+      - rm -f "{{.PACKAGE_NAME}}_*.tar.gz"
+      - rm -rf man/
+      - rm -rf docs/
+
+  docs:
+    desc: Generate documentation using roxygen2
+    cmds:
+      - "{{.R_CMD}} -e 'roxygen2::roxygenize(\".\", c(\"rd\", \"namespace\"))'"
+
+  build:
+    desc: Build the package
+    deps: [docs]
+    cmds:
+      - "{{.R_CMD}} CMD build ."
+
+  install:
+    desc: Install the package locally
+    deps: [build]
+    cmds:
+      - "{{.R_CMD}} CMD INSTALL {{.PACKAGE_NAME}}_*.tar.gz"
+
+  install-deps:
+    desc: Install package dependencies
+    cmds:
+      - "{{.R_CMD}} -e 'devtools::install_deps(dependencies = TRUE)'"
+
+  check:
+    desc: Run R CMD check on the package
+    deps: [build]
+    cmds:
+      - "{{.R_CMD}} CMD check {{.PACKAGE_NAME}}_*.tar.gz"
+
+  check_as_cran:
+    desc: Run R CMD check on the package
+    deps: [build]
+    cmds:
+      - "{{.R_CMD}} CMD check --as-cran {{.PACKAGE_NAME}}_*.tar.gz"
+

@@ -1,0 +1,15 @@
+Package: cpt
+Type: Package
+Title: What the Package Does (Short Line)
+Version: 1.0.0
+Authors@R: c(
+    person("Rainer", "Hirk", email = "Rainer.Hirk@quintik.at", role = c("aut", "cre")),
+    person("Florian", "Schwendinger", email = "Florian.Schwendinger@quintik.at", role = "aut"),
+    person("Katrina", "Brock", email = "kbrock@ab.mpg.de", role = "aut"))
+Description: More about what it does (maybe more than one line).
+License: GPL (>= 2)
+Imports: checkmate
+Depends: R (>= 4.0.0), zoo, xts, trackframe
+Suggests: tinytest
+Encoding: UTF-8
+RoxygenNote: 7.3.2
