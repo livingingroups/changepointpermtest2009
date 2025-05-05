@@ -71,7 +71,7 @@ leaflet(as.data.frame(coredata(sig_cpt))) %>%
                    opacity = 1,#0.5,
                    fillColor = ~pal(index2),
                    fillOpacity = 1,#0.2,
-                   radius = ~set_size(sig)) %>%
+radius = ~set_size(sig)) %>%
                    # radius = 1) %>%
   addLegend(pal = pal, values = ~index2, group = "circles", position = "bottomleft") %>%
   addArrowhead(lng = ~x1, lat = ~x2, weight = 0.3, color = "green",
