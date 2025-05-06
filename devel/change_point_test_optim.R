@@ -9,6 +9,7 @@
 #' @param q q value
 #' @param N total number of permutations
 #' @param tol maximum distance between indistinguishable positions
+#' 
 #'
 #' @return TODO
 #' @export
@@ -73,7 +74,8 @@ change_point_test <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
   
 }
 
-change_point_test_fit <- function (bz1, bz2, q, N, alpha) {
+change_point_test_fit <- function (bz1, bz2, q, N, alpha, start_batch_size = 10) {
+
   set.seed(2025)
   nz <- length(bz1)
   # We shall apply the CPT to points with coordinates (bz1,bz2)
@@ -109,6 +111,10 @@ change_point_test_fit <- function (bz1, bz2, q, N, alpha) {
   # sig[k] = 1  if change point detected at waypoint k
   # sig[k] = 0  otherwise
   sig <- rep(0,nz)
+
+  # batch size is how many candidate ks to calculate for 
+  # in each iteration
+  batch_size <- start_batch_size
   
   
   # LOOK (SEQUENTIALLY) FOR NEXT POSSIBLE CHANGE POINT
@@ -122,7 +128,6 @@ change_point_test_fit <- function (bz1, bz2, q, N, alpha) {
   while(goal.no < last.no - q){
     
     # k is number of steps in “k-leg”
-    k <- 0 
     f <- NA
     l <- NA
     # INCREASE k UNTIL NEXT POSSIBLE CHANGE POINT IS FOUND
@@ -134,60 +139,86 @@ change_point_test_fit <- function (bz1, bz2, q, N, alpha) {
     found_P_leq_alpha <- FALSE
     found_P_back_up <- FALSE
 
-    for(k in seq_len(last.no - goal.no - q - 1)) {
+    all_ks  <- seq_len(last.no - goal.no - q - 1)
+
+    for(ks in split(all_ks, rep(seq_along(all_ks), each = batch_size)[seq_along(all_ks)])) {
+    #if(len(all_ks) > 0) { ks <- all_ks
+      k_max <- max(ks)
+      k_len <- length(ks)
+      Rsumrand <- matrix(rep(NA, len=N*k_len), c(N, k_len))
+      Rsumrandr <- matrix(rep(NA, len=N*k_len), c(N, k_len))
+      
       # B
       
-      R1 <- sqrt((bz1[goal.no+k] - bz1[goal.no])^2 + (bz2[goal.no+k] - bz2[goal.no])^2)
-      R2 <- sqrt((bz1[goal.no+k+q] - bz1[goal.no+k])^2 + (bz2[goal.no+k+q] - bz2[goal.no+k])^2)
+      R1 <- sqrt((bz1[goal.no+ks] - bz1[goal.no])^2 + (bz2[goal.no+ks] - bz2[goal.no])^2)
+      R2 <- sqrt((bz1[goal.no+ks+q] - bz1[goal.no+ks])^2 + (bz2[goal.no+ks+q] - bz2[goal.no+ks])^2)
       
       Rsum <- R1 + R2
       
-      # Rsumrand[1] = observed value of statistic R1 + R2
-      Rsumrand[1] <- Rsum
+      # Rsumrand[1,] = observed value of statistic R1 + R2
+      Rsumrand[1, ] <- Rsum
+      
 
-      perm <- matrix(sapply(2:N, function(it) sample(k + q, k)), c(N-1, k), byrow = TRUE)
-      bz1r <- rowSums(matrix(bz1diff[goal.no-1+perm], c(N-1, k))) + bz1[goal.no]
-      bz2r <- rowSums(matrix(bz2diff[goal.no-1+perm], c(N-1, k))) + bz2[goal.no]
+      perm <- sapply(ks,
+        function(k) t(sapply(
+          2:N,
+          function(it) c(sample(k + q, k), rep(NA, k_max - k)),
+          simplify = 'array'
+        )),
+        simplify = 'array'
+      )
+
+      # # check dim
+      # stopifnot(all.equal(dim(perm), c(N-1, k_max, k_len)))
+      
+      perm <- aperm(perm, c(1, 3, 2))
+
+      # stopifnot(all.equal(dim(perm), c(N-1, k_len, k_max)))
+
+      #
+      # # Check that the sample without replacement is
+      # # along the correct axis
+      # for(ts in 1:(N-1)){
+      #   for(k_idx in seq_along(ks)){
+      #     stopifnot(length(unique(na.omit(perm[ts,k_idx,]))) == ks[k_idx])
+      #   }
+      # }
+
+      bz1r <- rowSums(array(bz1diff[goal.no-1+perm], c(N-1, k_len, k_max)), na.rm = TRUE, dims = 2) + bz1[goal.no]
+      bz2r <- rowSums(array(bz2diff[goal.no-1+perm], c(N-1, k_len, k_max)), na.rm = TRUE, dims = 2) + bz2[goal.no]
+      k_arr <- aperm(array(ks, c(k_len, N-1)), c(2,1)) 
+      # # check that orientation is correct
+      #stopifnot(all.equal(dim(k_arr), c(N-1, k_len)))
+      #stopifnot(all.equal(k_arr[1,], ks))
+
       R1rand <- sqrt((bz1r - bz1[goal.no])^2 + (bz2r  - bz2[goal.no])^2)
-      R2rand <- sqrt((bz1[goal.no+k+q] - bz1r)^2 + (bz2[goal.no+k+q] - bz2r)^2)
-      Rsumrand[2:N] <- R1rand + R2rand
+      R2rand <- sqrt((bz1[goal.no+k_arr+q] - bz1r)^2 + (bz2[goal.no+k_arr+q] - bz2r)^2)
+      Rsumrand[2:N, seq_len(k_len)] <- R1rand + R2rand
 
       # for: goal.no=5
       # P = .11, Pr[0] is NA, f is 6, Pr[20] .0414
 
       # while: goal.no 5
       # P: .1105, Pr[0] is 6639, f is 6, Pr[20] is .0399
-      P <- sum(Rsumrand >= Rsum)/N
 
-      Pr[k] <- P
+      Rsum_arr <- aperm(array(Rsum, c(k_len, N)), c(2,1)) 
+      Pr[ks] <- colSums(Rsumrand >= Rsum_arr)/N
 
-      # first look for P < alpha
-      if(!found_P_leq_alpha && P <= alpha) {
-        # f is the first value of k in the current run that is significant
-        f <- k
-        found_P_leq_alpha <- TRUE
-      # once p <= alpha is found, look for P >= alpha
-      } else if (found_P_leq_alpha && P > alpha) {
-        # l is the last value of k in the current run that is significant
-        l <- k - 1
-        # found_P_back_up <- TRUE
-        break
-      }
-    }  # end of ‘while’ on 
-    # 13/for -> P .178
-    # 12/while -> P .2108
-    # 13/for -> goal.no 13
-    # 12/while -> goal.no 14
-    print(k)
+      f <- match(TRUE, Pr < alpha)
+      l <- if(is.na(f)){NA} else {f + match(TRUE, Pr[f:k_max] >= alpha) - 2}
+      
+      if (!is.na(l)) break
+    }
+
+    print(c(goal.no,f,l+1))
 
     # apply “peak rule”
     rmin <- if(is.na(l)) 0 else if (l >= f) min(which(Pr[f:l] == min(Pr[f:l]))) else 0
-    # 21/for -> rmin = 3, goal.no = 13
-    # 21/while -> rmin = 4, goal.no = 14
     
     goal.no <- ifelse(rmin > 0, goal.no + f + rmin - 1, last.no)
     
     sig[goal.no] <- ifelse(goal.no == last.no,0,1)
+    batch_size <- l
     
   }  # end of ‘while’ on (goal.no < last.no - q) # A
   return(sig)
