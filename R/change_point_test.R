@@ -73,6 +73,7 @@ change_point_test <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
   
 }
 
+#' @importFrom dqrng dqsample
 change_point_test_fit <- function (bz1, bz2, q, N, alpha, start_batch_size = 10) {
 
   set.seed(2025)
@@ -159,7 +160,7 @@ change_point_test_fit <- function (bz1, bz2, q, N, alpha, start_batch_size = 10)
       perm <- sapply(ks,
         function(k) t(sapply(
           2:N,
-          function(it) c(sample(k + q, k), rep(NA, k_max - k)),
+          function(it) c(dqrng::dqsample(k + q, k), rep(NA, k_max - k)),
           simplify = 'array'
         )),
         simplify = 'array'

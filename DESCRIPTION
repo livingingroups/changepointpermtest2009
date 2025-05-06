@@ -9,7 +9,7 @@ Authors@R: c(
 Description: More about what it does (maybe more than one line).
 License: GPL (>= 2)
 Imports: checkmate
-Depends: R (>= 4.0.0), zoo, xts, trackframe
+Depends: R (>= 4.0.0), zoo, xts, trackframe, dqrng
 Suggests: tinytest
 Encoding: UTF-8
 RoxygenNote: 7.3.2
