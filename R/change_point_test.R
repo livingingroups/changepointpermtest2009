@@ -20,6 +20,26 @@ change_point_test <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
   # tol = 0
   # tol = 0.0001
   
+  # Ugly implementation of multiple tracks in the frame
+  tf_ids <- unique_ids(tf)
+  if(nrow(tf_ids) > 1) return(
+    do.call(rbind,
+      lapply(
+        seq_len(nrow(tf_ids)),
+        function(id_row_idx) {
+          id <- tf_ids[id_row_idx,]
+          # calling itself, unnecessary, but it works
+          cp <- change_point_test(
+            select_id(tf, id),
+            alpha = alpha, q = q, N = N, tol = tol
+          )
+          cp[, names(tf_ids)] <- id
+          cp
+        }
+      )
+    )
+  )
+  
   checkmate::assert_class(tf, "track_frame")
   # tf <- tf[seq(1, NROW(tf), by = 10),]
   x1 <- rev(longitude(tf))
@@ -42,7 +62,7 @@ change_point_test <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
   # REMOVE POINTS AT WHICH ANIMAL STAYS STILL
   # ind is (reverse) time ordering of points
   # newp  > 0 if point differs from previous point
-  ind_new <- c(TRUE, abs(bx1diff) > tol & abs(bx2diff) > tol)
+  ind_new <- c(TRUE, sqrt(bx1diff^2 + bx2diff^2) > tol)
   bz1 <- bx1[ind_new]
   bz2 <- bx2[ind_new]
   #backwards index
@@ -50,6 +70,9 @@ change_point_test <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
   
   sig <- change_point_test_fit(bz1 = bz1, bz2 = bz2, q = q, N = N, alpha = alpha)
   # sig <- change_point_test_fit_rcpp(bz1 = bz1, bz2 = bz2, q = q, N = N, alpha = alpha)
+  
+  # if alpha is null, that means we want return the probabilities accross k
+  if(is.null(alpha)) return(sig)
   
   
   #  Remove putative goal from list of CP’s
@@ -67,7 +90,7 @@ change_point_test <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
   
   
   # or return tf?
-  return(sig_xts)
+  return(as.data.frame(sig_xts))
   # cpt <- sig_xts[sig_xts$sig == 1, ] #order like in bsig
   # return(cpt)
   
@@ -138,7 +161,8 @@ change_point_test_fit <- function (bz1, bz2, q, N, alpha, start_batch_size = 10)
     found_P_leq_alpha <- FALSE
     found_P_back_up <- FALSE
 
-    all_ks  <- seq_len(last.no - goal.no - q - 1)
+    k_abs_max <- last.no - goal.no - q - 1
+    all_ks  <- seq_len(k_abs_max)
     for(ks in split(all_ks, rep(seq_along(all_ks), each = batch_size)[seq_along(all_ks)])) {
     #if(len(all_ks) > 0) { ks <- all_ks
       k_max <- max(ks)
@@ -196,11 +220,15 @@ change_point_test_fit <- function (bz1, bz2, q, N, alpha, start_batch_size = 10)
       Rsum_arr <- aperm(array(Rsum, c(k_len, N)), c(2,1)) 
       Pr[ks] <- colSums(Rsumrand >= Rsum_arr)/N
 
-      f <- match(TRUE, Pr < alpha)
-      l <- if(is.na(f)){NA} else {f + match(TRUE, Pr[f:k_max] >= alpha) - 2}
-      
-      if (!is.na(l)) break
+      if(!is.null(alpha)){
+        f <- match(TRUE, Pr < alpha)
+        l <- if(is.na(f)){NA} else {f + match(TRUE, Pr[f:k_max] >= alpha) - 2}
+        if (!is.na(l)) break
+      }
     }
+
+    # If alpha is null, we want all the probabilities for one iteration
+    if(is.null(alpha)) return(Pr)
 
     # apply “peak rule”
     rmin <- if(is.na(l)) 0 else if (l >= f) min(which(Pr[f:l] == min(Pr[f:l]))) else 0
