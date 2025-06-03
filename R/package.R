@@ -1,8 +1,10 @@
+
 #' @import checkmate
-#' @import xts
-#' @import zoo
 #' @import trackframe
-#' @importFrom stats runif
+#' @import Rcpp
+#' @importFrom stats runif setNames
+#' @importFrom zoo na.fill na.locf
+#' @useDynLib cpt, .registration = TRUE
 
 NULL
 
@@ -13,3 +15,8 @@ NULL
 #' be used for scientific inference. Especially the track in 7a is almost certainly
 #' substantially different from the original.
 "cptfiguredata"
+
+#' Test Data
+#'
+#' Small data set to test package.
+"cpttestdata"

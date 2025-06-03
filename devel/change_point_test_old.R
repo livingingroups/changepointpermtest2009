@@ -126,161 +126,161 @@ change_point_test_old <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
   
 }
 
-# change_point_test_fit <- function (bz1, bz2, q, N, alpha) {
-#   
-#   nz <- length(bz1)
-#   # We shall apply the CPT to points with coordinates (bz1,bz2)
-#   
-#   # Calculate the steps (bzdiff1, bzdiff2)
-#   bz1diff <- diff(bz1)
-#   bz2diff <- diff(bz2)
-#   
-#   # SOME DECLARATIONS
-#   
-#   # goal.no = number (from end) of current putative goal (with goal.no = 1 for end position 
-#   # Thus goal.no = goal.t + 1 
-#   # where goal.t was used in original code to refer to 
-#   # time of current putative goal (with goal.t = 0 for # end position 
-#   # start with goal.no = 1 
-#   goal.no <- 1
-#   
-#   # last.no = number (backwards in time) of last position of interest
-#   # last.no = length(bz1) is a convenient default
-#   # (and includes all the positions)
-#   last.no <- length(bz1) 
-#   
-#   no.of.nos <- length(bz1)
-#   
-#   Rsumrand  <- rep(0, len=N)
-#   Rsumrandr <- rep(0, len=N)
-#   
-#   # Pr will store observed p-values in a run of r
-#   Pr <- rep(1, len= no.of.nos)
-#   
-#   # sig is a vector indicating whether or not 
-#   # waypoint k is detected as a possible change point:
-#   # sig[k] = 1  if change point detected at waypoint k
-#   # sig[k] = 0  otherwise
-#   sig <- rep(0,nz)
-#   
-#   
-#   # k is number of steps in “k-leg”
-#   k <- 0
-#   
-#   # k is number of steps in “k-leg”
-#   k <- 0
-#   
-#   # LOOK (SEQUENTIALLY) FOR NEXT POSSIBLE CHANGE POINT
-#   
-#   ## Set rmin to control outer loop on goal.no
-#   ## rmin <- 1
-#   
-#   ## while((rmin > 0) && (goal.no < last.no – q)){ 
-#   ## A
-#   
-#   while(goal.no < last.no - q){
-#     
-#     k <- 0 
-#     print(k)
-#     # INCREASE k UNTIL NEXT POSSIBLE CHANGE POINT IS FOUND
-#     
-#     # Re-initialise Pr 
-#     Pr <- 0*Pr + 1
-#     
-#     P <- 1
-#     
-#     while ((P > alpha) && (goal.no + q + k < last.no)){ 
-#       # B
-#       
-#       k <- k + 1
-#       
-#       R1 <- sqrt((bz1[goal.no+k] - bz1[goal.no])^2 + (bz2[goal.no+k] - bz2[goal.no])^2)
-#       R2 <- sqrt((bz1[goal.no+k+q] - bz1[goal.no+k])^2 + (bz2[goal.no+k+q] - bz2[goal.no+k])^2)
-#       
-#       Rsum <- R1 + R2
-#       
-#       # Rsumrand[1] = observed value of statistic R1 + R2
-#       Rsumrand[1] <- Rsum
-#       
-#       # Now calculate statistic R1 + R2 for a further N-1 random permutations
-#       # and store in Rsumrand
-#       for (it in 2:N){ 
-#         # start of it loop C
-#         #FIXME RH: use seed here
-#         u <- runif(k+q,0,1)
-#         perm <- order(u)
-#         bz1r <- bz1[goal.no]
-#         bz2r <- bz2[goal.no]
-#         for (j in 1:k){ # start of j loop D
-#           bz1r <- bz1r + bz1diff[goal.no-1+perm[j]]
-#           bz2r <- bz2r + bz2diff[goal.no-1+perm[j]]
-#         } # end of j loop D
-#         
-#         R1rand <- sqrt((bz1r - bz1[goal.no])^2 + (bz2r  - bz2[goal.no])^2)
-#         R2rand <- sqrt((bz1[goal.no+k+q] - bz1r)^2 + (bz2[goal.no+k+q] - bz2r)^2)
-#         Rsumrand[it] <- R1rand + R2rand
-#       } # end of it loop C
-#       
-#       P <- sum(Rsumrand >= Rsum)/N
-#       
-#       Pr[k] <- P
-#       
-#     }  # end of ‘while’ on 
-#     #  ((P > alpha) && (goal.no + q + k < last.no)) B
-#     
-#     # f is the first value of k in the current run that is significant
-#     f <- k 
-#     
-#     while ((P <= alpha) && (goal.no + q + k < last.no)){
-#       # E
-#       
-#       k <- k+1
-#       R1 <- sqrt((bz1[goal.no+k] - bz1[goal.no])^2 + (bz2[goal.no+k] - bz2[goal.no])^2)
-#       R2 <- sqrt((bz1[goal.no+k+q] - bz1[goal.no+k])^2 + (bz2[goal.no+k+q] - bz2[goal.no+k])^2)
-#       
-#       
-#       Rsum <- R1 + R2
-#       
-#       # Rsumrand[1] = observed value of statistic R1 + R2
-#       Rsumrand[1] <- Rsum
-#       
-#       # Now calculate statistic R1 + R2 for a further N-1 random permutations
-#       # and store in Rsumrand
-#       for (it in 2:N){ # start of it loop F
-#         u <- runif(k+q,0,1)
-#         perm <- order(u)
-#         bz1r <- bz1[goal.no]
-#         bz2r <- bz2[goal.no]
-#         for (j in 1:k){ # start of j loop G
-#           bz1r <- bz1r + bz1diff[goal.no-1+perm[j]]
-#           bz2r <- bz2r + bz2diff[goal.no-1+perm[j]]
-#         } # end of j loop G
-#         
-#         R1rand <- sqrt((bz1r - bz1[goal.no])^2 + (bz2r  - bz2[goal.no])^2)
-#         R2rand <- sqrt((bz1[goal.no+k+q] - bz1r)^2 + (bz2[goal.no+k+q] - bz2r)^2)
-#         Rsumrand[it] <- R1rand + R2rand
-#       } # end of it loop F
-#       
-#       P <- sum(Rsumrand >= Rsum)/N
-#       
-#       Pr[k] <- P
-#       
-#     }  # end of ‘while’ on 
-#     #  ((P < alpha) && (goal.no + q + k < last.no)) E
-#     
-#     # l is the last value of k in the current run that is significant
-#     l <- k - 1
-#     
-#     
-#     # apply “peak rule”
-#     Pr[f:l]
-#     rmin <- min(which(Pr[f:l] == min(Pr[f:l]))) 
-#     rmin <- if(l >=f) rmin else 0
-#     
-#     goal.no <- ifelse(rmin > 0, goal.no + f + rmin - 1, last.no)
-#     
-#     sig[goal.no] <- ifelse(goal.no == last.no,0,1)
-#     
-#   }  # end of ‘while’ on (goal.no < last.no - q) # A
-#   return(sig)
-# }
+change_point_test_fit <- function (bz1, bz2, q, N, alpha) {
+
+  nz <- length(bz1)
+  # We shall apply the CPT to points with coordinates (bz1,bz2)
+
+  # Calculate the steps (bzdiff1, bzdiff2)
+  bz1diff <- diff(bz1)
+  bz2diff <- diff(bz2)
+
+  # SOME DECLARATIONS
+
+  # goal.no = number (from end) of current putative goal (with goal.no = 1 for end position
+  # Thus goal.no = goal.t + 1
+  # where goal.t was used in original code to refer to
+  # time of current putative goal (with goal.t = 0 for # end position
+  # start with goal.no = 1
+  goal.no <- 1
+
+  # last.no = number (backwards in time) of last position of interest
+  # last.no = length(bz1) is a convenient default
+  # (and includes all the positions)
+  last.no <- length(bz1)
+
+  no.of.nos <- length(bz1)
+
+  Rsumrand  <- rep(0, len=N)
+  Rsumrandr <- rep(0, len=N)
+
+  # Pr will store observed p-values in a run of r
+  Pr <- rep(1, len= no.of.nos)
+
+  # sig is a vector indicating whether or not
+  # waypoint k is detected as a possible change point:
+  # sig[k] = 1  if change point detected at waypoint k
+  # sig[k] = 0  otherwise
+  sig <- rep(0,nz)
+
+
+  # k is number of steps in “k-leg”
+  k <- 0
+
+  # k is number of steps in “k-leg”
+  k <- 0
+
+  # LOOK (SEQUENTIALLY) FOR NEXT POSSIBLE CHANGE POINT
+
+  ## Set rmin to control outer loop on goal.no
+  ## rmin <- 1
+
+  ## while((rmin > 0) && (goal.no < last.no – q)){
+  ## A
+
+  while(goal.no < last.no - q){
+
+    k <- 0
+    print(k)
+    # INCREASE k UNTIL NEXT POSSIBLE CHANGE POINT IS FOUND
+
+    # Re-initialise Pr
+    Pr <- 0*Pr + 1
+
+    P <- 1
+
+    while ((P > alpha) && (goal.no + q + k < last.no)){
+      # B
+
+      k <- k + 1
+
+      R1 <- sqrt((bz1[goal.no+k] - bz1[goal.no])^2 + (bz2[goal.no+k] - bz2[goal.no])^2)
+      R2 <- sqrt((bz1[goal.no+k+q] - bz1[goal.no+k])^2 + (bz2[goal.no+k+q] - bz2[goal.no+k])^2)
+
+      Rsum <- R1 + R2
+
+      # Rsumrand[1] = observed value of statistic R1 + R2
+      Rsumrand[1] <- Rsum
+
+      # Now calculate statistic R1 + R2 for a further N-1 random permutations
+      # and store in Rsumrand
+      for (it in 2:N){
+        # start of it loop C
+        #FIXME RH: use seed here
+        u <- runif(k+q,0,1)
+        perm <- order(u)
+        bz1r <- bz1[goal.no]
+        bz2r <- bz2[goal.no]
+        for (j in 1:k){ # start of j loop D
+          bz1r <- bz1r + bz1diff[goal.no-1+perm[j]]
+          bz2r <- bz2r + bz2diff[goal.no-1+perm[j]]
+        } # end of j loop D
+
+        R1rand <- sqrt((bz1r - bz1[goal.no])^2 + (bz2r  - bz2[goal.no])^2)
+        R2rand <- sqrt((bz1[goal.no+k+q] - bz1r)^2 + (bz2[goal.no+k+q] - bz2r)^2)
+        Rsumrand[it] <- R1rand + R2rand
+      } # end of it loop C
+
+      P <- sum(Rsumrand >= Rsum)/N
+
+      Pr[k] <- P
+
+    }  # end of ‘while’ on
+    #  ((P > alpha) && (goal.no + q + k < last.no)) B
+
+    # f is the first value of k in the current run that is significant
+    f <- k
+
+    while ((P <= alpha) && (goal.no + q + k < last.no)){
+      # E
+
+      k <- k+1
+      R1 <- sqrt((bz1[goal.no+k] - bz1[goal.no])^2 + (bz2[goal.no+k] - bz2[goal.no])^2)
+      R2 <- sqrt((bz1[goal.no+k+q] - bz1[goal.no+k])^2 + (bz2[goal.no+k+q] - bz2[goal.no+k])^2)
+
+
+      Rsum <- R1 + R2
+
+      # Rsumrand[1] = observed value of statistic R1 + R2
+      Rsumrand[1] <- Rsum
+
+      # Now calculate statistic R1 + R2 for a further N-1 random permutations
+      # and store in Rsumrand
+      for (it in 2:N){ # start of it loop F
+        u <- runif(k+q,0,1)
+        perm <- order(u)
+        bz1r <- bz1[goal.no]
+        bz2r <- bz2[goal.no]
+        for (j in 1:k){ # start of j loop G
+          bz1r <- bz1r + bz1diff[goal.no-1+perm[j]]
+          bz2r <- bz2r + bz2diff[goal.no-1+perm[j]]
+        } # end of j loop G
+
+        R1rand <- sqrt((bz1r - bz1[goal.no])^2 + (bz2r  - bz2[goal.no])^2)
+        R2rand <- sqrt((bz1[goal.no+k+q] - bz1r)^2 + (bz2[goal.no+k+q] - bz2r)^2)
+        Rsumrand[it] <- R1rand + R2rand
+      } # end of it loop F
+
+      P <- sum(Rsumrand >= Rsum)/N
+
+      Pr[k] <- P
+
+    }  # end of ‘while’ on
+    #  ((P < alpha) && (goal.no + q + k < last.no)) E
+
+    # l is the last value of k in the current run that is significant
+    l <- k - 1
+
+
+    # apply “peak rule”
+    Pr[f:l]
+    rmin <- min(which(Pr[f:l] == min(Pr[f:l])))
+    rmin <- if(l >=f) rmin else 0
+
+    goal.no <- ifelse(rmin > 0, goal.no + f + rmin - 1, last.no)
+
+    sig[goal.no] <- ifelse(goal.no == last.no,0,1)
+
+  }  # end of ‘while’ on (goal.no < last.no - q) # A
+  return(sig)
+}

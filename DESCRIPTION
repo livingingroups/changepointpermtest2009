@@ -1,15 +1,21 @@
 Package: cpt
 Type: Package
-Title: What the Package Does (Short Line)
-Version: 1.0.0
+Title: Change Point Detection for Animal Tracking Data
+Version: 0.0.1
 Authors@R: c(
-    person("Rainer", "Hirk", email = "Rainer.Hirk@quintik.at", role = c("aut", "cre")),
-    person("Florian", "Schwendinger", email = "Florian.Schwendinger@quintik.at", role = "aut"),
-    person("Katrina", "Brock", email = "kbrock@ab.mpg.de", role = "aut"))
-Description: More about what it does (maybe more than one line).
+    person("Katrina", "Brock", email = "kbrock@ab.mpg.de", role = "aut"),
+    person("Rainer", "Hirk", email = "Rainer.Hirk@quintik.at", role = "aut"),
+    person("Florian", "Schwendinger", email = "Florian.Schwendinger@quintik.at", role = c("aut", "cre")))
+Description:
+    Implements a permutation-based approach for detecting significant change points in animal movement trajectory data.
+    Change points represent locations where movement patterns significantly change,
+    which can indicate behavioral transitions or responses to environmental stimuli.
+    The package provides functions for both detecting change points in animal tracking data.
 License: GPL (>= 2)
-Imports: checkmate
-Depends: R (>= 4.0.0), zoo, xts, trackframe, dqrng
+Imports: checkmate, Rcpp (>= 1.0.14), trackframe
+Depends: R (>= 4.0.0), zoo
+LinkingTo: Rcpp, RcppArmadillo
 Suggests: tinytest
 Encoding: UTF-8
+LazyData: true
 RoxygenNote: 7.3.2

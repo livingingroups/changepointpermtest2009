@@ -51,4 +51,13 @@ tasks:
     deps: [build]
     cmds:
       - "{{.R_CMD}} CMD check --as-cran {{.PACKAGE_NAME}}_*.tar.gz"
-
+      
+  tar_ls:
+    desc: List the contents of the package
+    cmds:
+      - "tar -tvf {{.PACKAGE_NAME}}_*.tar.gz"
+      
+  test:
+    desc: Run the tinytests
+    cmds:
+      - "{{.R_CMD}} -f tests/tinytest.R"
