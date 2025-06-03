@@ -16,6 +16,7 @@ test_basic_functionality <- function() {
   y <- c(y1, y2)
   
   # Run change point detection
+  set.seed(2025L)
   result <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.05)
   
   # Check that the output is a numeric vector
@@ -38,6 +39,7 @@ test_no_change_points <- function() {
   x <- cumsum(rnorm(40, 0, 0.5))
   y <- cumsum(rnorm(40, 0, 0.5))
   
+  set.seed(2025L)
   result <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.05)
   
   # There might be some change points detected by chance, but should be few
@@ -52,9 +54,11 @@ test_alpha_parameter <- function() {
   y <- c(cumsum(rnorm(20, 0, 0.5)), cumsum(rnorm(20, -1, 0.5)) + 10)
   
   # With small alpha (more stringent), we expect fewer change points
+  set.seed(2025L)
   result_small_alpha <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.01)
   
   # With large alpha (less stringent), we expect more change points
+  set.seed(2025L)
   result_large_alpha <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.1)
   
   # The number of change points should be greater or equal with larger alpha
@@ -68,22 +72,28 @@ test_input_validation <- function() {
   
   # Test with invalid x (contains NA)
   x_na <- c(1:5, NA, 7:10)
+  set.seed(2025L)
   expect_error(change_point_fit(x_na, y, q = 3, N = 100, alpha = 0.05))
   
   # Test with invalid y (different length)
   y_short <- 1:9
+  set.seed(2025L)
   expect_error(change_point_fit(x, y_short, q = 3, N = 100, alpha = 0.05))
   
   # Test with invalid q (not numeric/integer)
+  set.seed(2025L)
   expect_error(change_point_fit(x, y, q = "three", N = 100, alpha = 0.05))
   
   # Test with invalid N (negative)
+  set.seed(2025L)
   expect_error(change_point_fit(x, y, q = 3, N = -10, alpha = 0.05))
   
   # Test with invalid alpha (not numeric)
+  set.seed(2025L)
   expect_error(change_point_fit(x, y, q = 3, N = 100, alpha = "0.05"))
   
   # Test with invalid alpha (negative)
+  set.seed(2025L)
   expect_error(change_point_fit(x, y, q = 3, N = 100, alpha = -0.05))
 }
 
@@ -94,6 +104,7 @@ test_constant_coordinates <- function() {
   y <- rep(1, 20)
   
   # With constant coordinates, there should be no change points
+  set.seed(2025L)
   result <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.05)
   
   expect_equal(sum(result), 0)

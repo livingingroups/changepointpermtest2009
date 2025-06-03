@@ -1,4 +1,4 @@
-#TODOS
+# TODOs:
 # - alpha NULL
 # - tests output class
 # - plots
@@ -14,20 +14,20 @@
 #'
 #' @param data a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
 #'   For the default method, this should be a matrix or data frame with at least 3 columns.
-#' @param alpha Numeric value specifying the significance level for detecting change points (default: 0.05).
-#'   Set to NULL to return probabilities across all potential change points. #FIXME: is this desired?
-#' @param q Integer specifying the minimum segment length between potential change points (default: 4).
-#' @param N Integer specifying the number of random permutations for the Monte Carlo test (default: 10000).
+#' @param alpha a numeric value specifying the significance level for detecting change points (default: 0.05).
+#'   Set to \code{NULL} to return probabilities across all potential change points. #FIXME: is this desired?
+#' @param q an integer specifying the minimum segment length between potential change points (default: 4).
+#' @param N an integer specifying the number of random permutations for the Monte Carlo test (default: 10000).
 #'   Higher values provide more accurate p-values but increase computation time.
-#' @param tol Numeric value specifying the maximum distance between indistinguishable positions (default: 0).
+#' @param tol a numeric value specifying the maximum distance between indistinguishable positions (default: 0).
 #'   Points with movements smaller than this threshold will be considered stationary.
-#' @param ... Additional arguments passed to methods.
+#' @param ... additional arguments passed to methods.
 #'
 #' @return An augmented data frame containing the original data with additional columns:
 #'   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
 #'   \item{cp_no}{Sequential numbering of detected change points}
 #'   
-#'   When alpha is NULL, the function returns probability values for each potential change point. #FIXME
+#' When alpha is \code{NULL}, the function returns probability values for each potential change point. #FIXME
 #' 
 #' @details This function implements a sequential change point detection algorithm that uses
 #'          a permutation test to identify significant changes in movement patterns. It compares
@@ -66,14 +66,13 @@ change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...
 # @param N total number of permutations
 # @param tol maximum distance between indistinguishable positions
 #
-# @return TODO
 #' @noRd
 #' @export
 change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) {
   x_col <- colnames(data)[1]
   y_col <- colnames(data)[2]
   t_col <- colnames(data)[3]
-
+  
   # reverse order
   b_xyt <- data[NROW(data):1,]
   # calcuate diff of coordinates
@@ -81,19 +80,21 @@ change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol =
   # remove points at which animal stays still
   ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > tol)
   b_xyt2 <- b_xyt[ind_new,]
-
-  set.seed(2025)
+  
   sig <- change_point_fit(bx = b_xyt2[, x_col], by = b_xyt2[, y_col], q = q, N = N, alpha = alpha)
-
+  
   # if alpha is null, that means we want return the probabilities accross k #FIXME
-  if(is.null(alpha)) return(sig)
-
+  if (is.null(alpha)) {
+    return(sig)
+  }
+  
   #  Remove putative goal from list of CP's
   sig[1] <- 0
   b_xyt2 <- cbind(b_xyt2,
                   "sig" = sig,
+                  
                   "cp_no" = ifelse(sig == 0, 0, cumsum(sig)))
-
+  
   # re-index - merge with b_xyt
   b_xyt <- merge(b_xyt, b_xyt2[, c(t_col, "sig")], by = t_col, all.x = TRUE, sort = FALSE)
   # b_xyt <- b_xyt[rev(order(b_xyt[,"t"])), ]
@@ -104,10 +105,11 @@ change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol =
   data[, "sig"] <- na.locf(data[, "sig"], fromLast = TRUE, na.rm = FALSE)
   data[, "cp_no"] <- na.locf(data[, "cp_no"], fromLast = TRUE, na.rm = FALSE)
   rownames(data) <- NULL
-
+  
   data <- data[, c(x_col, y_col, t_col, "sig", "cp_no")]
   class(data) <- c("change_point_test", "data.frame")
   #set attributes
+  # FIXME @RH: Why not use our construnctor?
   attr(data, "time_index") <- t_col
   attr(data, "easting_col") <- x_col
   attr(data, "northing_col") <- y_col
@@ -116,12 +118,16 @@ change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol =
 
 
 tf_change_point_test <- function(tf, alpha, q, N, tol) {
+  checkmate::assert_true(NROW(tf) > 0L)
   xyt <- tf_to_xyt(tf)[, 1:3]
   cpt <- change_point_test(xyt, alpha = alpha, q = q, N = N, tol = tol)
   tf_out <- merge(tf, cpt,
                   by = c(attr(tf, "easting_col"), attr(tf, "northing_col"), attr(tf, "time_index")),
                   all.x = TRUE, sort = FALSE)
-  tf_out <- as.track_frame(tf_out, easting_col = attr(tf, "easting_col"), northing_col = attr(tf, "northing_col"), time_index_col = attr(tf, "time_index"))
+  tf_out <- as.track_frame(tf_out,
+                           easting_col = attr(tf, "easting_col"),
+                           northing_col = attr(tf, "northing_col"),
+                           time_index_col = attr(tf, "time_index"))
   return(tf_out)
 }
 
@@ -132,33 +138,66 @@ tf_change_point_test <- function(tf, alpha, q, N, tol) {
 #   return(tf_out)
 # }
 
+# TODO: Maybe use dplyr::bind_rows but dplyr dependency for just rbind seams to much.
+#       Let's wait.
+do_rbind <- function(x, make.row.names = FALSE) {
+  do.call(rbind.data.frame, c(x, list(make.row.names = make.row.names)))
+}
+
+
+verify_cluster <- function(clu) {
+  if (is.null(clu)) {
+    return(clu)
+  }
+  if (is.numeric(clu)) {
+    checkmate::check_integerish(clu, len = 1L, any.missing = FALSE)
+  } else {
+    checkmate::check_class(clu, "cluster")
+  }
+  return(clu)
+}
+
+
+#' @param clu optional parameter either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"},
+#'   \itemize{
+#'     \item If \code{NULL} (default) no parallel processing is used.
+#'     \item If of class \code{"numeric"}, it gives the number of cores,
+#'       passed as integer to \code{parallel::makePSOCKcluster}.
+#'     \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel} package.
+#'       Allowed is any object which inherits from \code{"cluster"} and can be passed to
+#'       \code{parallel::parLapply}.
+#'   }
 #' @noRd
 #' @export
-change_point_test.track_frame <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, parallel = FALSE, ...) { #FIXME add parallel to docs
+change_point_test.track_frame <- function(data,
+                                          alpha = 0.05,
+                                          q = 4,
+                                          N = 1000,
+                                          tol = 0,
+                                          clu = NULL,
+                                          ...) {
+  checkmate::assert_true(NROW(data) > 0L)
+  clu <- verify_cluster(clu)
   tf_ids <- unlist(unique_ids(data))
-
   if(length(tf_ids) <= 1) {
     cpt <- tf_change_point_test(data, alpha = alpha, q = q, N = N, tol = tol)
   } else {
-    if(parallel == FALSE) {
-      cpt <- do.call(rbind, lapply(unlist(tf_ids), function(x) {
-        # x <- tf_ids[1]
-        print(x)
-        tfx <- data[data[, attr(data, "track_id")] == x, ]
-        cpt_i <- tf_change_point_test(tf = tfx, alpha = alpha, q = q, N = N, tol = tol)
-        return(cpt_i)
-      }))
-
-
+    cpt <- split(data, data[, attr(data, "track_id")])
+    if(is.null(clu)) {
+      cpt <- lapply(cpt, tf_change_point_test, alpha = alpha, q = q, N = N, tol = tol)
     } else {
-      stop("TODO")
-      cpt <- parallel::parLapply(unlist(tf_ids), function(x) {
-        tfx <- data[data[, attr(data, "track_id")] == x, ]
-        cpt_i <- tf_change_point_test(tf = tfx, alpha = alpha, q = q, N = N, tol = tol)
-        return(cpt_i)
-      })
+      if (is.numeric(clu)) {
+        if (clu <= 0L) {
+          ncores <- as.integer(max(1, parallel::detectCores() - 1))
+        } else {
+          ncores <- as.integer(clu)
+        }
+        clu <- makePSOCKcluster(as.integer(ncores))
+        on.exit(stopCluster(clu), add = TRUE)
+      }
+      cpt <- parLapply(clu, cpt, tf_change_point_test, alpha = alpha, q = q, N = N, tol = tol)
     }
-    cpt <- as.track_frame(cpt, easting_col = attr(data, "easting_col"),
+    cpt <- as.track_frame(do_rbind(cpt), easting_col = attr(data, "easting_col"),
                           northing_col = attr(data, "northing_col"),
                           time_index_col = attr(data, "time_index"),
                           track_id = attr(data, "track_id"))
@@ -175,11 +214,11 @@ change_point_test.track_frame <- function(data, alpha = 0.05, q = 4, N = 1000, t
 #' Detects change points in animal movement trajectory data using a permutation-based approach.
 #' This function identifies locations where the movement pattern significantly changes.
 #'
-#' @param bx Numeric vector of x-coordinates of the trajectory backwards in time.
-#' @param by Numeric vector of y-coordinates of the trajectory backwards in time.
-#' @param q Integer specifying the minimum segment length between potential change points.
-#' @param N Integer specifying the number of random permutations for the permutation test.
-#' @param alpha Numeric value specifying the significance level for detecting change points.
+#' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
+#' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
+#' @param q an integer specifying the minimum segment length between potential change points.
+#' @param N an integer specifying the number of random permutations for the permutation test.
+#' @param alpha a numeric value specifying the significance level for detecting change points.
 #'
 #' @return A numeric vector of the same length as the input coordinates, where 1 indicates
 #'         a change point at that position and 0 indicates no change point.
@@ -196,19 +235,21 @@ change_point_fit <- function(bx, by, q, N, alpha) {
   checkmate::assert_integerish(q, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_integerish(N, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_numeric(alpha, len = 1, any.missing = FALSE, lower = 0)
-  drop(rcpparma_change_point_test_fit(bx, by, as.integer(q), as.integer(N), alpha))
+  cpf <- rcpparma_change_point_test_fit(bx, by, as.integer(q), as.integer(N), alpha)
+  drop(cpf)
 }
 
 
 #' Summary - Extract Change Points from Movement Data
 #'
-#' Extracts and summarizes change points detected by the change_point_test function.
-#' This function processes the output from change_point_test to create a data frame
+#' Extracts and summarizes change points detected by the \code{change_point_test} function.
+#' This function processes the output from \code{change_point_test} to create a data frame
 #' containing the temporal and spatial information for each identified change point.
 #'
-#' @param object An object of class change_point_test or change_point_test_list containing movement data with change point information,
-#'   typically the output from change_point_test(). Must contain columns x and y coordinates, a timestamp,
-#'   'sig', and 'cp_no'.
+#' @param object an object of class \code{change_point_test} or
+#'   \code{change_point_test_list} containing movement data with change point information,
+#'   typically the output from \code{change_point_test()}. Must contain columns x and y coordinates,
+#'   a timestamp, \code{'sig'}, and \code{'cp_no'}.
 #' @param ... other arguments passed to summary
 #'
 #' @return A data frame with one row per change point and the following columns:
@@ -259,7 +300,7 @@ summary.change_point_test <- function(object, ...) {
       }))
     }
   } else {
-  
+    
     xyt_cp <- object[object$sig != 0,]
     xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
     summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
@@ -269,25 +310,6 @@ summary.change_point_test <- function(object, ...) {
                        "east" = x[, attr(object, "northing_col")][1])
     }))
   }
-
+  
   return(summary)
 }
-
-# #' @noRd
-# #' @export
-# summary.change_point_test_list <- function(object, ...) {
-#   # xyt <- cpt2[[1]]
-#   s_list <- lapply(object, function(xyt){
-#     xyt_cp <- xyt[xyt$sig != 0,]
-#     xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
-# 
-#     summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
-#       # x <- xyt_cp_split[[1]]
-#       cbind.data.frame("first" = min(x[, attr(xyt, "time_index")]),
-#                        "last" = max(x[, attr(xyt, "time_index")]),
-#                        "north" = x[, attr(xyt, "easting_col")][1],
-#                        "east" = x[, attr(xyt, "northing_col")][1])
-#     }))
-#   })
-#   return(s_list)
-# }

@@ -8,6 +8,7 @@ library(trackframe)
 test_cpttestdata <- function() {
   data("cpttestdata", package = "cpt")
   xyt <- cpttestdata
+  set.seed(2025L)
   cpt <- change_point_test(xyt, alpha = 0.05, q = 4, N = 1000, tol = 0)
   # cat(deparse(cpt$sig))
   results_orig <- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -22,6 +23,7 @@ test_cpttestdata <- function() {
   expect_equal(summary(cpt)[, "last"], c(39, 65, 74, 88, 132))
   
   tf <- as.track_frame(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])), x = cpttestdata[,1], y=cpttestdata[,2]), 't', 'x', 'y')
+  set.seed(2025L)
   cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, tol = 0)
   expect_equal(cpt_tf$sig, results_orig)
   expect_equal(summary(cpt_tf)[, "north"], c(688443.1545, 687898.0517, 687666.5149, 687345.6599, 687095.3092))
@@ -44,6 +46,7 @@ test_basic_functionality <- function() {
   data <- data.frame(x = x, y = y, t = t)
   
   # Run change point detection
+  set.seed(2025L)
   result <- change_point_test(data, alpha = 0.05, q = 3, N = 100, tol = 0)
   
   # Check that the result is a data frame
@@ -71,12 +74,14 @@ test_input_formats <- function() {
   
   # Test with data frame
   data_df <- data.frame(x = x, y = y, t = t)
+  set.seed(2025L)
   result_df <- change_point_test(data_df, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_df))
   
   # Test with matrix
   data_matrix <- cbind(x, y, t)
   colnames(data_matrix) <- c("x", "y", "t")
+  set.seed(2025L)
   result_matrix <- change_point_test(data_matrix, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_matrix))
   
@@ -87,6 +92,7 @@ test_input_formats <- function() {
   # Test with track_frame
   
   data_tf <- as.track_frame(data.frame(t=as.POSIXct(t), x = x, y = y), 't', 'x', 'y')
+  set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_tf))
   expect_equal(result_df[, c("sig", "cp_no")], result_matrix[, c("sig", "cp_no")])
@@ -104,6 +110,7 @@ test_cp_no_consistency <- function() {
   data <- data.frame(x = x, y = y, t = t)
   
   # Run change point detection
+  set.seed(2025L)
   result <- change_point_test(data, alpha = 0.05, q = 3, N = 100, tol = 0)
   
   # Check that cp_no is sequential and matches sig column
@@ -128,13 +135,15 @@ test_colnames <- function() {
   xyt <- cpttestdata
   cn <- c("xnew", "ynew", "time2")
   colnames(xyt) <- cn
+  set.seed(2025L)
   cpt <- change_point_test(xyt, N = 100)
   expect_equal(colnames(cpt[1:3]), cn)
-
+  
   tf <- as.track_frame(data.frame(tnew = as.POSIXct(seq_along(cpttestdata[,3])),
                                   x2 = cpttestdata[,1],
                                   y2 = cpttestdata[,2]),
                        'tnew', 'x2', 'y2')
+  set.seed(2025L)                       
   cpt_tf <- change_point_test(tf, N = 100)
   expect_equal(colnames(cpt_tf[1:3]), c('x2', 'y2', 'tnew'))
 }

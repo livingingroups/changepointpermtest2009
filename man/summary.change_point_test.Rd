@@ -7,9 +7,10 @@
 \method{summary}{change_point_test}(object, ...)
 }
 \arguments{
-\item{object}{An object of class change_point_test or change_point_test_list containing movement data with change point information,
-typically the output from change_point_test(). Must contain columns x and y coordinates, a timestamp,
-'sig', and 'cp_no'.}
+\item{object}{an object of class \code{change_point_test} or
+\code{change_point_test_list} containing movement data with change point information,
+typically the output from \code{change_point_test()}. Must contain columns x and y coordinates,
+a timestamp, \code{'sig'}, and \code{'cp_no'}.}
 
 \item{...}{other arguments passed to summary}
 }
@@ -21,8 +22,8 @@ A data frame with one row per change point and the following columns:
   \item{east}{Y-coordinate (easting) of the change point location}
 }
 \description{
-Extracts and summarizes change points detected by the change_point_test function.
-This function processes the output from change_point_test to create a data frame
+Extracts and summarizes change points detected by the \code{change_point_test} function.
+This function processes the output from \code{change_point_test} to create a data frame
 containing the temporal and spatial information for each identified change point.
 }
 \examples{

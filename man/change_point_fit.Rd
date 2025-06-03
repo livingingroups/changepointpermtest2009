@@ -7,15 +7,15 @@
 change_point_fit(bx, by, q, N, alpha)
 }
 \arguments{
-\item{bx}{Numeric vector of x-coordinates of the trajectory backwards in time.}
+\item{bx}{a numeric vector of x-coordinates of the trajectory backwards in time.}
 
-\item{by}{Numeric vector of y-coordinates of the trajectory backwards in time.}
+\item{by}{a numeric vector of y-coordinates of the trajectory backwards in time.}
 
-\item{q}{Integer specifying the minimum segment length between potential change points.}
+\item{q}{an integer specifying the minimum segment length between potential change points.}
 
-\item{N}{Integer specifying the number of random permutations for the permutation test.}
+\item{N}{an integer specifying the number of random permutations for the permutation test.}
 
-\item{alpha}{Numeric value specifying the significance level for detecting change points.}
+\item{alpha}{a numeric value specifying the significance level for detecting change points.}
 }
 \value{
 A numeric vector of the same length as the input coordinates, where 1 indicates

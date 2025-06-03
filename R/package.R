@@ -4,9 +4,10 @@
 #' @import Rcpp
 #' @importFrom stats runif setNames
 #' @importFrom zoo na.fill na.locf
+#' @importFrom parallel parLapply stopCluster makePSOCKcluster
 #' @useDynLib cpt, .registration = TRUE
-
 NULL
+
 
 #' Data Extracted from Figures
 #'
@@ -15,6 +16,7 @@ NULL
 #' be used for scientific inference. Especially the track in 7a is almost certainly
 #' substantially different from the original.
 "cptfiguredata"
+
 
 #' Test Data
 #'

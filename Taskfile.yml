@@ -10,14 +10,6 @@ tasks:
     cmds:
       - task --list
 
-  clean:
-    desc: Clean build artifacts
-    cmds:
-      - rm -rf "{{.PACKAGE_NAME}}.Rcheck"
-      - rm -f "{{.PACKAGE_NAME}}_*.tar.gz"
-      - rm -rf man/
-      - rm -rf docs/
-
   docs:
     desc: Generate documentation using roxygen2
     cmds:
@@ -61,3 +53,25 @@ tasks:
     desc: Run the tinytests
     cmds:
       - "{{.R_CMD}} -f tests/tinytest.R"
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf "{{.PACKAGE_NAME}}.Rcheck"
+      - rm -f "{{.PACKAGE_NAME}}_*.tar.gz"
+
+  clean-src:
+    desc: Clean up source files
+    cmds:
+      - rm -f src/*.o src/*.so src/*.a
+
+  clean-all:
+    desc: Clean up all artifacts
+    deps: [clean, clean-src]
+    
+  manual:
+    desc: Create the manual
+    deps: [docs]
+    cmds:
+      - rm -f ../../cpt-manual.pdf
+      - "{{.R_CMD}} CMD Rd2pdf --output=../../cpt-manual.pdf ."

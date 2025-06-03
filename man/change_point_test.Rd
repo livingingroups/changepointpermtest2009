@@ -10,25 +10,25 @@ change_point_test(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...)
 \item{data}{a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
 For the default method, this should be a matrix or data frame with at least 3 columns.}
 
-\item{alpha}{Numeric value specifying the significance level for detecting change points (default: 0.05).
-Set to NULL to return probabilities across all potential change points. #FIXME: is this desired?}
+\item{alpha}{a numeric value specifying the significance level for detecting change points (default: 0.05).
+Set to \code{NULL} to return probabilities across all potential change points. #FIXME: is this desired?}
 
-\item{q}{Integer specifying the minimum segment length between potential change points (default: 4).}
+\item{q}{an integer specifying the minimum segment length between potential change points (default: 4).}
 
-\item{N}{Integer specifying the number of random permutations for the Monte Carlo test (default: 10000).
+\item{N}{an integer specifying the number of random permutations for the Monte Carlo test (default: 10000).
 Higher values provide more accurate p-values but increase computation time.}
 
-\item{tol}{Numeric value specifying the maximum distance between indistinguishable positions (default: 0).
+\item{tol}{a numeric value specifying the maximum distance between indistinguishable positions (default: 0).
 Points with movements smaller than this threshold will be considered stationary.}
 
-\item{...}{Additional arguments passed to methods.}
+\item{...}{additional arguments passed to methods.}
 }
 \value{
 An augmented data frame containing the original data with additional columns:
   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
   \item{cp_no}{Sequential numbering of detected change points}
   
-  When alpha is NULL, the function returns probability values for each potential change point. #FIXME
+When alpha is \code{NULL}, the function returns probability values for each potential change point. #FIXME
 }
 \description{
 Detects significant change points in animal movement trajectory data using a permutation-based approach.
