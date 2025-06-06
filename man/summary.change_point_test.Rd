@@ -31,8 +31,8 @@ library(cpt)
 data("cpttestdata", package = "cpt")
 
 # First detect change points
-result <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
 
 # Then extract the change points into a summarized format
-summary(result)
+summary(cpt)
 }

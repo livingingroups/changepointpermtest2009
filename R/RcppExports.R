@@ -5,3 +5,7 @@ rcpparma_change_point_test_fit <- function(bx, by, q, N, alpha) {
     .Call(`_cpt_rcpparma_change_point_test_fit`, bx, by, q, N, alpha)
 }
 
+rcpparma_change_point_test_pvalue <- function(bx, by, q_max, N) {
+    .Call(`_cpt_rcpparma_change_point_test_pvalue`, bx, by, q_max, N)
+}
+

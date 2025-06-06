@@ -1,8 +1,8 @@
 # TODOs:
-# - alpha NULL
 # - tests output class
 # - plots
 # - vignette
+# - test parallel
 
 
 
@@ -12,14 +12,13 @@
 #' This function identifies locations where the movement pattern significantly changes, which can represent
 #' behavioral transitions or responses to environmental stimuli.
 #'
-#' @param data a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
+#' @param data a track_frame, a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
 #'   For the default method, this should be a matrix or data frame with at least 3 columns.
-#' @param alpha a numeric value specifying the significance level for detecting change points (default: 0.05).
-#'   Set to \code{NULL} to return probabilities across all potential change points. #FIXME: is this desired?
-#' @param q an integer specifying the minimum segment length between potential change points (default: 4).
-#' @param N an integer specifying the number of random permutations for the Monte Carlo test (default: 10000).
+#' @param alpha a numeric value specifying the significance level for detecting change points.
+#' @param q an integer specifying the minimum segment length between potential change points.
+#' @param N an integer specifying the number of random permutations for thepermutation test.
 #'   Higher values provide more accurate p-values but increase computation time.
-#' @param tol a numeric value specifying the maximum distance between indistinguishable positions (default: 0).
+#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
 #'   Points with movements smaller than this threshold will be considered stationary.
 #' @param ... additional arguments passed to methods.
 #'
@@ -27,7 +26,6 @@
 #'   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
 #'   \item{cp_no}{Sequential numbering of detected change points}
 #'   
-#' When alpha is \code{NULL}, the function returns probability values for each potential change point. #FIXME
 #' 
 #' @details This function implements a sequential change point detection algorithm that uses
 #'          a permutation test to identify significant changes in movement patterns. It compares
@@ -42,15 +40,27 @@
 #' @examples
 #' library(cpt)
 #' data("cpttestdata", package = "cpt")
-#' 
+#' class(cpttestdata)
 #' # First detect change points
-#' result <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+#' set.seed(2025L)
+#' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
 #' 
 #' # Then extract the change points into a summarized format
-#' summary(result)
+#' summary(cpt)
+#' 
+#' # with trackframe
+#' library(trackframe)
+#'  tf <- as.track_frame(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])),
+#'  x = cpttestdata[,1],
+#'  y=cpttestdata[,2]),
+#'  't', 'x', 'y')
+#'  class(tf)
+#'  set.seed(2025L)
+#'  cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+#'  summary(cpt_tf)
 #' 
 #' # Get probability values instead of binary indicators
-#' # prob_values <- change_point_test(cpttestdata, alpha = NULL, q = 3, N = 500)
+#' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
 change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...) {
   UseMethod("change_point_test")
 }
@@ -109,32 +119,50 @@ change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol =
   data <- data[, c(x_col, y_col, t_col, "sig", "cp_no")]
   class(data) <- c("change_point_test", "data.frame")
   #set attributes
-  # FIXME @RH: Why not use our construnctor?
-  attr(data, "time_index") <- t_col
-  attr(data, "easting_col") <- x_col
-  attr(data, "northing_col") <- y_col
+  # FIXME @RH: Why not use our constructor? RH: shouldn't depend on trackframe here
+  attr(data, "time") <- t_col
+  attr(data, "easting") <- x_col
+  attr(data, "northing") <- y_col
   return(data)
 }
 
-
-tf_change_point_test <- function(tf, alpha, q, N, tol) {
-  checkmate::assert_true(NROW(tf) > 0L)
-  xyt <- tf_to_xyt(tf)[, 1:3]
-  cpt <- change_point_test(xyt, alpha = alpha, q = q, N = N, tol = tol)
-  tf_out <- merge(tf, cpt,
-                  by = c(attr(tf, "easting_col"), attr(tf, "northing_col"), attr(tf, "time_index")),
-                  all.x = TRUE, sort = FALSE)
-  tf_out <- as.track_frame(tf_out,
-                           easting_col = attr(tf, "easting_col"),
-                           northing_col = attr(tf, "northing_col"),
-                           time_index_col = attr(tf, "time_index"))
-  return(tf_out)
+#' Change Point Test Fitting
+#'
+#' Detects change points in animal movement trajectory data using a permutation-based approach.
+#' This function identifies locations where the movement pattern significantly changes.
+#'
+#' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
+#' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
+#' @param q an integer specifying the minimum segment length between potential change points.
+#' @param N an integer specifying the number of random permutations for the permutation test.
+#' @param alpha a numeric value specifying the significance level for detecting change points.
+#'
+#' @return A numeric vector of the same length as the input coordinates, where 1 indicates
+#'         a change point at that position and 0 indicates no change point.
+#'
+#' @details This function implements a sequential change point detection algorithm that uses
+#'          a permutation test to identify significant changes in movement patterns. It compares
+#'          the sum of distances between consecutive points against randomly permuted sequences
+#'          to determine if a change point exists.
+#'
+#' @export
+change_point_fit <- function(bx, by, q, N, alpha) {
+  checkmate::assert_numeric(bx, any.missing = FALSE)
+  checkmate::assert_numeric(by, len = length(bx), any.missing = FALSE)
+  checkmate::assert_integerish(q, len = 1, any.missing = FALSE, lower = 1)
+  checkmate::assert_integerish(N, len = 1, any.missing = FALSE, lower = 1)
+  checkmate::assert_numeric(alpha, len = 1, any.missing = FALSE, lower = 0)
+  cpf <- rcpparma_change_point_test_fit(bx, by, as.integer(q), as.integer(N), alpha)
+  drop(cpf)
 }
 
 
-# rbind_track_frame <- function(..., easting_col, northing_col, time_index_col){ #FIXME S3 method in trackframe
+
+
+
+# rbind_track_frame <- function(..., easting_col, northing_col, time_col){ #FIXME S3 method in trackframe
 #   tf_df <- rbind.data.frame(...)
-#   tf_out <- as.track_frame(tf_df, easting_col = easting_col, northing_col = northing_col, time_index_col = time_index_col)
+#   tf_out <- as.track_frame(tf_df, easting_col = easting_col, northing_col = northing_col, time_col = time_col)
 #   return(tf_out)
 # }
 
@@ -182,7 +210,7 @@ change_point_test.track_frame <- function(data,
   if(length(tf_ids) <= 1) {
     cpt <- tf_change_point_test(data, alpha = alpha, q = q, N = N, tol = tol)
   } else {
-    cpt <- split(data, data[, attr(data, "track_id")])
+    cpt <- split(data, data[, attr(data, "id")])
     if(is.null(clu)) {
       cpt <- lapply(cpt, tf_change_point_test, alpha = alpha, q = q, N = N, tol = tol)
     } else {
@@ -197,48 +225,30 @@ change_point_test.track_frame <- function(data,
       }
       cpt <- parLapply(clu, cpt, tf_change_point_test, alpha = alpha, q = q, N = N, tol = tol)
     }
-    cpt <- as.track_frame(do_rbind(cpt), easting_col = attr(data, "easting_col"),
-                          northing_col = attr(data, "northing_col"),
-                          time_index_col = attr(data, "time_index"),
-                          track_id = attr(data, "track_id"))
+    cpt <- as.track_frame(do_rbind(cpt), easting_col = attr(data, "easting"),
+                          northing_col = attr(data, "northing"),
+                          time_col = attr(data, "time"),
+                          id_col = attr(data, "id"))
   }
-  # colnames(cpt)[NCOL(cpt)] <- attr(data, "track_id")
+  # colnames(cpt)[NCOL(cpt)] <- attr(data, "id")
   rownames(cpt) <- NULL
   class(cpt) <- c("change_point_test", class(cpt))
   return(cpt)
 }
 
-
-#' Change Point Test Fitting
-#'
-#' Detects change points in animal movement trajectory data using a permutation-based approach.
-#' This function identifies locations where the movement pattern significantly changes.
-#'
-#' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
-#' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
-#' @param q an integer specifying the minimum segment length between potential change points.
-#' @param N an integer specifying the number of random permutations for the permutation test.
-#' @param alpha a numeric value specifying the significance level for detecting change points.
-#'
-#' @return A numeric vector of the same length as the input coordinates, where 1 indicates
-#'         a change point at that position and 0 indicates no change point.
-#'
-#' @details This function implements a sequential change point detection algorithm that uses
-#'          a permutation test to identify significant changes in movement patterns. It compares
-#'          the sum of distances between consecutive points against randomly permuted sequences
-#'          to determine if a change point exists.
-#'
-#' @export
-change_point_fit <- function(bx, by, q, N, alpha) {
-  checkmate::assert_numeric(bx, any.missing = FALSE)
-  checkmate::assert_numeric(by, len = length(bx), any.missing = FALSE)
-  checkmate::assert_integerish(q, len = 1, any.missing = FALSE, lower = 1)
-  checkmate::assert_integerish(N, len = 1, any.missing = FALSE, lower = 1)
-  checkmate::assert_numeric(alpha, len = 1, any.missing = FALSE, lower = 0)
-  cpf <- rcpparma_change_point_test_fit(bx, by, as.integer(q), as.integer(N), alpha)
-  drop(cpf)
+tf_change_point_test <- function(tf, alpha, q, N, tol) {
+  checkmate::assert_true(NROW(tf) > 0L)
+  xyt <- tf_to_xyt(tf)[, 1:3]
+  cpt <- change_point_test(xyt, alpha = alpha, q = q, N = N, tol = tol)
+  tf_out <- merge(tf, cpt,
+                  by = c(attr(tf, "easting"), attr(tf, "northing"), attr(tf, "time")),
+                  all.x = TRUE, sort = FALSE)
+  tf_out <- as.track_frame(tf_out,
+                           easting_col = attr(tf, "easting"),
+                           northing_col = attr(tf, "northing"),
+                           time_col = attr(tf, "time"))
+  return(tf_out)
 }
-
 
 #' Summary - Extract Change Points from Movement Data
 #'
@@ -265,10 +275,10 @@ change_point_fit <- function(bx, by, q, N, alpha) {
 #' data("cpttestdata", package = "cpt")
 #' 
 #' # First detect change points
-#' result <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+#' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
 #' 
 #' # Then extract the change points into a summarized format
-#' summary(result)
+#' summary(cpt)
 summary.change_point_test <- function(object, ...) {
   if(inherits(object, "track_frame")) {
     tf_ids <- unlist(unique_ids(object))
@@ -276,25 +286,25 @@ summary.change_point_test <- function(object, ...) {
       xyt_cp <- object[object$sig != 0,]
       xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
       summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
-        cbind.data.frame("first" = min(x[, attr(object, "time_index")]),
-                         "last" = max(x[, attr(object, "time_index")]),
-                         "north" = x[, attr(object, "easting_col")][1],
-                         "east" = x[, attr(object, "northing_col")][1])
+        cbind.data.frame("first" = min(x[, attr(object, "time")]),
+                         "last" = max(x[, attr(object, "time")]),
+                         "east" = x[, attr(object, "easting")][1],
+                         "north" = x[, attr(object, "northing")][1])
       }))
     } else{
-      unique(object[, attr(object, "track_id")])
-      tf_split <- split(object, f = object[,attr(object, "track_id")])
+      unique(object[, attr(object, "id")])
+      tf_split <- split(object, f = object[,attr(object, "id")])
       summary <- do.call("rbind", lapply(tf_split, function(xyt){
         xyt_cp <- xyt[xyt$sig != 0,]
         xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
         
         summary_i <- do.call("rbind", lapply(xyt_cp_split, function(x) {
           # x <- xyt_cp_split[[1]]
-          cbind.data.frame("first" = min(x[, attr(xyt, "time_index")]),
-                           "last" = max(x[, attr(xyt, "time_index")]),
-                           "north" = x[, attr(xyt, "easting_col")][1],
-                           "east" = x[, attr(xyt, "northing_col")][1],
-                           "track_id" = x[, attr(xyt, "track_id")][1])
+          cbind.data.frame("first" = min(x[, attr(xyt, "time")]),
+                           "last" = max(x[, attr(xyt, "time")]),
+                           "east" = x[, attr(xyt, "easting")][1],
+                           "north" = x[, attr(xyt, "northing")][1],
+                           "id" = x[, attr(xyt, "id")][1])
         }))
         summary_i
       }))
@@ -304,10 +314,10 @@ summary.change_point_test <- function(object, ...) {
     xyt_cp <- object[object$sig != 0,]
     xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
     summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
-      cbind.data.frame("first" = min(x[, attr(object, "time_index")]),
-                       "last" = max(x[, attr(object, "time_index")]),
-                       "north" = x[, attr(object, "easting_col")][1],
-                       "east" = x[, attr(object, "northing_col")][1])
+      cbind.data.frame("first" = min(x[, attr(object, "time")]),
+                       "last" = max(x[, attr(object, "time")]),
+                       "east" = x[, attr(object, "easting")][1],
+                       "north" = x[, attr(object, "northing")][1])
     }))
   }
   

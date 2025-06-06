@@ -26,9 +26,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpparma_change_point_test_pvalue
+arma::mat rcpparma_change_point_test_pvalue(arma::dvec bx, arma::dvec by, int32_t q_max, int32_t N);
+RcppExport SEXP _cpt_rcpparma_change_point_test_pvalue(SEXP bxSEXP, SEXP bySEXP, SEXP q_maxSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::dvec >::type bx(bxSEXP);
+    Rcpp::traits::input_parameter< arma::dvec >::type by(bySEXP);
+    Rcpp::traits::input_parameter< int32_t >::type q_max(q_maxSEXP);
+    Rcpp::traits::input_parameter< int32_t >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpparma_change_point_test_pvalue(bx, by, q_max, N));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cpt_rcpparma_change_point_test_fit", (DL_FUNC) &_cpt_rcpparma_change_point_test_fit, 5},
+    {"_cpt_rcpparma_change_point_test_pvalue", (DL_FUNC) &_cpt_rcpparma_change_point_test_pvalue, 4},
     {NULL, NULL, 0}
 };
 
