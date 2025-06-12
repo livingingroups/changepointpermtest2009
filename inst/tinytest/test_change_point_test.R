@@ -19,7 +19,7 @@ test_cpttestdata <- function() {
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                     0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0)
-  expect_equal(cpt$sig, results_orig)
+  expect_equal(cpt[, "sig"], results_orig)
   expect_equal(summary(cpt)[, "last"], c(39, 65, 74, 88, 132))
   
   tf <- as.track_frame(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])), x = cpttestdata[,1], y=cpttestdata[,2]), 't', 'x', 'y')
@@ -40,7 +40,7 @@ test_basic_functionality <- function() {
   
   x <- c(x1, x2)
   y <- c(y1, y2)
-  t <- 1:40
+  t <- as.POSIXct(1:40)
   
   # Create data frame with the required columns
   data <- data.frame(x = x, y = y, t = t)
@@ -67,12 +67,15 @@ test_basic_functionality <- function() {
 # Test with different input formats
 test_input_formats <- function() {
   # Create a simple dataset
-  set.seed(202)
+  set.seed(2025)
   x <- 1:10
   y <- 1:10
   t <- 1:10
   
   # Test with data frame
+  data_df <- data.frame(x = x, y = y, t = t)
+  expect_error(change_point_test(data_df, alpha = 0.05, q = 3, N = 100, tol = 0))
+  t <- as.POSIXct(1:40)
   data_df <- data.frame(x = x, y = y, t = t)
   set.seed(2025L)
   result_df <- change_point_test(data_df, alpha = 0.05, q = 2, N = 50, tol = 0)
@@ -83,7 +86,7 @@ test_input_formats <- function() {
   colnames(data_matrix) <- c("x", "y", "t")
   set.seed(2025L)
   result_matrix <- change_point_test(data_matrix, alpha = 0.05, q = 2, N = 50, tol = 0)
-  expect_true(is.data.frame(result_matrix))
+  expect_true(is.matrix(result_matrix))
   
   # Both should have the same structure
   expect_equal(ncol(result_df), ncol(result_matrix))
@@ -95,7 +98,7 @@ test_input_formats <- function() {
   set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_tf))
-  expect_equal(result_df[, c("sig", "cp_no")], result_matrix[, c("sig", "cp_no")])
+  expect_equal(as.matrix(result_df[, c("sig", "cp_no")]), result_matrix[, c("sig", "cp_no")])
 }
 
 
@@ -106,7 +109,7 @@ test_cp_no_consistency <- function() {
   set.seed(303)
   x <- c(1:10, 20:30, 40:50)
   y <- c(1:10, 20:30, 40:50)
-  t <- 1:length(x)
+  t <- as.POSIXct(1:length(x))
   data <- data.frame(x = x, y = y, t = t)
   
   # Run change point detection
@@ -136,8 +139,14 @@ test_colnames <- function() {
   cn <- c("xnew", "ynew", "time2")
   colnames(xyt) <- cn
   set.seed(2025L)
+  
+  expect_error(change_point_test(xyt, N = 100))
+  
+  cn <- c("x", "y", "t")
+  colnames(xyt) <- cn
   cpt <- change_point_test(xyt, N = 100)
-  expect_equal(colnames(cpt[1:3]), cn)
+  colnames(cpt)
+  expect_equal(colnames(cpt)[1:3], cn)
   
   tf <- as.track_frame(data.frame(tnew = as.POSIXct(seq_along(cpttestdata[,3])),
                                   x2 = cpttestdata[,1],

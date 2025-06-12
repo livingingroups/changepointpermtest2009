@@ -12,8 +12,7 @@
 #' This function identifies locations where the movement pattern significantly changes, which can represent
 #' behavioral transitions or responses to environmental stimuli.
 #'
-#' @param data a track_frame, a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
-#'   For the default method, this should be a matrix or data frame with at least 3 columns.
+#' @param data a track_frame, or an object coercible to track_frame
 #' @param alpha a numeric value specifying the significance level for detecting change points.
 #' @param q an integer specifying the minimum segment length between potential change points.
 #' @param N an integer specifying the number of random permutations for thepermutation test.
@@ -66,19 +65,21 @@ change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...
 }
 
 
-# Change Point Test
-# 
-# Detecting change points in animal ranging data
+#' Change Point Test
+#' 
+#' Detecting change points in animal ranging data
+#'
+#' @param data a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
+#' @param alpha a numeric value specifying the significance level for detecting change points.
+#' @param q an integer specifying the minimum segment length between potential change points.
+#' @param N an integer specifying the number of random permutations for thepermutation test.
+#'   Higher values provide more accurate p-values but increase computation time.
+#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
+#'   Points with movements smaller than this threshold will be considered stationary.
+#' @param ... additional arguments passed to methods.
 #
-# @param xyt a matrix with columns x, y (in cartesian coordinates) and t
-# @param alpha nominal significance level
-# @param q q value
-# @param N total number of permutations
-# @param tol maximum distance between indistinguishable positions
-#
-#' @noRd
 #' @export
-change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) {
+change_point_test_xyt <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) { #TODO: change to x = , y = , t = 
   x_col <- colnames(data)[1]
   y_col <- colnames(data)[2]
   t_col <- colnames(data)[3]
@@ -93,11 +94,6 @@ change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol =
   
   sig <- change_point_fit(bx = b_xyt2[, x_col], by = b_xyt2[, y_col], q = q, N = N, alpha = alpha)
   
-  # if alpha is null, that means we want return the probabilities accross k #FIXME
-  if (is.null(alpha)) {
-    return(sig)
-  }
-  
   #  Remove putative goal from list of CP's
   sig[1] <- 0
   b_xyt2 <- cbind(b_xyt2,
@@ -106,18 +102,24 @@ change_point_test.default <- function(data, alpha = 0.05, q = 4, N = 1000, tol =
                   "cp_no" = ifelse(sig == 0, 0, cumsum(sig)))
   
   # re-index - merge with b_xyt
-  b_xyt <- merge(b_xyt, b_xyt2[, c(t_col, "sig")], by = t_col, all.x = TRUE, sort = FALSE)
+  data <- merge(b_xyt, b_xyt2[, c(t_col, "sig")], by = t_col, all.x = TRUE, sort = FALSE)
+  if(is.matrix(b_xyt)) data <- as.matrix(data)
   # b_xyt <- b_xyt[rev(order(b_xyt[,"t"])), ]
-  data <- b_xyt[order(b_xyt[, t_col]), ]
-  data[, "cp_no"] <- ifelse(is.na(data[, "sig"]), NA,
+  data <- data[order(data[, t_col]), ]
+  # data[, "cp_no"] <- ifelse(is.na(data[, "sig"]), NA,
+  #                           ifelse(data[, "sig"] == 0, 0, cumsum(na.fill(data[, "sig"], fill = 0))))
+  data <- cbind(data, "cp_no" = ifelse(is.na(data[, "sig"]), NA,
                             ifelse(data[, "sig"] == 0, 0, cumsum(na.fill(data[, "sig"], fill = 0))))
+  )
+  
   #na.locf
   data[, "sig"] <- na.locf(data[, "sig"], fromLast = TRUE, na.rm = FALSE)
   data[, "cp_no"] <- na.locf(data[, "cp_no"], fromLast = TRUE, na.rm = FALSE)
   rownames(data) <- NULL
   
   data <- data[, c(x_col, y_col, t_col, "sig", "cp_no")]
-  class(data) <- c("change_point_test", "data.frame")
+  # class(data) <- c("change_point_test", "data.frame")
+  class(data) <- union("change_point_test", class(data))
   #set attributes
   # FIXME @RH: Why not use our constructor? RH: shouldn't depend on trackframe here
   attr(data, "time") <- t_col
@@ -197,13 +199,14 @@ verify_cluster <- function(clu) {
 #'   }
 #' @noRd
 #' @export
-change_point_test.track_frame <- function(data,
+change_point_test.default <- function(data,
                                           alpha = 0.05,
                                           q = 4,
                                           N = 1000,
                                           tol = 0,
                                           clu = NULL,
                                           ...) {
+  data <- as.track_frame(data)
   checkmate::assert_true(NROW(data) > 0L)
   clu <- verify_cluster(clu)
   tf_ids <- unlist(unique_ids(data))
@@ -236,18 +239,19 @@ change_point_test.track_frame <- function(data,
   return(cpt)
 }
 
-tf_change_point_test <- function(tf, alpha, q, N, tol) {
-  checkmate::assert_true(NROW(tf) > 0L)
-  xyt <- tf_to_xyt(tf)[, 1:3]
-  cpt <- change_point_test(xyt, alpha = alpha, q = q, N = N, tol = tol)
-  tf_out <- merge(tf, cpt,
-                  by = c(attr(tf, "easting"), attr(tf, "northing"), attr(tf, "time")),
+tf_change_point_test <- function(data, alpha, q, N, tol) {
+  checkmate::assert_true(NROW(data) > 0L)
+  xyt <- tf_to_xyt(data)[, 1:3]
+  cpt <- change_point_test_xyt(xyt, alpha = alpha, q = q, N = N, tol = tol)
+  data_out <- merge(data, cpt,
+                  by = c(attr(data, "easting"), attr(data, "northing"), attr(data, "time")),
                   all.x = TRUE, sort = FALSE)
-  tf_out <- as.track_frame(tf_out,
-                           easting_col = attr(tf, "easting"),
-                           northing_col = attr(tf, "northing"),
-                           time_col = attr(tf, "time"))
-  return(tf_out)
+  if(is.matrix(data)) data_out <- as.matrix(data_out)
+  data_out <- as.track_frame(data_out,
+                           easting_col = attr(data, "easting"),
+                           northing_col = attr(data, "northing"),
+                           time_col = attr(data, "time"))
+  return(data_out)
 }
 
 #' Summary - Extract Change Points from Movement Data
@@ -280,7 +284,17 @@ tf_change_point_test <- function(tf, alpha, q, N, tol) {
 #' # Then extract the change points into a summarized format
 #' summary(cpt)
 summary.change_point_test <- function(object, ...) {
-  if(inherits(object, "track_frame")) {
+  
+  if(inherits(object, "matrix")) {
+    xyt_cp <- object[object[, "sig"] != 0,]
+    xyt_cp_split <- split(as.data.frame(xyt_cp), f = xyt_cp[, "cp_no"])
+    summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
+      cbind.data.frame("first" = min(x[, attr(object, "time")]),
+                       "last" = max(x[, attr(object, "time")]),
+                       "east" = x[, attr(object, "easting")][1],
+                       "north" = x[, attr(object, "northing")][1])
+    }))
+  } else if(inherits(object, "track_frame")) {
     tf_ids <- unlist(unique_ids(object))
     if(length(tf_ids) <= 1) {
       xyt_cp <- object[object$sig != 0,]
@@ -309,17 +323,7 @@ summary.change_point_test <- function(object, ...) {
         summary_i
       }))
     }
-  } else {
-    
-    xyt_cp <- object[object$sig != 0,]
-    xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
-    summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
-      cbind.data.frame("first" = min(x[, attr(object, "time")]),
-                       "last" = max(x[, attr(object, "time")]),
-                       "east" = x[, attr(object, "easting")][1],
-                       "north" = x[, attr(object, "northing")][1])
-    }))
-  }
+  } 
   
   return(summary)
 }

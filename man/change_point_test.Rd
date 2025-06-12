@@ -7,8 +7,7 @@
 change_point_test(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...)
 }
 \arguments{
-\item{data}{a track_frame, a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
-For the default method, this should be a matrix or data frame with at least 3 columns.}
+\item{data}{a track_frame, or an object coercible to track_frame}
 
 \item{alpha}{a numeric value specifying the significance level for detecting change points.}
 
