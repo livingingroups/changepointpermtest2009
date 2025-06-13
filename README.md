@@ -33,7 +33,7 @@ change_points <- summary(result)
 change_points
 
 # Get probability values instead of binary indicators
-prob_values <- change_point_test(cpttestdata, alpha = NULL, q = 3, N = 500)
+prob_values <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
 ```
 
 ### Parameters
@@ -45,7 +45,7 @@ prob_values <- change_point_test(cpttestdata, alpha = NULL, q = 3, N = 500)
 
 ## Documentation
 
-For more detailed information, see the package documentation:
+For more detailed information, see the package documentation and vignette:
 
 ```r
 ?change_point_test
@@ -61,4 +61,5 @@ Brock, K., Hirk, R., & Schwendinger, F. (2025). cpt: Change Point Detection for 
 
 ## License
 
+TODO: check LICENSE
 This package is licensed under the GPL (>= 2) license.
