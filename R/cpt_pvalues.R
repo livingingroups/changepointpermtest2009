@@ -33,8 +33,8 @@
 #' library(cpt)
 #' data("cpttestdata", package = "cpt")
 #' 
-#' # Get pvalues
 #' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, N = 100)
+#' pvalues
 change_point_test_pvalue <- function(data, q_max = 6, N = 1000, tol = 0, ...) {
   x_col <- colnames(data)[1]
   y_col <- colnames(data)[2]

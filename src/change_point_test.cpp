@@ -115,7 +115,7 @@ arma::dvec rcpparma_change_point_test_fit(arma::dvec bx, arma::dvec by, int32_t 
     // Update goal_no
     if (rmin > 0) {
       goal_no = goal_no + f + rmin - 1;
-      sig(goal_no-1) = 1;  // Mark as change point
+      sig(goal_no - 1) = 1;  // Mark as change point
     } else {
       goal_no = nobs;  // Exit condition
     }

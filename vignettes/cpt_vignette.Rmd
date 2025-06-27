@@ -19,7 +19,7 @@ knitr::opts_chunk$set(dpi=300)
 ## Install cpt package
 
 ```{r eval=FALSE, include=TRUE}
-library(devtools)
+library("remotes")
 install_github('livingingroups/travelpaths-devel/pkgs/trackframe')
 install_github('livingingroups/travelpaths-devel/pkgs/cpt')
 ```
@@ -28,8 +28,8 @@ install_github('livingingroups/travelpaths-devel/pkgs/cpt')
 ## Load packages
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
-library(cpt)
-library(trackframe)
+library("cpt")
+library("trackframe")
 # library(ggplot2)
 ```
 
@@ -286,7 +286,7 @@ tail(pvalues)
 
 Load data
 ```{r}
-data(cptfiguredata_tf)
+data("cptfiguredata_tf")
 str(cptfiguredata_tf)
 tf <- cptfiguredata_tf
 ```

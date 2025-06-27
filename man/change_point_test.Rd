@@ -41,27 +41,26 @@ This function implements a sequential change point detection algorithm that uses
          the starting location.
 }
 \examples{
-library(cpt)
+library("cpt")
 data("cpttestdata", package = "cpt")
-class(cpttestdata)
 # First detect change points
 set.seed(2025L)
 cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
 
-# Then extract the change points into a summarized format
+# Second show the change points in a summarized format
 summary(cpt)
 
 # with trackframe
-library(trackframe)
- tf <- as.track_frame(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])),
- x = cpttestdata[,1],
- y=cpttestdata[,2]),
- 't', 'x', 'y')
- class(tf)
- set.seed(2025L)
- cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
- summary(cpt_tf)
+library("trackframe")
+df <- data.frame(x = cpttestdata[, 1],
+                 y = cpttestdata[, 2],
+                 t = as.POSIXct(seq_along(cpttestdata[, 3])))
+tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+set.seed(2025L)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+summary(cpt_tf)
 
 # Get probability values instead of binary indicators
 pvalues <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
+pvalues
 }

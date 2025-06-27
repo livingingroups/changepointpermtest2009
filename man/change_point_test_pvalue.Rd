@@ -45,6 +45,6 @@ This function implements a sequential change point detection algorithm that uses
 library(cpt)
 data("cpttestdata", package = "cpt")
 
-# Get pvalues
 pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, N = 100)
+pvalues
 }

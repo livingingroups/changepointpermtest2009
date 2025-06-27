@@ -7,3 +7,4 @@ Taskfile.yml
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^archive$
+^temp$

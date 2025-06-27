@@ -17,6 +17,7 @@ NULL
 #' substantially different from the original.
 "cptfiguredata"
 
+
 #' Data Extracted from Figures as track_frame
 #'
 #' These data were extracted from Figures 3,4,7 of Byrne, Noser, Bates, Jupp 2009

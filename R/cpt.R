@@ -37,29 +37,28 @@
 #' @export
 #'
 #' @examples
-#' library(cpt)
+#' library("cpt")
 #' data("cpttestdata", package = "cpt")
-#' class(cpttestdata)
 #' # First detect change points
 #' set.seed(2025L)
 #' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
 #' 
-#' # Then extract the change points into a summarized format
+#' # Second show the change points in a summarized format
 #' summary(cpt)
 #' 
 #' # with trackframe
-#' library(trackframe)
-#'  tf <- as.track_frame(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])),
-#'  x = cpttestdata[,1],
-#'  y=cpttestdata[,2]),
-#'  't', 'x', 'y')
-#'  class(tf)
-#'  set.seed(2025L)
-#'  cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
-#'  summary(cpt_tf)
+#' library("trackframe")
+#' df <- data.frame(x = cpttestdata[, 1],
+#'                  y = cpttestdata[, 2],
+#'                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
+#' tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+#' set.seed(2025L)
+#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+#' summary(cpt_tf)
 #' 
 #' # Get probability values instead of binary indicators
 #' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
+#' pvalues
 change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...) {
   UseMethod("change_point_test")
 }
@@ -69,17 +68,82 @@ change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...
 #' 
 #' Detecting change points in animal ranging data
 #'
-#' @param data a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.
+#' @param easting a numeric vector of x-coordinates (easting) of the trajectory backwards in time.
+#' @param northing a numeric vector of y-coordinates (northing) of the trajectory backwards in time.
+#' @param time a vecor inheriting from \code{numeric} or \code{POSIXt} or \code{Date}
+#'        containing the timestamps corresponding to the easting and northing coordinates.
 #' @param alpha a numeric value specifying the significance level for detecting change points.
 #' @param q an integer specifying the minimum segment length between potential change points.
 #' @param N an integer specifying the number of random permutations for thepermutation test.
-#'   Higher values provide more accurate p-values but increase computation time.
+#'        Higher values provide more accurate p-values but increase computation time.
 #' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
-#'   Points with movements smaller than this threshold will be considered stationary.
+#'        Points with movements smaller than this threshold will be considered stationary.
 #' @param ... additional arguments passed to methods.
+#' 
+#' @return An augmented data frame containing the original data with additional columns:
 #
 #' @export
-change_point_test_xyt <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) { #TODO: change to x = , y = , t = 
+#' 
+#' @examples 
+#' 
+#' library("cpt")
+#' data("cpttestdata", package = "cpt")
+#' 
+#' cpt <- change_point_test_xyt(cpttestdata[, "x"], cpttestdata[, "y"], cpttestdata[, "t"],
+#'                              alpha = 0.05, q = 3, N = 500)
+#' summary(cpt)
+change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) {
+  checkmate::assert_numeric(easting, min.len = 3L, any.missing = FALSE)
+  checkmate::assert_numeric(northing, len = length(easting), any.missing = FALSE)
+  checkmate::assert_numeric(time, len = length(easting), any.missing = FALSE)
+  checkmate::assert_integerish(q, len = 1, any.missing = FALSE, lower = 1)
+  checkmate::assert_integerish(N, len = 1, any.missing = FALSE, lower = 1)
+  checkmate::assert_numeric(alpha, len = 1, any.missing = FALSE, lower = 0)
+  checkmate::assert_numeric(tol, len = 1, any.missing = FALSE, lower = 0)
+  
+  # Reverse the time-ordering so that (bx[1], by[1]) refers to (final) 
+  idx <- time[order(time, decreasing = TRUE)]
+  bx <- easting[idx]
+  by <- northing[idx]
+  bt <- time[idx]
+  # calcuate diff of coordinates
+  bxdiff <- diff(bx)
+  bydiff <- diff(by)
+  # remove points at which animal stays still
+  # FIXME: The first TRUE should depend on the second value!?!
+  is_moving <- c(TRUE, sqrt(bxdiff^2 + bydiff^2) > tol)
+  bxm <- bx[is_moving]
+  bym <- by[is_moving]
+  btm <- bt[is_moving]
+  
+  sig <- change_point_fit(bx = bxm, by = bym, q = q, N = N, alpha = alpha)
+  
+  #  Remove putative goal from list of CP's
+  sig[1] <- 0L
+  cp_no <- (sig != 0) * cumsum(sig)
+  # re-index
+  df <- data.frame(easting = bx, northing = by, time = bt, sig = NA_integer_, cp_no = NA_integer_)
+  df[["sig"]][is_moving] <- sig
+  df[["cp_no"]][is_moving] <- cp_no
+  df <- df[order(df[["time"]]), ]
+  df[["sig"]] <- na.locf(df[["sig"]], fromLast = TRUE, na.rm = FALSE)
+  df[["cp_no"]] <- na.locf(df[["cp_no"]], fromLast = TRUE, na.rm = FALSE)
+  class(df) <- union("change_point_test", class(df))
+  # FIXME: @RH: Why not use our constructor?
+  attr(df, "time") <- "time"
+  attr(df, "easting") <- "easting"
+  attr(df, "northing") <- "northing"
+  return(df)
+}
+
+
+
+
+# FIXME:
+# This was as quick fix to get a consistent interface.
+# The internal function should be simplified.
+# This for some reason was called change_point_test_xyt??
+change_point_test_internal <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) { #TODO: change to x = , y = , t = 
   x_col <- colnames(data)[1]
   y_col <- colnames(data)[2]
   t_col <- colnames(data)[3]
@@ -98,7 +162,6 @@ change_point_test_xyt <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, 
   sig[1] <- 0
   b_xyt2 <- cbind(b_xyt2,
                   "sig" = sig,
-                  
                   "cp_no" = ifelse(sig == 0, 0, cumsum(sig)))
   
   # re-index - merge with b_xyt
@@ -127,6 +190,7 @@ change_point_test_xyt <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, 
   attr(data, "northing") <- y_col
   return(data)
 }
+
 
 #' Change Point Test Fitting
 #'
@@ -200,12 +264,12 @@ verify_cluster <- function(clu) {
 #' @noRd
 #' @export
 change_point_test.default <- function(data,
-                                          alpha = 0.05,
-                                          q = 4,
-                                          N = 1000,
-                                          tol = 0,
-                                          clu = NULL,
-                                          ...) {
+                                      alpha = 0.05,
+                                      q = 4,
+                                      N = 1000,
+                                      tol = 0,
+                                      clu = NULL,
+                                      ...) {
   data <- as.track_frame(data)
   checkmate::assert_true(NROW(data) > 0L)
   clu <- verify_cluster(clu)
@@ -239,18 +303,25 @@ change_point_test.default <- function(data,
   return(cpt)
 }
 
+
 tf_change_point_test <- function(data, alpha, q, N, tol) {
   checkmate::assert_true(NROW(data) > 0L)
   xyt <- tf_to_xyt(data)[, 1:3]
-  cpt <- change_point_test_xyt(xyt, alpha = alpha, q = q, N = N, tol = tol)
+  # FIXME:
+  # - [ ] Switch to change_point_test_xyt
+  # - [ ] If correctly ordered at the correct time we can avoid using merge.
+  cpt <- change_point_test_internal(xyt, alpha = alpha, q = q, N = N, tol = tol)
   data_out <- merge(data, cpt,
-                  by = c(attr(data, "easting"), attr(data, "northing"), attr(data, "time")),
-                  all.x = TRUE, sort = FALSE)
-  if(is.matrix(data)) data_out <- as.matrix(data_out)
+                    by = c(attr(data, "easting"), attr(data, "northing"), attr(data, "time")),
+                    all.x = TRUE, sort = FALSE)
+  if (is.matrix(data)) {
+    # FIXME: What should this do?
+    data_out <- as.matrix(data_out)
+  }
   data_out <- as.track_frame(data_out,
-                           easting_col = attr(data, "easting"),
-                           northing_col = attr(data, "northing"),
-                           time_col = attr(data, "time"))
+                             easting_col = attr(data, "easting"),
+                             northing_col = attr(data, "northing"),
+                             time_col = attr(data, "time"))
   return(data_out)
 }
 

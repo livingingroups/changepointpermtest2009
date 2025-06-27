@@ -4,10 +4,24 @@
 \alias{change_point_test_xyt}
 \title{Change Point Test}
 \usage{
-change_point_test_xyt(data, alpha = 0.05, q = 4, N = 1000, tol = 0, ...)
+change_point_test_xyt(
+  easting,
+  northing,
+  time,
+  alpha = 0.05,
+  q = 4,
+  N = 1000,
+  tol = 0,
+  ...
+)
 }
 \arguments{
-\item{data}{a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps.}
+\item{easting}{a numeric vector of x-coordinates (easting) of the trajectory backwards in time.}
+
+\item{northing}{a numeric vector of y-coordinates (northing) of the trajectory backwards in time.}
+
+\item{time}{a vecor inheriting from \code{numeric} or \code{POSIXt} or \code{Date}
+containing the timestamps corresponding to the easting and northing coordinates.}
 
 \item{alpha}{a numeric value specifying the significance level for detecting change points.}
 
@@ -21,6 +35,18 @@ Points with movements smaller than this threshold will be considered stationary.
 
 \item{...}{additional arguments passed to methods.}
 }
+\value{
+An augmented data frame containing the original data with additional columns:
+}
 \description{
 Detecting change points in animal ranging data
+}
+\examples{
+
+library("cpt")
+data("cpttestdata", package = "cpt")
+
+cpt <- change_point_test_xyt(cpttestdata[, "x"], cpttestdata[, "y"], cpttestdata[, "t"],
+                             alpha = 0.05, q = 3, N = 500)
+summary(cpt)
 }

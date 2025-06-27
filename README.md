@@ -1,5 +1,8 @@
 # cpt: Change Point Detection for Animal Movement Data
 
+## TODO
+- [ ]
+
 ## Overview
 
 The `cpt` package provides tools for detecting significant change points in animal movement trajectory data. Change points represent locations where movement patterns significantly change, which can indicate behavioral transitions or responses to environmental stimuli. This package implements a permutation-based approach to identify these critical points in animal tracking data.
@@ -53,10 +56,9 @@ For more detailed information, see the package documentation and vignette:
 
 ## Citation
 
-If you use this package in your research, please cite it as:
-
+FIXME: I would give here the original paper, this gives additional insentive
 ```
-Brock, K., Hirk, R., & Schwendinger, F. (2025). cpt: Change Point Detection for Animal Movement Data. R package version 0.0.1.
+"How did they get here from there? Detecting changes of direction in terrestrial ranging" by R.W. Byrne, R.G. Noser, L.A. Bates & P.E. Jupp (2009) Animal Behaviour 77, 619-631.
 ```
 
 ## License

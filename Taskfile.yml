@@ -10,10 +10,14 @@ tasks:
     cmds:
       - task --list
 
+  compileAttributes:
+    cmds:
+      - "{{.R_CMD}} --quiet --vanilla -e 'Rcpp::compileAttributes()'"
+
   docs:
     desc: Generate documentation using roxygen2
     cmds:
-      - "{{.R_CMD}} -e 'roxygen2::roxygenize(\".\", c(\"rd\", \"namespace\"))'"
+      - "{{.R_CMD}} --quiet --vanilla -e 'roxygen2::roxygenize(\".\", c(\"rd\", \"namespace\"))'"
 
   build:
     desc: Build the package
@@ -21,9 +25,20 @@ tasks:
     cmds:
       - "{{.R_CMD}} CMD build ."
 
+  build-fast:
+    desc: Build the package
+    cmds:
+      - "{{.R_CMD}} CMD build --no-build-vignettes ."
+
   install:
     desc: Install the package locally
     deps: [build]
+    cmds:
+      - "{{.R_CMD}} CMD INSTALL {{.PACKAGE_NAME}}_*.tar.gz"
+
+  install-fast:
+    desc: Install the package locally
+    deps: [build-fast]
     cmds:
       - "{{.R_CMD}} CMD INSTALL {{.PACKAGE_NAME}}_*.tar.gz"
 
@@ -68,6 +83,11 @@ tasks:
   clean-all:
     desc: Clean up all artifacts
     deps: [clean, clean-src]
+
+  clean-vignettes:
+    desc: Clean up vignette outputs
+    cmds:
+      - rm -rf vignettes/*.html vignettes/*.R
     
   manual:
     desc: Create the manual
@@ -75,3 +95,8 @@ tasks:
     cmds:
       - rm -f ../../cpt-manual.pdf
       - "{{.R_CMD}} CMD Rd2pdf --output=../../cpt-manual.pdf ."
+
+  cpt_vignette:
+    desc: Build the vignette
+    cmds:
+      - "{{.R_CMD}} --quiet --vanilla -e 'tools::buildVignette(\"vignettes/cpt_vignette.Rmd\", dir = \"vignettes\")'"
