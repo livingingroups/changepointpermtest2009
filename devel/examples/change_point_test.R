@@ -29,3 +29,19 @@ pvalues
 
 
 
+df <- data.frame(x = cpttestdata[, 1],
+                 y = cpttestdata[, 2],
+                 t = as.POSIXct(seq_along(cpttestdata[, 3])))
+tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+unique_ids(tf)
+
+
+df <- data.frame(x = cpttestdata[, 1],
+                 y = cpttestdata[, 2],
+                 t = as.POSIXct(seq_along(cpttestdata[, 3])),
+                 id = 1L)
+tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y', id_col=  "id")
+
+
+unique_ids(tf)
+

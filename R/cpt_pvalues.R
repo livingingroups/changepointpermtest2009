@@ -17,8 +17,6 @@
 #'   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
 #'   \item{cp_no}{Sequential numbering of detected change points}
 #'   
-#' When alpha is \code{NULL}, the function returns probability values for each potential change point. #FIXME
-#' 
 #' @details This function implements a sequential change point detection algorithm that uses
 #'          a permutation test to identify significant changes in movement patterns. It compares
 #'          the sum of distances between consecutive points against randomly permuted sequences

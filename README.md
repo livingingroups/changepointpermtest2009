@@ -56,7 +56,6 @@ For more detailed information, see the package documentation and vignette:
 
 ## Citation
 
-FIXME: I would give here the original paper, this gives additional insentive
 ```
 "How did they get here from there? Detecting changes of direction in terrestrial ranging" by R.W. Byrne, R.G. Noser, L.A. Bates & P.E. Jupp (2009) Animal Behaviour 77, 619-631.
 ```

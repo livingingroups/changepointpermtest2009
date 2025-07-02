@@ -5,65 +5,6 @@
 # - test parallel
 
 
-
-#' Change Point Detection for Animal Movement Data
-#'
-#' Detects significant change points in animal movement trajectory data using a permutation-based approach.
-#' This function identifies locations where the movement pattern significantly changes, which can represent
-#' behavioral transitions or responses to environmental stimuli.
-#'
-#' @param data a track_frame, or an object coercible to track_frame
-#' @param alpha a numeric value specifying the significance level for detecting change points.
-#' @param q an integer specifying the minimum segment length between potential change points.
-#' @param N an integer specifying the number of random permutations for thepermutation test.
-#'   Higher values provide more accurate p-values but increase computation time.
-#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
-#'   Points with movements smaller than this threshold will be considered stationary.
-#' @param ... additional arguments passed to methods.
-#'
-#' @return An augmented data frame containing the original data with additional columns:
-#'   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
-#'   \item{cp_no}{Sequential numbering of detected change points}
-#'   
-#' 
-#' @details This function implements a sequential change point detection algorithm that uses
-#'          a permutation test to identify significant changes in movement patterns. It compares
-#'          the sum of distances between consecutive points against randomly permuted sequences
-#'          to determine if a change point exists.
-#'          
-#'          The first point in the trajectory is never considered a change point, as it represents
-#'          the starting location.
-#'
-#' @export
-#'
-#' @examples
-#' library("cpt")
-#' data("cpttestdata", package = "cpt")
-#' # First detect change points
-#' set.seed(2025L)
-#' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
-#' 
-#' # Second show the change points in a summarized format
-#' summary(cpt)
-#' 
-#' # with trackframe
-#' library("trackframe")
-#' df <- data.frame(x = cpttestdata[, 1],
-#'                  y = cpttestdata[, 2],
-#'                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
-#' tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
-#' set.seed(2025L)
-#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
-#' summary(cpt_tf)
-#' 
-#' # Get probability values instead of binary indicators
-#' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
-#' pvalues
-change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...) {
-  UseMethod("change_point_test")
-}
-
-
 #' Change Point Test
 #' 
 #' Detecting change points in animal ranging data
@@ -110,7 +51,6 @@ change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, 
   bxdiff <- diff(bx)
   bydiff <- diff(by)
   # remove points at which animal stays still
-  # FIXME: The first TRUE should depend on the second value!?!
   is_moving <- c(TRUE, sqrt(bxdiff^2 + bydiff^2) > tol)
   bxm <- bx[is_moving]
   bym <- by[is_moving]
@@ -135,8 +75,6 @@ change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, 
   attr(df, "northing") <- "northing"
   return(df)
 }
-
-
 
 
 # FIXME:
@@ -245,14 +183,74 @@ verify_cluster <- function(clu) {
   }
   if (is.numeric(clu)) {
     checkmate::check_integerish(clu, len = 1L, any.missing = FALSE)
-  } else {
-    checkmate::check_class(clu, "cluster")
+    return(as.integer(clu))
   }
+  checkmate::check_class(clu, "cluster")
   return(clu)
 }
 
 
-#' @param clu optional parameter either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"},
+
+#' Change Point Detection for Animal Movement Data
+#'
+#' Detects significant change points in animal movement trajectory data using a permutation-based approach.
+#' This function identifies locations where the movement pattern significantly changes, which can represent
+#' behavioral transitions or responses to environmental stimuli.
+#'
+#' @param data a track_frame, or an object coercible to track_frame
+#' @param alpha a numeric value specifying the significance level for detecting change points.
+#' @param q an integer specifying the minimum segment length between potential change points.
+#' @param N an integer specifying the number of random permutations for thepermutation test.
+#'   Higher values provide more accurate p-values but increase computation time.
+#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
+#'   Points with movements smaller than this threshold will be considered stationary.
+#' @param ... additional arguments passed to methods.
+#'
+#' @return An augmented data frame containing the original data with additional columns:
+#'   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
+#'   \item{cp_no}{Sequential numbering of detected change points}
+#'   
+#' 
+#' @details This function implements a sequential change point detection algorithm that uses
+#'          a permutation test to identify significant changes in movement patterns. It compares
+#'          the sum of distances between consecutive points against randomly permuted sequences
+#'          to determine if a change point exists.
+#'          
+#'          The first point in the trajectory is never considered a change point, as it represents
+#'          the starting location.
+#'
+#' @export
+#'
+#' @examples
+#' library("cpt")
+#' data("cpttestdata", package = "cpt")
+#' # First detect change points
+#' set.seed(2025L)
+#' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+#' 
+#' # Second show the change points in a summarized format
+#' summary(cpt)
+#' 
+#' # with trackframe
+#' library("trackframe")
+#' df <- data.frame(x = cpttestdata[, 1],
+#'                  y = cpttestdata[, 2],
+#'                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
+#' tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+#' set.seed(2025L)
+#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+#' summary(cpt_tf)
+#' 
+#' # Get probability values instead of binary indicators
+#' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
+#' pvalues
+change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...) {
+  UseMethod("change_point_test")
+}
+
+
+#' @param clu optional parameter determining whether parallelization with the parallel package is used.
+#'   Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
 #'   \itemize{
 #'     \item If \code{NULL} (default) no parallel processing is used.
 #'     \item If of class \code{"numeric"}, it gives the number of cores,
@@ -263,18 +261,17 @@ verify_cluster <- function(clu) {
 #'   }
 #' @noRd
 #' @export
-change_point_test.default <- function(data,
-                                      alpha = 0.05,
-                                      q = 4,
-                                      N = 1000,
-                                      tol = 0,
-                                      clu = NULL,
-                                      ...) {
-  data <- as.track_frame(data)
-  checkmate::assert_true(NROW(data) > 0L)
+change_point_test.track_frame <- function(data,
+                                          alpha = 0.05,
+                                          q = 4,
+                                          N = 1000,
+                                          tol = 0,
+                                          clu = NULL,
+                                          ...) {
+  checkmate::assert_true(NROW(data) > 2L)
   clu <- verify_cluster(clu)
-  tf_ids <- unlist(unique_ids(data))
-  if(length(tf_ids) <= 1) {
+  tf_ids <- unlist(unique_ids(data))  # FIXME: Why unlist is needed, docs state unique_ids returns vector?
+  if (length(tf_ids) <= 1) {
     cpt <- tf_change_point_test(data, alpha = alpha, q = q, N = N, tol = tol)
   } else {
     cpt <- split(data, data[, attr(data, "id")])
@@ -302,6 +299,30 @@ change_point_test.default <- function(data,
   class(cpt) <- c("change_point_test", class(cpt))
   return(cpt)
 }
+
+
+#' @noRd
+#' @export
+change_point_test.data.frame <- function(data,
+                                         alpha = 0.05,
+                                         q = 4,
+                                         N = 1000,
+                                         tol = 0,
+                                         clu = NULL,
+                                         ...) {
+  change_point_test.track_frame(as.track_frame(data))
+}
+
+
+#' @noRd
+#' @export
+change_point_test.move2 <- change_point_test.data.frame
+
+
+#' @noRd
+#' @export
+change_point_test.sftrack <- change_point_test.data.frame
+
 
 
 tf_change_point_test <- function(data, alpha, q, N, tol) {
