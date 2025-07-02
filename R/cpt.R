@@ -1,10 +1,3 @@
-# TODOs:
-# - tests output class
-# - plots
-# - vignette
-# - test parallel
-
-
 #' Change Point Test
 #' 
 #' Detecting change points in animal ranging data
@@ -161,31 +154,20 @@ change_point_fit <- function(bx, by, q, N, alpha) {
 }
 
 
-
-
-
-# rbind_track_frame <- function(..., easting_col, northing_col, time_col){ #FIXME S3 method in trackframe
-#   tf_df <- rbind.data.frame(...)
-#   tf_out <- as.track_frame(tf_df, easting_col = easting_col, northing_col = northing_col, time_col = time_col)
-#   return(tf_out)
-# }
-
-# TODO: Maybe use dplyr::bind_rows but dplyr dependency for just rbind seams to much.
-#       Let's wait.
 do_rbind <- function(x, make.row.names = FALSE) {
   do.call(rbind.data.frame, c(x, list(make.row.names = make.row.names)))
 }
 
 
-verify_cluster <- function(clu) {
+refine_cluster_input <- function(clu) {
   if (is.null(clu)) {
     return(clu)
   }
   if (is.numeric(clu)) {
-    checkmate::check_integerish(clu, len = 1L, any.missing = FALSE)
+    checkmate::assert_integerish(clu, len = 1L, any.missing = FALSE)
     return(as.integer(clu))
   }
-  checkmate::check_class(clu, "cluster")
+  checkmate::assert_class(clu, "cluster")
   return(clu)
 }
 
@@ -269,12 +251,12 @@ change_point_test.track_frame <- function(data,
                                           clu = NULL,
                                           ...) {
   checkmate::assert_true(NROW(data) > 2L)
-  clu <- verify_cluster(clu)
-  tf_ids <- unlist(unique_ids(data))  # FIXME: Why unlist is needed, docs state unique_ids returns vector?
+  clu <- refine_cluster_input(clu)
+  tf_ids <- unique_ids(data)
   if (length(tf_ids) <= 1) {
     cpt <- tf_change_point_test(data, alpha = alpha, q = q, N = N, tol = tol)
   } else {
-    cpt <- split(data, data[, attr(data, "id")])
+    cpt <- split(data, data[[attr(data, "id")]])
     if(is.null(clu)) {
       cpt <- lapply(cpt, tf_change_point_test, alpha = alpha, q = q, N = N, tol = tol)
     } else {
@@ -294,7 +276,6 @@ change_point_test.track_frame <- function(data,
                           time_col = attr(data, "time"),
                           id_col = attr(data, "id"))
   }
-  # colnames(cpt)[NCOL(cpt)] <- attr(data, "id")
   rownames(cpt) <- NULL
   class(cpt) <- c("change_point_test", class(cpt))
   return(cpt)
@@ -327,7 +308,7 @@ change_point_test.sftrack <- change_point_test.data.frame
 
 tf_change_point_test <- function(data, alpha, q, N, tol) {
   checkmate::assert_true(NROW(data) > 0L)
-  xyt <- tf_to_xyt(data)[, 1:3]
+  xyt <- tf_as_xyt(data)[, 1:3]
   # FIXME:
   # - [ ] Switch to change_point_test_xyt
   # - [ ] If correctly ordered at the correct time we can avoid using merge.
@@ -345,6 +326,7 @@ tf_change_point_test <- function(data, alpha, q, N, tol) {
                              time_col = attr(data, "time"))
   return(data_out)
 }
+
 
 #' Summary - Extract Change Points from Movement Data
 #'

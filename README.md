@@ -1,7 +1,11 @@
 # cpt: Change Point Detection for Animal Movement Data
 
-## TODO
-- [ ]
+## TODOs:
+- [ ] tests output class
+- [ ] plots
+- [ ] vignette
+- [ ] test parallel
+
 
 ## Overview
 

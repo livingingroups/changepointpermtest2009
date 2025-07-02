@@ -254,7 +254,7 @@ ids <- rbind.data.frame(list("id_code" = 'VCVM001', "age" = 10, "sex" = "m"),
 
 Transform to track_frame
 ```{r}
-cocomo_tf <- as.track_frame_from_cocomo(xs, ys, timestamps, ids)
+cocomo_tf <- cocomo_as_tf(xs, ys, timestamps, ids)
 head(cocomo_tf)
 class(cocomo_tf)
 ```

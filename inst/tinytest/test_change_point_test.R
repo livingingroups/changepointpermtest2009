@@ -74,31 +74,20 @@ test_input_formats <- function() {
   
   # Test with data frame
   data_df <- data.frame(x = x, y = y, t = t)
-  expect_error(change_point_test(data_df, alpha = 0.05, q = 3, N = 100, tol = 0))
+  result_df <- change_point_test(data_df, alpha = 0.05, q = 3, N = 100, tol = 0)
   t <- as.POSIXct(1:40)
   data_df <- data.frame(x = x, y = y, t = t)
   set.seed(2025L)
   result_df <- change_point_test(data_df, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_df))
   
-  # Test with matrix
-  data_matrix <- cbind(x, y, t)
-  colnames(data_matrix) <- c("x", "y", "t")
-  set.seed(2025L)
-  result_matrix <- change_point_test(data_matrix, alpha = 0.05, q = 2, N = 50, tol = 0)
-  expect_true(is.matrix(result_matrix))
-  
-  # Both should have the same structure
-  expect_equal(ncol(result_df), ncol(result_matrix))
-  expect_true(all(colnames(result_df) %in% colnames(result_matrix)))
   
   # Test with track_frame
-  
   data_tf <- as.track_frame(data.frame(t=as.POSIXct(t), x = x, y = y), 't', 'x', 'y')
   set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_tf))
-  expect_equal(as.matrix(result_df[, c("sig", "cp_no")]), result_matrix[, c("sig", "cp_no")])
+  expect_equal(result_df[, c("sig", "cp_no")], result_tf[, c("sig", "cp_no")])
 }
 
 

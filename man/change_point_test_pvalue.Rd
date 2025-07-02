@@ -24,8 +24,6 @@ Points with movements smaller than this threshold will be considered stationary.
 An augmented data frame containing the original data with additional columns:
   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
   \item{cp_no}{Sequential numbering of detected change points}
-  
-When alpha is \code{NULL}, the function returns probability values for each potential change point. #FIXME
 }
 \description{
 Detects significant change points in animal movement trajectory data using a permutation-based approach.
