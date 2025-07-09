@@ -36,7 +36,7 @@ change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, 
   checkmate::assert_numeric(tol, len = 1, any.missing = FALSE, lower = 0)
   
   # Reverse the time-ordering so that (bx[1], by[1]) refers to (final) 
-  idx <- time[order(time, decreasing = TRUE)]
+  idx <- order(time, decreasing = TRUE)
   bx <- easting[idx]
   by <- northing[idx]
   bt <- time[idx]
@@ -57,12 +57,13 @@ change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, 
   # re-index
   df <- data.frame(easting = bx, northing = by, time = bt, sig = NA_integer_, cp_no = NA_integer_)
   df[["sig"]][is_moving] <- sig
-  df[["cp_no"]][is_moving] <- cp_no
+  df[["cp_no"]][is_moving] <- as.integer((cp_no > 0) * (max(cp_no) + 1L - cp_no))
   df <- df[order(df[["time"]]), ]
   df[["sig"]] <- na.locf(df[["sig"]], fromLast = TRUE, na.rm = FALSE)
   df[["cp_no"]] <- na.locf(df[["cp_no"]], fromLast = TRUE, na.rm = FALSE)
   class(df) <- union("change_point_test", class(df))
-  # FIXME: @RH: Why not use our constructor?
+  rownames(df) <- NULL
+  # FIXME: Use our constructor?
   attr(df, "time") <- "time"
   attr(df, "easting") <- "easting"
   attr(df, "northing") <- "northing"
@@ -70,55 +71,23 @@ change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, 
 }
 
 
-# FIXME:
-# This was as quick fix to get a consistent interface.
-# The internal function should be simplified.
-# This for some reason was called change_point_test_xyt??
-change_point_test_internal <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) { #TODO: change to x = , y = , t = 
-  x_col <- colnames(data)[1]
-  y_col <- colnames(data)[2]
-  t_col <- colnames(data)[3]
-  
-  # reverse order
-  b_xyt <- data[NROW(data):1,]
-  # calcuate diff of coordinates
-  b_xy_diff <- structure(apply(b_xyt[, c(x_col, y_col)], 2, FUN = diff), dimnames = list(NULL,c("x_diff", "y_diff")))
-  # remove points at which animal stays still
-  ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > tol)
-  b_xyt2 <- b_xyt[ind_new,]
-  
-  sig <- change_point_fit(bx = b_xyt2[, x_col], by = b_xyt2[, y_col], q = q, N = N, alpha = alpha)
-  
-  #  Remove putative goal from list of CP's
-  sig[1] <- 0
-  b_xyt2 <- cbind(b_xyt2,
-                  "sig" = sig,
-                  "cp_no" = ifelse(sig == 0, 0, cumsum(sig)))
-  
-  # re-index - merge with b_xyt
-  data <- merge(b_xyt, b_xyt2[, c(t_col, "sig")], by = t_col, all.x = TRUE, sort = FALSE)
-  if(is.matrix(b_xyt)) data <- as.matrix(data)
-  # b_xyt <- b_xyt[rev(order(b_xyt[,"t"])), ]
-  data <- data[order(data[, t_col]), ]
-  # data[, "cp_no"] <- ifelse(is.na(data[, "sig"]), NA,
-  #                           ifelse(data[, "sig"] == 0, 0, cumsum(na.fill(data[, "sig"], fill = 0))))
-  data <- cbind(data, "cp_no" = ifelse(is.na(data[, "sig"]), NA,
-                            ifelse(data[, "sig"] == 0, 0, cumsum(na.fill(data[, "sig"], fill = 0))))
-  )
-  
-  #na.locf
-  data[, "sig"] <- na.locf(data[, "sig"], fromLast = TRUE, na.rm = FALSE)
-  data[, "cp_no"] <- na.locf(data[, "cp_no"], fromLast = TRUE, na.rm = FALSE)
-  rownames(data) <- NULL
-  
-  data <- data[, c(x_col, y_col, t_col, "sig", "cp_no")]
-  # class(data) <- c("change_point_test", "data.frame")
-  class(data) <- union("change_point_test", class(data))
-  #set attributes
-  # FIXME @RH: Why not use our constructor? RH: shouldn't depend on trackframe here
-  attr(data, "time") <- t_col
-  attr(data, "easting") <- x_col
-  attr(data, "northing") <- y_col
+# Wrapper function for change_point_test_xyt to calculate for a single id.
+change_point_test_trackframe_single_id <- function(data, alpha, q, N, tol, seed = NULL, verify = FALSE, ...) {
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
+  cpt <- change_point_test_xyt(data[[attr(data, "easting")]],
+                               data[[attr(data, "northing")]],
+                               data[[attr(data, "time")]],
+                               alpha = alpha, q = q, N = N, tol = tol)
+  if (isTRUE(verify)) {
+    # just for testing
+    stopifnot(all(data[[attr(data, "easting")]] == cpt[["easting"]]))
+    stopifnot(all(data[[attr(data, "northing")]] == cpt[["northing"]]))
+    stopifnot(all(data[[attr(data, "time")]] == cpt[["time"]]))
+  }
+  data[["sig"]] <- cpt[["sig"]]
+  data[["cp_no"]] <- cpt[["cp_no"]]  
   return(data)
 }
 
@@ -154,11 +123,6 @@ change_point_fit <- function(bx, by, q, N, alpha) {
 }
 
 
-do_rbind <- function(x, make.row.names = FALSE) {
-  do.call(rbind.data.frame, c(x, list(make.row.names = make.row.names)))
-}
-
-
 refine_cluster_input <- function(clu) {
   if (is.null(clu)) {
     return(clu)
@@ -170,7 +134,6 @@ refine_cluster_input <- function(clu) {
   checkmate::assert_class(clu, "cluster")
   return(clu)
 }
-
 
 
 #' Change Point Detection for Animal Movement Data
@@ -186,6 +149,17 @@ refine_cluster_input <- function(clu) {
 #'   Higher values provide more accurate p-values but increase computation time.
 #' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
 #'   Points with movements smaller than this threshold will be considered stationary.
+#' @param clu optional parameter determining whether parallelization with the parallel package is used.
+#'   Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
+#'   \itemize{
+#'     \item If \code{NULL} (default) no parallel processing is used.
+#'     \item If of class \code{"numeric"}, it gives the number of cores,
+#'       passed as integer to \code{parallel::makePSOCKcluster}.
+#'     \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel} package.
+#'       Allowed is any object which inherits from \code{"cluster"} and can be passed to
+#'       \code{parallel::parLapply}.
+#'   }
+#' @param seed seed to be passed to random number generator
 #' @param ... additional arguments passed to methods.
 #'
 #' @return An augmented data frame containing the original data with additional columns:
@@ -226,21 +200,11 @@ refine_cluster_input <- function(clu) {
 #' # Get probability values instead of binary indicators
 #' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
 #' pvalues
-change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, ...) {
+change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, clu = NULL, seed = NULL, ...) {
   UseMethod("change_point_test")
 }
 
 
-#' @param clu optional parameter determining whether parallelization with the parallel package is used.
-#'   Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
-#'   \itemize{
-#'     \item If \code{NULL} (default) no parallel processing is used.
-#'     \item If of class \code{"numeric"}, it gives the number of cores,
-#'       passed as integer to \code{parallel::makePSOCKcluster}.
-#'     \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel} package.
-#'       Allowed is any object which inherits from \code{"cluster"} and can be passed to
-#'       \code{parallel::parLapply}.
-#'   }
 #' @noRd
 #' @export
 change_point_test.track_frame <- function(data,
@@ -249,16 +213,20 @@ change_point_test.track_frame <- function(data,
                                           N = 1000,
                                           tol = 0,
                                           clu = NULL,
+                                          seed = NULL,
                                           ...) {
   checkmate::assert_true(NROW(data) > 2L)
+  verify <- list(...)[["verify"]]
   clu <- refine_cluster_input(clu)
   tf_ids <- unique_ids(data)
   if (length(tf_ids) <= 1) {
-    cpt <- tf_change_point_test(data, alpha = alpha, q = q, N = N, tol = tol)
+    cpt <- change_point_test_trackframe_single_id(data, alpha = alpha, q = q, N = N, tol = tol,
+                                                  seed = seed, verify = verify)
   } else {
     cpt <- split(data, data[[attr(data, "id")]])
     if(is.null(clu)) {
-      cpt <- lapply(cpt, tf_change_point_test, alpha = alpha, q = q, N = N, tol = tol)
+      cpt <- lapply(cpt, change_point_test_trackframe_single_id, alpha = alpha, q = q, N = N,
+                    tol = tol, seed = seed, verify = verify)
     } else {
       if (is.numeric(clu)) {
         if (clu <= 0L) {
@@ -269,12 +237,10 @@ change_point_test.track_frame <- function(data,
         clu <- makePSOCKcluster(as.integer(ncores))
         on.exit(stopCluster(clu), add = TRUE)
       }
-      cpt <- parLapply(clu, cpt, tf_change_point_test, alpha = alpha, q = q, N = N, tol = tol)
+      cpt <- parLapply(clu, cpt, change_point_test_trackframe_single_id, alpha = alpha, q = q,
+                       N = N, tol = tol, seed = seed, verify = verify)
     }
-    cpt <- as.track_frame(do_rbind(cpt), easting_col = attr(data, "easting"),
-                          northing_col = attr(data, "northing"),
-                          time_col = attr(data, "time"),
-                          id_col = attr(data, "id"))
+    cpt <- do_rbind(cpt)
   }
   rownames(cpt) <- NULL
   class(cpt) <- c("change_point_test", class(cpt))
@@ -306,26 +272,6 @@ change_point_test.sftrack <- change_point_test.data.frame
 
 
 
-tf_change_point_test <- function(data, alpha, q, N, tol) {
-  checkmate::assert_true(NROW(data) > 0L)
-  xyt <- tf_as_xyt(data)[, 1:3]
-  # FIXME:
-  # - [ ] Switch to change_point_test_xyt
-  # - [ ] If correctly ordered at the correct time we can avoid using merge.
-  cpt <- change_point_test_internal(xyt, alpha = alpha, q = q, N = N, tol = tol)
-  data_out <- merge(data, cpt,
-                    by = c(attr(data, "easting"), attr(data, "northing"), attr(data, "time")),
-                    all.x = TRUE, sort = FALSE)
-  if (is.matrix(data)) {
-    # FIXME: What should this do?
-    data_out <- as.matrix(data_out)
-  }
-  data_out <- as.track_frame(data_out,
-                             easting_col = attr(data, "easting"),
-                             northing_col = attr(data, "northing"),
-                             time_col = attr(data, "time"))
-  return(data_out)
-}
 
 
 #' Summary - Extract Change Points from Movement Data

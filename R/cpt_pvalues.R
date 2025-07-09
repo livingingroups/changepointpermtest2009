@@ -69,14 +69,12 @@ change_point_fit_pvalue_new <- function(bx, by, q_max, N) {
   # q_max = maximum value of q
   # q_max =6 is a convenient default
 
-  goal.t <- 0
-
   # last.t = "time" (backwards in time) of last position of interest
   # (and includes all the positions)
   n_obs <- length(bx)
   last.t <- length(bx) - q_max - 1
 
-  no.of.t <- last.t - goal.t + 1
+  no.of.t <- last.t + 1
 
   # Set up matrix P in which to store P-values
   # P <- matrix(rep(exp(2), q_max * no.of.t), nrow = no.of.t, ncol = q_max)
@@ -88,13 +86,16 @@ change_point_fit_pvalue_new <- function(bx, by, q_max, N) {
   Rsumrand <- 0 * c(1:N)
 
   for (q in 1:q_max) { # start of q loop
-    k_max <- n_obs -q
+    k_max <- n_obs - q - 1L
     for (k in 1:k_max) { # start of k loop
 
-      R1 <- sqrt((bx[goal.t + k + 1] - bx[goal.t + 1])^2 + (by[goal.t + k + 1] - by[goal.t + 1])^2)
-      R2 <- sqrt((bx[goal.t + k + q + 1] - bx[goal.t + k + 1])^2 + (by[goal.t + k + q + 1] - by[goal.t + k + 1])^2)
+      R1 <- sqrt((bx[k + 1] - bx[1])^2 +
+                 (by[k + 1] - by[1])^2)
+      R2 <- sqrt((bx[k + q + 1] - bx[k + 1])^2 +
+                 (by[k + q + 1] - by[k + 1])^2)
 
       Rsum <- R1 + R2
+      # writeLines(paste(q, k, R1, R2, sep = ";"))
 
       # Rsumrand[1] = observed value of statistic R1 + R2
       Rsumrand[1] <- Rsum
@@ -102,111 +103,25 @@ change_point_fit_pvalue_new <- function(bx, by, q_max, N) {
       # Now calculate statistic R1 + R2 for a further N-1 random permutations
       # and store in Rsumrand
       for (it in 2:N) { # start of it loop
-        u <- runif(k + q, 0, 1)
+        u <- runif(k + q, 0, 1)  # FIXME: Why here "+ q" is needed?
         perm <- order(u)
-        bxr <- bx[goal.t + 1]
-        byr <- by[goal.t + 1]
+        bxr <- bx[1]
+        byr <- by[1]
         for (j in 1:k) { # start of j loop
-          bxr <- bxr + bxdiff[goal.t + perm[j]]
-          byr <- byr + bydiff[goal.t + perm[j]]
+          bxr <- bxr + bxdiff[perm[j]]
+          byr <- byr + bydiff[perm[j]]
         } # end of j loop
 
 
-        R1rand <- sqrt((bxr - bx[goal.t + 1])^2 + (byr - by[goal.t + 1])^2)
-        R2rand <- sqrt((bx[goal.t + k + q + 1] - bxr)^2 + (by[goal.t + k + q + 1] - byr)^2)
+        R1rand <- sqrt((bxr - bx[1])^2 + (byr - by[1])^2)
+        R2rand <- sqrt((bx[k + q + 1] - bxr)^2 + (by[k + q + 1] - byr)^2)
+        # writeLines(paste(R1rand, R2rand, sep = ";"))
         Rsumrand[it] <- R1rand + R2rand
       } # end of it loop
-
 
       # calculate P-values
       P[k, q] <- sum(Rsumrand >= Rsum) / N
     } # end of k loop
   } # end of q loop
-  return(P)
-}
-
-
-change_point_test_pvalue_old <- function(data, q_max = 6, N = 1000, tol = 0, ...) {
-  # data <- xyt
-  # q_max = 3
-  # N = 100
-  # tol = 0
-  x_col <- colnames(data)[1]
-  y_col <- colnames(data)[2]
-  t_col <- colnames(data)[3]
-  
-  # reverse order
-  b_xyt <- data[NROW(data):1,]
-  # # calcuate diff of coordinates
-  # b_xy_diff <- structure(apply(b_xyt[, c(x_col, y_col)], 2, FUN = diff), dimnames = list(NULL,c("x_diff", "y_diff")))
-  # # remove points at which animal stays still #FIXME do we need it here?
-  # ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > tol)
-  # b_xyt2 <- b_xyt[ind_new,]
-  b_xyt2 <- b_xyt
-  dim(b_xyt2)
-  pvalues <- change_point_fit_pvalue_old(bx = b_xyt2[, x_col], by = b_xyt2[, y_col], q_max = q_max, N = N)
-  # pvalues <- change_point_fit_pvalue_cpp(bx = b_xyt2[, x_col], by = b_xyt2[, y_col], q_max = q_max, N = N)
-  return(pvalues)
-}
-
-change_point_fit_pvalue_old <- function(bx, by, q_max, N) {
-  bxdiff <- diff(bx)
-  bydiff <- diff(by)
-  # q_max = maximum value of q
-  # q_max =6 is a convenient default
-  
-  goal.t <- 0
-  
-  # last.t = "time" (backwards in time) of last position of interest
-  # (and includes all the positions)
-  last.t <- length(bx) - q_max - 1
-  
-  no.of.t <- last.t - goal.t + 1
-  n_obs <- length(bx)
-  
-  # Set up matrix P in which to store P-values
-  # P <- matrix(rep(exp(2), q_max * no.of.t), nrow = no.of.t, ncol = q_max)
-  P <- matrix(rep(NA, q_max * n_obs), nrow = n_obs, ncol = q_max)
-  
-  # N = total number of permutations (1 observed and N-1 simulated)
-  # N = 1000 is a convenient number
-  
-  Rsumrand <- 0 * c(1:N)
-  
-  for (k in 1:n_obs) { # start of k loop
-    for (q in 1:q_max) { # start of q loop
-      if(k <= (n_obs - q)){
-        R1 <- sqrt((bx[goal.t + k + 1] - bx[goal.t + 1])^2 + (by[goal.t + k + 1] - by[goal.t + 1])^2)
-        R2 <- sqrt((bx[goal.t + k + q + 1] - bx[goal.t + k + 1])^2 + (by[goal.t + k + q + 1] - by[goal.t + k + 1])^2)
-        
-        Rsum <- R1 + R2
-        
-        # Rsumrand[1] = observed value of statistic R1 + R2
-        Rsumrand[1] <- Rsum
-        
-        # Now calculate statistic R1 + R2 for a further N-1 random permutations
-        # and store in Rsumrand
-        for (it in 2:N) { # start of it loop
-          u <- runif(k + q, 0, 1)
-          perm <- order(u)
-          bxr <- bx[goal.t + 1]
-          byr <- by[goal.t + 1]
-          for (j in 1:k) { # start of j loop
-            bxr <- bxr + bxdiff[goal.t + perm[j]]
-            byr <- byr + bydiff[goal.t + perm[j]]
-          } # end of j loop
-          
-          
-          R1rand <- sqrt((bxr - bx[goal.t + 1])^2 + (byr - by[goal.t + 1])^2)
-          R2rand <- sqrt((bx[goal.t + k + q + 1] - bxr)^2 + (by[goal.t + k + q + 1] - byr)^2)
-          Rsumrand[it] <- R1rand + R2rand
-        } # end of it loop
-        
-        
-        # calculate P-values
-        P[k, q] <- sum(Rsumrand >= Rsum) / N
-      }
-    } # end of q loop
-  } # end of k loop
   return(P)
 }

@@ -416,8 +416,8 @@ N = 100
 tf_7a <- tf[tf$track_id == '7a', ]
 set.seed(2025)
 data <- tf_7a
-# P = change_point_test_pvalue( #gives different result due to different calculation order
-  P = cpt:::change_point_test_pvalue_old(
+P = change_point_test_pvalue( #gives different result due to different calculation order
+  # P = cpt:::change_point_test_pvalue_old(
   data,
   q_max = 6,
   N = N

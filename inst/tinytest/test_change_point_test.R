@@ -98,7 +98,7 @@ test_cp_no_consistency <- function() {
   set.seed(303)
   x <- c(1:10, 20:30, 40:50)
   y <- c(1:10, 20:30, 40:50)
-  t <- as.POSIXct(1:length(x))
+  t <- as.POSIXct(1:length(x) * 5)
   data <- data.frame(x = x, y = y, t = t)
   
   # Run change point detection
@@ -143,7 +143,7 @@ test_colnames <- function() {
                        'tnew', 'x2', 'y2')
   set.seed(2025L)                       
   cpt_tf <- change_point_test(tf, N = 100)
-  expect_equal(colnames(cpt_tf[1:3]), c('x2', 'y2', 'tnew'))
+  expect_equal(colnames(cpt_tf[1:3]), c('tnew', 'x2', 'y2'))
 }
 
 # Run all tests

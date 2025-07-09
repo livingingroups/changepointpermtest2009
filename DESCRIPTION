@@ -1,7 +1,7 @@
 Package: cpt
 Type: Package
 Title: Change Point Detection for Animal Tracking Data
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: c(
     person("Katrina", "Brock", email = "kbrock@ab.mpg.de", role = "aut"),
     person("Rainer", "Hirk", email = "Rainer.Hirk@quintik.at", role = "aut"),

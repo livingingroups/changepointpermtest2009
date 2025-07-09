@@ -29,19 +29,22 @@ pvalues
 
 
 
-df <- data.frame(x = cpttestdata[, 1],
-                 y = cpttestdata[, 2],
-                 t = as.POSIXct(seq_along(cpttestdata[, 3])))
-tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
-unique_ids(tf)
+library("trackframe")
+library("cpt")
+data("cpttestdata", package = "cpt")
+str(cpttestdata)
+
+df <- as.data.frame(cpttestdata)
+head(df)
+cpttestdata <- as.track_frame(df, time_col = "t", easting_col = "x", northing_col = "y")
+dir("data")
+file <- normalizePath("data/cpttestdata.rda")
+save(cpttestdata, file = file)
 
 
-df <- data.frame(x = cpttestdata[, 1],
-                 y = cpttestdata[, 2],
-                 t = as.POSIXct(seq_along(cpttestdata[, 3])),
-                 id = 1L)
-tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y', id_col=  "id")
+str(as.track_frame(df))
 
 
-unique_ids(tf)
+q("no")
+R
 
