@@ -257,7 +257,13 @@ change_point_test.data.frame <- function(data,
                                          tol = 0,
                                          clu = NULL,
                                          ...) {
-  change_point_test.track_frame(as.track_frame(data))
+  change_point_test.track_frame(data = as.track_frame(data),
+                                alpha = alpha,
+                                q = q,
+                                N = N,
+                                tol = tol,
+                                clu = clu,
+                                ...)
 }
 
 
