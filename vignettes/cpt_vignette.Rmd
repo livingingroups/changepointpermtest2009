@@ -107,6 +107,7 @@ all.equal(cpt[, "sig"], cpt_tf$sig)
 
 Generate 3 tracks with different sizes
 ```{r}
+library(travelpaths)
 ntracks <- 3
 sizes <- c(30, 100, 50)
 set.seed(2025L)
@@ -190,7 +191,8 @@ burstz <- list(id = raccoon$animal_id, month = as.POSIXlt(raccoon$timestamp)$mon
 # Input is a data.frame
 data <- as_sftrack(raccoon,
                        group = burstz, time = "timestamp",
-                       error = NA, coords = c("longitude", "latitude")
+                       error = NA, coords = c("longitude", "latitude"),
+                   crs = 4326
 )
 
 data <- data[!is.na(data$latitude),]
