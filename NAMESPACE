@@ -3,7 +3,7 @@
 S3method(change_point_test,data.frame)
 S3method(change_point_test,move2)
 S3method(change_point_test,sftrack)
-S3method(change_point_test,track_frame)
+S3method(change_point_test,trackframe)
 S3method(summary,change_point_test)
 export(change_point_fit)
 export(change_point_test)

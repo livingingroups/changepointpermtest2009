@@ -76,9 +76,9 @@ change_point_test_trackframe_single_id <- function(data, alpha, q, N, tol, seed 
   if (!is.null(seed)) {
     set.seed(seed)
   }
-  cpt <- change_point_test_xyt(data[[attr(data, "easting")]],
-                               data[[attr(data, "northing")]],
-                               data[[attr(data, "time")]],
+  cpt <- change_point_test_xyt(easting = data[[attr(data, "easting")]],
+                               northing = data[[attr(data, "northing")]],
+                               time = data[[attr(data, "time")]],
                                alpha = alpha, q = q, N = N, tol = tol)
   if (isTRUE(verify)) {
     # just for testing
@@ -142,7 +142,7 @@ refine_cluster_input <- function(clu) {
 #' This function identifies locations where the movement pattern significantly changes, which can represent
 #' behavioral transitions or responses to environmental stimuli.
 #'
-#' @param data a track_frame, or an object coercible to track_frame
+#' @param data a trackframe, or an object coercible to trackframe
 #' @param alpha a numeric value specifying the significance level for detecting change points.
 #' @param q an integer specifying the minimum segment length between potential change points.
 #' @param N an integer specifying the number of random permutations for thepermutation test.
@@ -192,7 +192,7 @@ refine_cluster_input <- function(clu) {
 #' df <- data.frame(x = cpttestdata[, 1],
 #'                  y = cpttestdata[, 2],
 #'                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
-#' tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+#' tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
 #' set.seed(2025L)
 #' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
 #' summary(cpt_tf)
@@ -207,7 +207,7 @@ change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, clu
 
 #' @noRd
 #' @export
-change_point_test.track_frame <- function(data,
+change_point_test.trackframe <- function(data,
                                           alpha = 0.05,
                                           q = 4,
                                           N = 1000,
@@ -257,7 +257,7 @@ change_point_test.data.frame <- function(data,
                                          tol = 0,
                                          clu = NULL,
                                          ...) {
-  change_point_test.track_frame(data = as.track_frame(data),
+  change_point_test.trackframe(data = as.trackframe(data),
                                 alpha = alpha,
                                 q = q,
                                 N = N,
@@ -320,7 +320,7 @@ summary.change_point_test <- function(object, ...) {
                        "east" = x[, attr(object, "easting")][1],
                        "north" = x[, attr(object, "northing")][1])
     }))
-  } else if(inherits(object, "track_frame")) {
+  } else if(inherits(object, "trackframe")) {
     tf_ids <- unlist(unique_ids(object))
     if(length(tf_ids) <= 1) {
       xyt_cp <- object[object$sig != 0,]

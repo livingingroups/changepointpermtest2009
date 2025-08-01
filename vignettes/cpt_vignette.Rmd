@@ -35,8 +35,8 @@ library("trackframe")
 
 ## Load data
 ```{r}
-data(cptfiguredata)
-head(cptfiguredata)
+data(cpttestdata)
+head(cpttestdata)
 class(cpttestdata)
 ```
 
@@ -62,17 +62,17 @@ summary(cpt)
 TODO
 
 
-## Run cpt with a track_frame
+## Run cpt with a trackframe
 
-check as.track_frame method for data.frame
+check as.trackframe method for data.frame
 ```{r eval=FALSE, include=TRUE}
-?as.track_frame.data.frame
+?as.trackframe.data.frame
 ```
 
 
-Transform data to a track_frame. Trackframe always use x/y coordinates as cartesian coordinates with easting and northing. 
+Transform data to a trackframe. Trackframe always use x/y coordinates as cartesian coordinates with easting and northing. 
 ```{r}
-tf <- as.track_frame(data.frame(t = as.POSIXct(seq_along(cpttestdata[,3])),
+tf <- as.trackframe(data.frame(t = as.POSIXct(seq_along(cpttestdata[,3])),
                                 x = cpttestdata[,1],
                                 y = cpttestdata[,2]),
                      time_col = 't',
@@ -103,7 +103,7 @@ all.equal(cpt[, "sig"], cpt_tf$sig)
 
 
 
-## Run cpt with a track_frame and multiple IDs
+## Run cpt with a trackframe and multiple IDs
 
 Generate 3 tracks with different sizes
 ```{r}
@@ -162,9 +162,9 @@ albatross_move2 <- mt_read(mt_example()) |>
   filter_nonempty()
 ```
 
-Transform to track_frame
+Transform to trackframe
 ```{r}
-move2_tf <- as.track_frame(albatross_move2)
+move2_tf <- as.trackframe(albatross_move2)
 class(move2_tf)
 ```
 
@@ -198,9 +198,9 @@ data <- as_sftrack(raccoon,
 data <- data[!is.na(data$latitude),]
 ```
 
-Transform to track_frame
+Transform to trackframe
 ```{r}
-sftrack_tf <- as.track_frame(data)
+sftrack_tf <- as.trackframe(data)
 class(sftrack_tf)
 ```
 
@@ -254,7 +254,7 @@ ids <- rbind.data.frame(list("id_code" = 'VCVM001', "age" = 10, "sex" = "m"),
                         list("id_code" = 'WRTH', "age" = 5, "sex" = "f"))
 ```
 
-Transform to track_frame
+Transform to trackframe
 ```{r}
 cocomo_tf <- cocomo_as_tf(xs, ys, timestamps, ids)
 head(cocomo_tf)

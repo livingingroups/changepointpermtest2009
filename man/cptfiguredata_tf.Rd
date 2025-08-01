@@ -5,7 +5,7 @@
 \alias{cptfiguredata_tf}
 \title{Data Extracted from Figures as track_frame}
 \format{
-An object of class \code{track_frame} (inherits from \code{data.frame}) with 670 rows and 4 columns.
+An object of class \code{trackframe} (inherits from \code{data.frame}) with 670 rows and 4 columns.
 }
 \usage{
 cptfiguredata_tf

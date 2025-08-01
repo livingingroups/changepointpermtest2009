@@ -5,7 +5,7 @@
 \alias{cpttestdata}
 \title{Test Data}
 \format{
-An object of class \code{track_frame} (inherits from \code{data.frame}) with 154 rows and 3 columns.
+An object of class \code{trackframe} (inherits from \code{data.frame}) with 154 rows and 3 columns.
 }
 \usage{
 cpttestdata

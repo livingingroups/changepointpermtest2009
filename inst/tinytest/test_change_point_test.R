@@ -22,7 +22,7 @@ test_cpttestdata <- function() {
   expect_equal(cpt[, "sig"], results_orig)
   expect_equal(summary(cpt)[, "last"], c(39, 65, 74, 88, 132))
   
-  tf <- as.track_frame(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])), x = cpttestdata[,1], y=cpttestdata[,2]), 't', 'x', 'y')
+  tf <- as.trackframe(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])), x = cpttestdata[,1], y=cpttestdata[,2]), 't', 'x', 'y')
   set.seed(2025L)
   cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, tol = 0)
   expect_equal(cpt_tf$sig, results_orig)
@@ -82,8 +82,8 @@ test_input_formats <- function() {
   expect_true(is.data.frame(result_df))
   
   
-  # Test with track_frame
-  data_tf <- as.track_frame(data.frame(t=as.POSIXct(t), x = x, y = y), 't', 'x', 'y')
+  # Test with trackframe
+  data_tf <- as.trackframe(data.frame(t=as.POSIXct(t), x = x, y = y), 't', 'x', 'y')
   set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_tf))
@@ -137,7 +137,7 @@ test_colnames <- function() {
   colnames(cpt)
   expect_equal(colnames(cpt)[1:3], cn)
   
-  tf <- as.track_frame(data.frame(tnew = as.POSIXct(seq_along(cpttestdata[,3])),
+  tf <- as.trackframe(data.frame(tnew = as.POSIXct(seq_along(cpttestdata[,3])),
                                   x2 = cpttestdata[,1],
                                   y2 = cpttestdata[,2]),
                        'tnew', 'x2', 'y2')
