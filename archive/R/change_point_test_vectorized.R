@@ -4,7 +4,7 @@
 #' 
 #' Detecting change points in animal ranging data
 #'
-#' @param tf an object of class "track_frame"
+#' @param tf an object of class "trackframe"
 #' @param alpha nominal significance level
 #' @param q q value
 #' @param N total number of permutations
@@ -40,7 +40,7 @@ change_point_test_vectorized <- function(tf, alpha = 0.05, q = 4, N = 1000, tol 
   #   )
   # )
   
-  checkmate::assert_class(tf, "track_frame")
+  checkmate::assert_class(tf, "trackframe")
   # tf <- tf[seq(1, NROW(tf), by = 10),]
   x1 <- easting(tf)
   x2 <- northing(tf)

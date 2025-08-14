@@ -1,6 +1,6 @@
 #' @noRd
 #' @export
-change_point_test.track_frame <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, parallel = FALSE, ...) { #FIXME add parallel to docs
+change_point_test.trackframe <- function(data, alpha = 0.05, q = 4, N = 1000, tol = 0, parallel = FALSE, ...) { #FIXME add parallel to docs
   tf_ids <- unlist(unique_ids(data))
   
   if(length(tf_ids) <= 1) {

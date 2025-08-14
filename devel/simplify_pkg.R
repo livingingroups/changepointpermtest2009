@@ -48,7 +48,7 @@ do_rbind <- cpt:::do_rbind
 change_point_test_trackframe_single_id <- cpt:::change_point_test_trackframe_single_id
 
 data <- rbind(cbind(cpttestdata, id = 1L), cbind(cpttestdata, id = 2L), cbind(cpttestdata, id = 3L))
-data <- as.track_frame(data, id = "id")
+data <- as.trackframe(data, id = "id")
 cpt <- split(data, data[[attr(data, "id")]])
 str(cpt[[1]])
 x <- lapply(cpt, change_point_test_trackframe_single_id, alpha = alpha, q = q, N = N, tol = tol, verify = TRUE)
@@ -72,7 +72,7 @@ apply(z[z$id == 1, ] == z[z$id == 2, ], 2, all)
 
 
 data <- rbind(cbind(cpttestdata, id = 1L), cbind(cpttestdata, id = 2L), cbind(cpttestdata, id = 3L))
-data <- as.track_frame(data, id = "id")
+data <- as.trackframe(data, id = "id")
 
 
 clu <- parallel::makeCluster(3, "SOCK")
@@ -115,7 +115,7 @@ tf_change_point_test <- function(data, alpha, q, N, tol) {
     # FIXME: What should this do?
     data_out <- as.matrix(data_out)
   }
-  data_out <- as.track_frame(data_out,
+  data_out <- as.trackframe(data_out,
                              easting_col = attr(data, "easting"),
                              northing_col = attr(data, "northing"),
                              time_col = attr(data, "time"))
@@ -134,7 +134,7 @@ library("trackframe")
 df <- data.frame(x = cpttestdata[, 1],
                  y = cpttestdata[, 2],
                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
-tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
 summary(cpt_tf)

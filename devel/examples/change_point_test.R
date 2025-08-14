@@ -18,7 +18,7 @@ library("trackframe")
 df <- data.frame(x = cpttestdata[, 1],
                  y = cpttestdata[, 2],
                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
-tf <- as.track_frame(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
 summary(cpt_tf)
@@ -36,13 +36,13 @@ str(cpttestdata)
 
 df <- as.data.frame(cpttestdata)
 head(df)
-cpttestdata <- as.track_frame(df, time_col = "t", easting_col = "x", northing_col = "y")
+cpttestdata <- as.trackframe(df, time_col = "t", easting_col = "x", northing_col = "y")
 dir("data")
 file <- normalizePath("data/cpttestdata.rda")
 save(cpttestdata, file = file)
 
 
-str(as.track_frame(df))
+str(as.trackframe(df))
 
 
 q("no")

@@ -10,8 +10,8 @@ figdata <- cptfiguredata
 # TODO: just save the trackframe in the package 
 figdata$index <- as.POSIXct(seq_len(nrow(figdata)))
 figdata$y <- -figdata$y
-?trackframe::as.track_frame.data.frame
-tf <- trackframe::as.track_frame(
+?trackframe::as.trackframe.data.frame
+tf <- trackframe::as.trackframe(
   figdata,
   easting_col = 'x',
   northing_col = 'y',

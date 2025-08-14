@@ -7,7 +7,7 @@ inp <- scan(file, list(x1 = 0, x2 = 0))
 x1 <- inp[[1]]
 x2 <- inp[[2]]
 
-tf <- as.track_frame(data.frame(t=as.POSIXct(seq_along(x1)), y = x1, x=x2), 't', 'y', 'x')
+tf <- as.trackframe(data.frame(t=as.POSIXct(seq_along(x1)), y = x1, x=x2), 't', 'y', 'x')
 
 sig_cpt <- change_point_test(tf, alpha = 0.05, q = 4, N = 10000, tol = 0) #authors recommend N=10000
 

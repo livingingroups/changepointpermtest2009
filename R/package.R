@@ -18,7 +18,7 @@ NULL
 "cptfiguredata"
 
 
-#' Data Extracted from Figures as track_frame
+#' Data Extracted from Figures as trackframe
 #'
 #' These data were extracted from Figures 3,4,7 of Byrne, Noser, Bates, Jupp 2009
 #' Since the process of pulling data from an image is error-prone, these data should **not**

@@ -3,7 +3,7 @@
 \docType{data}
 \name{cptfiguredata_tf}
 \alias{cptfiguredata_tf}
-\title{Data Extracted from Figures as track_frame}
+\title{Data Extracted from Figures as trackframe}
 \format{
 An object of class \code{trackframe} (inherits from \code{data.frame}) with 670 rows and 4 columns.
 }
