@@ -1,5 +1,6 @@
 travelpaths_*.tar.gz
 Taskfile.yml
+^data-raw$
 ^devel$
 ^work$
 ^work_cpp$

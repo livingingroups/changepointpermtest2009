@@ -1,3 +1,36 @@
+#FIXME: work in progress 
+# write S3 methods for trackframe, sftrack and move2
+# check consistency with paper output and decide how to proceed
+
+
+change_point_test_pvalue_xyt <- function(x, y, t, q_max = 6, N = 1000, tol = 0, ...) {
+  checkmate::assert_numeric(x, min.len = 3L, any.missing = FALSE)
+  checkmate::assert_numeric(y, len = length(x), any.missing = FALSE)
+  checkmate::assert_numeric(t, len = length(x), any.missing = FALSE)
+  checkmate::assert_integerish(q_max, len = 1, any.missing = FALSE, lower = 1)
+  checkmate::assert_integerish(N, len = 1, any.missing = FALSE, lower = 1)
+  checkmate::assert_numeric(tol, len = 1, any.missing = FALSE, lower = 0)
+  
+  # Reverse the time-ordering so that (bx[1], by[1]) refers to (final) 
+  idx <- order(t, decreasing = TRUE)
+  bx <- x[idx]
+  by <- y[idx]
+  bt <- t[idx]
+  # # calcuate diff of coordinates
+  # bxdiff <- diff(bx)
+  # bydiff <- diff(by)
+  # # remove points at which animal stays still
+  # is_moving <- c(TRUE, sqrt(bxdiff^2 + bydiff^2) > tol)
+  # bxm <- bx[is_moving]
+  # bym <- by[is_moving]
+  # btm <- bt[is_moving]
+  pvalues <- change_point_fit_pvalue_new(bx = bx, by = by, q_max = q_max, N = N)
+  
+  return(pvalues)
+}
+
+
+
 #' Change Point Detection for Animal Movement Data
 #'
 #' Detects significant change points in animal movement trajectory data using a permutation-based approach.
@@ -34,6 +67,7 @@
 #' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, N = 100)
 #' pvalues
 change_point_test_pvalue <- function(data, q_max = 6, N = 1000, tol = 0, ...) {
+  #FIXME: with S3 classes
   x_col <- colnames(data)[1]
   y_col <- colnames(data)[2]
   t_col <- colnames(data)[3]

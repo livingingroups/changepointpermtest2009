@@ -1,32 +1,38 @@
-# library(tinytest)
+if(FALSE) {
+  library(tinytest)
+}
 # Test Suite for change_point_test Function
 library(cpt)
 library(trackframe)
 
 # cpttestdata
 
-test_cpttestdata <- function() {
-  data("cpttestdata", package = "cpt")
-  xyt <- cpttestdata
+test_xytdata <- function() {
+  data("path_trackframe", package = "trackframe")
+  xyt <- path_trackframe[1:50,]
+  xyt$time <- 1:50
+  # data("cpttestdata", package = "cpt")
+  # xyt <- cpttestdata
   set.seed(2025L)
-  cpt <- change_point_test(xyt, alpha = 0.05, q = 4, N = 1000, tol = 0)
-  # cat(deparse(cpt$sig))
-  results_orig <- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 
-                    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0)
-  expect_equal(cpt[, "sig"], results_orig)
-  expect_equal(summary(cpt)[, "last"], c(39, 65, 74, 88, 132))
-  
-  tf <- as.trackframe(data.frame(t=as.POSIXct(seq_along(cpttestdata[,3])), x = cpttestdata[,1], y=cpttestdata[,2]), 't', 'x', 'y')
+  cpt_xyt <- change_point_test_xyt(easting = xyt[, "easting"],
+                                   northing = xyt[, "northing"],
+                                   time = xyt[, "time"],
+                                   alpha = 0.05, q = 4, N = 1000, tol = 0)
+  expect_inherits(cpt_xyt , "change_point_test")
   set.seed(2025L)
-  cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, tol = 0)
-  expect_equal(cpt_tf$sig, results_orig)
-  expect_equal(summary(cpt_tf)[, "east"], c(688443.1545, 687898.0517, 687666.5149, 687345.6599, 687095.3092))
+  cpt_tf <- change_point_test(xyt, alpha = 0.05, q = 4, N = 1000, tol = 0)
+  expect_inherits(cpt_tf , "change_point_test")
+  expect_equal(cpt_xyt$sig, cpt_tf$sig)
+  # cat(deparse(cpt_xyt$sig))
+  results_orig <- c(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+                    0,  0, 0, 0, 0, 0, 0, 0, 0, 0)
+  expect_equal(cpt_xyt[, "sig"], results_orig)
+  object <- cpt_xyt
+  class(cpt_xyt)
+  inherits(cpt_xyt, c("matrix", "data.frame"))
+  expect_equal(summary(cpt_xyt)[, "last"], c(9, 17, 34))
+  expect_equal(summary(cpt_tf)[, "east"], c(201881.27, 202099.40, 201485.55), tolerance = 1e-03)
 }
 
 # Basic functionality test with simple trajectory
@@ -147,7 +153,7 @@ test_colnames <- function() {
 }
 
 # Run all tests
-test_cpttestdata()
+test_xytdata()
 test_basic_functionality()
 test_input_formats()
 test_cp_no_consistency()

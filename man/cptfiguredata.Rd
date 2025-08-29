@@ -5,7 +5,7 @@
 \alias{cptfiguredata}
 \title{Data Extracted from Figures}
 \format{
-An object of class \code{data.frame} with 670 rows and 3 columns.
+An object of class \code{data.frame} with 670 rows and 4 columns.
 }
 \usage{
 cptfiguredata

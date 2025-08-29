@@ -27,8 +27,7 @@ This function processes the output from \code{change_point_test} to create a dat
 containing the temporal and spatial information for each identified change point.
 }
 \examples{
-library(cpt)
-data("cpttestdata", package = "cpt")
+library("cpt")
 
 # First detect change points
 cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)

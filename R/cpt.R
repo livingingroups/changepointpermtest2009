@@ -21,10 +21,13 @@
 #' @examples 
 #' 
 #' library("cpt")
-#' data("cpttestdata", package = "cpt")
 #' 
-#' cpt <- change_point_test_xyt(cpttestdata[, "x"], cpttestdata[, "y"], cpttestdata[, "t"],
-#'                              alpha = 0.05, q = 3, N = 500)
+#' cpt <- change_point_test_xyt(cpttestdata[, "x"],
+#'                              cpttestdata[, "y"],
+#'                              cpttestdata[, "t"],
+#'                              alpha = 0.05,
+#'                              q = 3,
+#'                              N = 500)
 #' summary(cpt)
 change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, N = 1000, tol = 0, ...) {
   checkmate::assert_numeric(easting, min.len = 3L, any.missing = FALSE)
@@ -179,7 +182,6 @@ refine_cluster_input <- function(clu) {
 #'
 #' @examples
 #' library("cpt")
-#' data("cpttestdata", package = "cpt")
 #' # First detect change points
 #' set.seed(2025L)
 #' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
@@ -198,7 +200,8 @@ refine_cluster_input <- function(clu) {
 #' summary(cpt_tf)
 #' 
 #' # Get probability values instead of binary indicators
-#' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
+#' pvalues <- change_point_test_pvalue(
+#'   cpttestdata[, c("x", "y", "t")], q_max = 3, N = 500)
 #' pvalues
 change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, clu = NULL, seed = NULL, ...) {
   UseMethod("change_point_test")
@@ -301,8 +304,7 @@ change_point_test.sftrack <- change_point_test.data.frame
 #' @export
 #'
 #' @examples
-#' library(cpt)
-#' data("cpttestdata", package = "cpt")
+#' library("cpt")
 #' 
 #' # First detect change points
 #' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
@@ -311,16 +313,8 @@ change_point_test.sftrack <- change_point_test.data.frame
 #' summary(cpt)
 summary.change_point_test <- function(object, ...) {
   
-  if(inherits(object, "matrix")) {
-    xyt_cp <- object[object[, "sig"] != 0,]
-    xyt_cp_split <- split(as.data.frame(xyt_cp), f = xyt_cp[, "cp_no"])
-    summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
-      cbind.data.frame("first" = min(x[, attr(object, "time")]),
-                       "last" = max(x[, attr(object, "time")]),
-                       "east" = x[, attr(object, "easting")][1],
-                       "north" = x[, attr(object, "northing")][1])
-    }))
-  } else if(inherits(object, "trackframe")) {
+
+  if(inherits(object, "trackframe")) {
     tf_ids <- unlist(unique_ids(object))
     if(length(tf_ids) <= 1) {
       xyt_cp <- object[object$sig != 0,]
@@ -349,7 +343,16 @@ summary.change_point_test <- function(object, ...) {
         summary_i
       }))
     }
-  } 
+  } else if(inherits(object, c("matrix", "data.frame"))) {
+    xyt_cp <- object[object[, "sig"] != 0,]
+    xyt_cp_split <- split(as.data.frame(xyt_cp), f = xyt_cp[, "cp_no"])
+    summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
+      cbind.data.frame("first" = min(x[, attr(object, "time")]),
+                       "last" = max(x[, attr(object, "time")]),
+                       "east" = x[, attr(object, "easting")][1],
+                       "north" = x[, attr(object, "northing")][1])
+    })) 
+  }
   
   return(summary)
 }

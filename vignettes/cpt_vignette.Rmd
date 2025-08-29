@@ -33,21 +33,22 @@ library("trackframe")
 # library(ggplot2)
 ```
 
-## Load data
-```{r}
-data(cpttestdata)
-head(cpttestdata)
-class(cpttestdata)
-```
 
 **cpt** package currently supports xyt matrices (a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps) and trackframes (see pkg trackframe) as input formats.
 
-## Run cpt with xyt matrix
+## Run cpt with xyt
 
 Detect change points
 ```{r}
+data("path_trackframe", package = "trackframe")
+class(path_trackframe)
 set.seed(2025L)
-cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test_xyt(easting = path_trackframe[, "easting"],
+                             northing = path_trackframe[, "northing"],
+                             time = path_matrix[, "time"],
+                             alpha = 0.05,
+                             q = 3,
+                             N = 500)
 class(cpt)
 ```
 
@@ -72,12 +73,7 @@ check as.trackframe method for data.frame
 
 Transform data to a trackframe. Trackframe always use x/y coordinates as cartesian coordinates with easting and northing. 
 ```{r}
-tf <- as.trackframe(data.frame(t = as.POSIXct(seq_along(cpttestdata[,3])),
-                                x = cpttestdata[,1],
-                                y = cpttestdata[,2]),
-                     time_col = 't',
-                     easting_col = 'x',
-                     northing_col = 'y')
+tf <- as.trackframe(path_matrix, crs_input = 4326) 
 class(tf)
 ```
 
@@ -93,32 +89,18 @@ Extract the change points into a summarized format
 summary(cpt_tf)
 ```
 
-### Compare results
-
-```{r}
-head(cpt)
-head(cpt_tf)
-all.equal(cpt[, "sig"], cpt_tf$sig)
-```
-
-
 
 ## Run cpt with a trackframe and multiple IDs
 
 Generate 3 tracks with different sizes
 ```{r}
-library(travelpaths)
-ntracks <- 3
-sizes <- c(30, 100, 50)
-set.seed(2025L)
-multi_track <- sim_travel_paths(ntracks, sizes)
-head(multi_track)
-class(multi_track)
+data("paths_trackframe", package = "trackframe")
+class(paths_trackframe)
 ```
 
 ```{r}
 set.seed(2025L)
-cpt_mt <- change_point_test(multi_track, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_mt <- change_point_test(paths_trackframe, alpha = 0.05, q = 3, N = 500, tol = 0)
 class(cpt_mt)
 ```
 
@@ -128,7 +110,7 @@ summary(cpt_mt)
 ```
 
 ```{r}
-select_id(cpt_mt, "track_1")
+head(select_id(cpt_mt, "track_1"))
 tail(select_id(cpt_mt, "track_3"))
 ```
 
@@ -137,11 +119,20 @@ tail(select_id(cpt_mt, "track_3"))
 
 Detect change points
 ```{r}
-cpttestdata_df <- as.data.frame(cpttestdata)
-cpttestdata_df$t <- as.POSIXct(cpttestdata_df$t)
+data("path_data_frame", package = "trackframe")
+class(path_data_frame)
 set.seed(2025L)
-cpt <- change_point_test(cpttestdata_df, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(path_data_frame, alpha = 0.05, q = 3, N = 500)
 class(cpt)
+```
+
+Alternatively, in order to remove the warning coerce to trackframe first by setting crs.
+
+```{r}
+tf <- as.trackframe(path_data_frame, crs_input = 4326)
+set.seed(2025L)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500)
+all.equal(cpt$sig, cpt_tf$sig)
 ```
 
 Extract the change points into a summarized format
@@ -151,27 +142,12 @@ summary(cpt)
 
 ## Run cpt with move2
 
-```{r}
-library(sf)
-filter_nonempty <- function(x) x[!sf::st_is_empty(x),]
-
-library(move2)
-suppressPackageStartupMessages(library(move2, quietly = TRUE))
-albatross_move2 <- mt_read(mt_example()) |>
-  sf::st_transform(3857) |>
-  filter_nonempty()
-```
-
-Transform to trackframe
-```{r}
-move2_tf <- as.trackframe(albatross_move2)
-class(move2_tf)
-```
-
 Detect change points
 ```{r}
+data("path_move2", package = "trackframe")
+class(path_move2)
 set.seed(2025L)
-cpt <- change_point_test(move2_tf, alpha = 0.05, q = 3, N = 100)
+cpt <- change_point_test(path_move2, alpha = 0.05, q = 3, N = 100)
 class(cpt)
 ```
 
@@ -182,45 +158,18 @@ tail(summary(cpt), n = 5)
 
 ## Run cpt with sftrack
 
-Create sftrack data
-```{r}
-library(sftrack)
-data("raccoon")
-raccoon$timestamp <- as.POSIXct(raccoon$timestamp, "EST")
-burstz <- list(id = raccoon$animal_id, month = as.POSIXlt(raccoon$timestamp)$mon)
-# Input is a data.frame
-data <- as_sftrack(raccoon,
-                       group = burstz, time = "timestamp",
-                       error = NA, coords = c("longitude", "latitude"),
-                   crs = 4326
-)
-
-data <- data[!is.na(data$latitude),]
-```
-
-Transform to trackframe
-```{r}
-sftrack_tf <- as.trackframe(data)
-class(sftrack_tf)
-```
-
 Detect change points
 ```{r}
+data("path_sftrack", package = "trackframe")
+class(path_sftrack)
 set.seed(2025L)
-cpt <- change_point_test(sftrack_tf, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(path_sftrack, alpha = 0.05, q = 3, N = 500)
 class(cpt)
 ```
 
 Extract the change points into a summarized format
 ```{r}
 summary(cpt)
-```
-
-Re-create sf-id
-
-```{r}
-ids_sftrack <- lapply(sftrack_tf[, attr(sftrack_tf, "id")], function(text) eval(parse(text = text)))
-tail(ids_sftrack, n= 2)
 ```
 
 
@@ -280,6 +229,7 @@ summary(cpt)
 
 Get probability values instead of binary indicators
 ```{r}
+data("cpttestdata")
 pvalues <- change_point_test_pvalue(cpttestdata, q_max = 5, N = 500)
 tail(pvalues)
 ```

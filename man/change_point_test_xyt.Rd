@@ -44,9 +44,12 @@ Detecting change points in animal ranging data
 \examples{
 
 library("cpt")
-data("cpttestdata", package = "cpt")
 
-cpt <- change_point_test_xyt(cpttestdata[, "x"], cpttestdata[, "y"], cpttestdata[, "t"],
-                             alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test_xyt(cpttestdata[, "x"],
+                             cpttestdata[, "y"],
+                             cpttestdata[, "t"],
+                             alpha = 0.05,
+                             q = 3,
+                             N = 500)
 summary(cpt)
 }
