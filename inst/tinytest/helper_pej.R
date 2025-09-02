@@ -6,16 +6,8 @@
 # setwd("~/travelpaths-devel")
 # file <- "data/8_7august11.txt"
 # inp <- scan(file, list(x1 = 0, x2 = 0))
-data("cpttestdata", package = "cpt")
-inp <- list(cpttestdata[,1], cpttestdata[,2])
 
-x1<-inp[[1]]
-x2<-inp[[2]]
-# Inspect first few rows of the data
-xy <- cbind(x1,x2)
-head(xy)
-
-pej_implementation <- function(x1, x2, alpha, q, N, tol) {
+pej_implementation <- function(x1, x2, alpha, q, N, tol, seed = 2025) {
   # INPUTS
 
   # # input alpha
@@ -124,7 +116,7 @@ pej_implementation <- function(x1, x2, alpha, q, N, tol) {
 
   ## while((rmin > 0) && (goal.no < last.no – q)){ 
   ## A
-  set.seed(2025)
+  set.seed(seed)
   while(goal.no < last.no - q){
     
     k <- 0 
