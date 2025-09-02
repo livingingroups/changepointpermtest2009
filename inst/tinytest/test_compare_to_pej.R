@@ -2,10 +2,17 @@ source('helper_pej.R')
 library(trackframe)
 library(cpt)
 
+#' @importFrom tinytest expect_equal
 compare_to_pej <- function(xy, alpha, q, N, tol) {
   #tf <- as.trackframe(tf)
   #pej_result <- pej_implementation(easting(tf), northing(tf), alpha, q, N, tol)
   pej_result <- pej_implementation(xy[,1], xy[,2], alpha, q, N, tol)
+  sig <- pej_result$sig
+  cps <- pej_result$cps
+  bz1 <- pej_result$bz1
+  bz2 <- pej_result$bz2
+  
+  
   xyt <- xyt2 <- cbind("x" = inp[[1]], "y" = inp[[2]], t = 1:length(inp[[1]]))
   b_xyt <- xyt[NROW(xyt):1,]
   # calcuate diff of coordinates
@@ -35,7 +42,6 @@ compare_to_pej <- function(xy, alpha, q, N, tol) {
   rownames(xyt) <- NULL
 
 
-  cps
   xyt
   xyt[which(xyt$sig == 1),]
 
@@ -44,14 +50,14 @@ compare_to_pej <- function(xy, alpha, q, N, tol) {
 
   cps_rcpp <- do.call("rbind", lapply(xyt_cp_split, function(x) {
     setNames(c(min(x$t), max(x$t), x$x[1], x$y[1]), c("first", "last", "north", "east"))
-}))
+  }))
 
-rownames(cps_rcpp) <- NULL
-
-expect_equal(b_xyt2[, "x"], bz1)
-expect_equal(b_xyt2[, "y"], bz2)
-expect_equal(sig, sig_rcpp)
-expect_equal(cps, cps_rcpp)
+  rownames(cps_rcpp) <- NULL
+  #browser()
+  expect_equal(b_xyt2[, "x"], bz1)
+  expect_equal(b_xyt2[, "y"], bz2)
+  expect_equal(sig, sig_rcpp)
+  expect_equal(cps, cps_rcpp)
 
 
 }

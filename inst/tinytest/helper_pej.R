@@ -324,6 +324,6 @@ pej_implementation <- function(x1, x2, alpha, q, N, tol) {
   # “north” and “east” are the coordinates of these change points
   # “cps” contains “first, “last”, “north” and “east”. 
   cps <- cbind(first, last, north, east)
-  list(sig = sig, cps = cps)
+  list(sig = sig, cps = cps, bz1 = bz1, bz2 = bz2)
 
 }
