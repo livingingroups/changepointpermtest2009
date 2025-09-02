@@ -1,0 +1,182 @@
+---
+author: "MPI"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Plots like Byrne et al. 2009}
+  %\VignetteEngine{knitr::knitr}
+editor_options: 
+  chunk_output_type: console
+---
+
+# Recreate Analysis as "How did they get here from there?"
+
+Load data
+```{r}
+library(trackframe)
+library(cpt)
+data("cptfiguredata_tf")
+str(cptfiguredata_tf)
+tf <- cptfiguredata_tf
+```
+
+
+```{r}
+library(ggplot2)
+```
+
+### Fig  3
+
+```{r, out.width="100%", fig.width=7}
+tf3 <- tf[startsWith(tf$track_id, '3'),]
+
+ggplot() + geom_path(data = tf3[order(index(tf3)),],
+                     mapping = aes(x = easting(tf3), y = northing(tf3), group = track_id)) +
+  coord_fixed()
+  # TODO:
+  # - show starting point and direction.
+  # - facet wrap instead of relying on fake coords being non-overlapping  
+```
+
+### Fig 4
+
+
+```{r}
+tf4 <- tf[startsWith(tf$track_id, '4'),]
+# b and d seem to match up well
+# a and c seem to be missing some changepoints
+cp <- change_point_test(
+  tf4,
+  alpha = .01,
+  q = 6
+)
+```
+
+```{r, out.width="100%"}
+ggplot() + geom_path(data = tf4[order(index(tf4)),],
+                     mapping = aes(x = easting(tf4), y = northing(tf4), group = track_id)) +
+  coord_fixed() +
+  geom_point(data = cp[cp$sig == 1,], aes(x=x, y=y), shape="\u2605", size = 8)
+```
+
+### Fig 5
+
+```{r, out.width="100%", fig.height=10, , fig.width=5}
+N = 100
+tf_4a <- tf[tf$track_id == '4a', ]
+set.seed(2025)
+P = change_point_test_pvalue(
+# P = cpt:::change_point_test_pvalue_old( #gives different result due to different calculation order
+  tf_4a,
+  q_max = 10,
+  N = N
+)
+
+# plot results (- log(P) vs k for q = 1, .. , q_max)
+
+no.of.t <- NROW(P)
+k <- c(1:no.of.t)
+s <- seq(no.of.t - 1)
+
+withr::with_par(
+  list(mfrow = c(5, 2)),
+  for(i in 1:NCOL(P)) {
+    plot(k, -log(P[k, i]), xlim = c(0, no.of.t + 1), ylim = c(0, log(N)), pch = 4, main = sprintf("q = %i",i))
+    y <- -log(P[k, i])
+    segments(k[s], y[s], k[s + 1], y[s + 1])
+    abline(h = -log(0.10), col = "blue")
+    abline(h = -log(0.05), col = "red")
+    abline(h = -log(0.01), col = "green")
+  }
+)
+```
+
+
+### Fig 6 
+
+```{r}
+# Pretty different
+calculate_n_cp_by_q <- function(tf, q=seq_len(10), alpha = 0.01) {
+  # tf <- tf[startsWith(tf$track_id, '4'), ]
+  if(length(attr(tf, 'id'))!=1) stop('only implemented for 1 id col')
+  do.call(rbind, lapply(seq_len(10), function(q) {
+    cp <- change_point_test(
+      tf,
+      alpha = alpha,
+      q = q
+    )
+    # cp <- do.call(rbind, lapply(seq_len(cp), function(i) cbind(cp, "track_id" = i)))
+    df <- as.data.frame(rowsum(cp$sig, as.factor(cp[,attr(tf, 'id')])))
+    names(df) <- 'n_cp'
+    df$track_id <- rownames(df)
+    rownames(df) <- NULL
+    df$q <- q
+    df
+  }))
+}
+
+fig6_data <- calculate_n_cp_by_q(tf4)
+```
+
+```{r, out.width="100%"}
+ggplot(data = fig6_data, mapping = aes(x=q, y=n_cp, group=track_id, colour = track_id)) + geom_smooth(span = .4) + geom_point()
+```
+
+### Fig 7
+
+```{r}
+tf7 <- tf[startsWith(tf$track_id, '7'),]
+cp <- change_point_test(
+  tf7,
+  alpha = .05,
+  q = 4
+)
+```
+
+```{r, out.width="100%"}
+ggplot() + geom_path(data = tf7[order(index(tf7)),],
+                     mapping = aes(x = easting(tf7), y = northing(tf7), group = track_id)) +
+  coord_fixed() +
+  geom_point(data = cp[cp$sig == 1,], aes(x=x, y=y), shape="\u2605", size = 8)
+```
+
+### Fig 8
+
+```{r, out.width="100%", fig.height=10, , fig.width=5}
+N = 100
+tf_7a <- tf[tf$track_id == '7a', ]
+set.seed(2025)
+data <- tf_7a
+P = change_point_test_pvalue( #gives different result due to different calculation order
+  # P = cpt:::change_point_test_pvalue_old(
+  data,
+  q_max = 6,
+  N = N
+)
+
+
+# plot results (- log(P) vs k for q = 1, .. , q_max)
+
+no.of.t <- NROW(P)
+k <- c(1:no.of.t)
+s <- seq(no.of.t - 1)
+
+par(mfrow = c(3, 2))
+for(i in 1:NCOL(P)) {
+  plot(k, -log(P[k, i]), xlim = c(0, no.of.t + 1), ylim = c(0, log(N)), pch = 4, main = sprintf("q = %i",i))
+  y <- -log(P[k, i])
+  segments(k[s], y[s], k[s + 1], y[s + 1])
+  abline(h = -log(0.10), col = "blue")
+  abline(h = -log(0.05), col = "red")
+  abline(h = -log(0.01), col = "green")
+}
+
+```
+
+## Fig 9
+
+```{r, out.width="100%"}
+fig9_data <- calculate_n_cp_by_q(tf7, alpha = 0.05)
+ggplot(data = fig9_data, mapping = aes(x=q, y=n_cp, group=track_id, colour = track_id)) + geom_smooth(span=.4) + geom_point()
+```
+
