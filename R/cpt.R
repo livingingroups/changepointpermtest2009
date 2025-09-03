@@ -46,8 +46,16 @@ change_point_test_xyt <- function(easting, northing, time, alpha = 0.05, q = 4, 
   # calcuate diff of coordinates
   bxdiff <- diff(bx)
   bydiff <- diff(by)
+
   # remove points at which animal stays still
-  is_moving <- c(TRUE, sqrt(bxdiff^2 + bydiff^2) > tol)
+  is_moving <- if(isTRUE(list(...)[["legacy_movement_criteria"]])) c(
+    TRUE,
+    abs(bxdiff) > tol & abs(bydiff) > tol
+  ) else c(
+    TRUE,
+    sqrt(bxdiff^2 + bydiff^2) > tol
+  )
+
   bxm <- bx[is_moving]
   bym <- by[is_moving]
   btm <- bt[is_moving]
@@ -82,7 +90,7 @@ change_point_test_trackframe_single_id <- function(data, alpha, q, N, tol, seed 
   cpt <- change_point_test_xyt(easting = data[[attr(data, "easting")]],
                                northing = data[[attr(data, "northing")]],
                                time = data[[attr(data, "time")]],
-                               alpha = alpha, q = q, N = N, tol = tol)
+                               alpha = alpha, q = q, N = N, tol = tol, ...)
   if (isTRUE(verify)) {
     # just for testing
     stopifnot(all(data[[attr(data, "easting")]] == cpt[["easting"]]))
@@ -224,12 +232,12 @@ change_point_test.trackframe <- function(data,
   tf_ids <- unique_ids(data)
   if (length(tf_ids) <= 1) {
     cpt <- change_point_test_trackframe_single_id(data, alpha = alpha, q = q, N = N, tol = tol,
-                                                  seed = seed, verify = verify)
+                                                  seed = seed, verify = verify, ...)
   } else {
     cpt <- split(data, data[[attr(data, "id")]])
     if(is.null(clu)) {
       cpt <- lapply(cpt, change_point_test_trackframe_single_id, alpha = alpha, q = q, N = N,
-                    tol = tol, seed = seed, verify = verify)
+                    tol = tol, seed = seed, verify = verify, ...)
     } else {
       if (is.numeric(clu)) {
         if (clu <= 0L) {
@@ -241,7 +249,7 @@ change_point_test.trackframe <- function(data,
         on.exit(stopCluster(clu), add = TRUE)
       }
       cpt <- parLapply(clu, cpt, change_point_test_trackframe_single_id, alpha = alpha, q = q,
-                       N = N, tol = tol, seed = seed, verify = verify)
+                       N = N, tol = tol, seed = seed, verify = verify, ...)
     }
     cpt <- do_rbind(cpt)
   }
