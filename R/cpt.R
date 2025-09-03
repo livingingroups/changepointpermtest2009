@@ -203,21 +203,29 @@ refine_cluster_input <- function(clu) {
 #' pvalues <- change_point_test_pvalue(
 #'   cpttestdata[, c("x", "y", "t")], q_max = 3, N = 500)
 #' pvalues
+#' @rdname change_point_test
 change_point_test <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, clu = NULL, seed = NULL, ...) {
   UseMethod("change_point_test")
 }
 
 
-#' @noRd
+#' @examples
+#' tf <- as.trackframe(cpttestdata)
+#' class(tf)
+#' set.seed(2025L)
+#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+#' summary(cpt_tf)
+#'
 #' @export
+#' @rdname change_point_test
 change_point_test.trackframe <- function(data,
-                                          alpha = 0.05,
-                                          q = 4,
-                                          N = 1000,
-                                          tol = 0,
-                                          clu = NULL,
-                                          seed = NULL,
-                                          ...) {
+                                         alpha = 0.05,
+                                         q = 4,
+                                         N = 1000,
+                                         tol = 0,
+                                         clu = NULL,
+                                         seed = NULL,
+                                         ...) {
   checkmate::assert_true(NROW(data) > 2L)
   verify <- list(...)[["verify"]]
   clu <- refine_cluster_input(clu)
@@ -251,8 +259,15 @@ change_point_test.trackframe <- function(data,
 }
 
 
-#' @noRd
+#' @examples
+#' df <- cpttestdata
+#' class(df)
+#' set.seed(2025L)
+#' cpt_df <- change_point_test(df, alpha = 0.05, q = 3, N = 500, tol = 0)
+#' summary(cpt_df)
+#'
 #' @export
+#' @rdname change_point_test
 change_point_test.data.frame <- function(data,
                                          alpha = 0.05,
                                          q = 4,
@@ -270,13 +285,29 @@ change_point_test.data.frame <- function(data,
 }
 
 
-#' @noRd
+#' @examples
+#' library(move2)
+#' data("path_move2", package = "trackframe")
+#' class(path_move2)
+#' set.seed(2025L)
+#' cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, N = 500, tol = 0)
+#' summary(cpt_move2) 
+#'
 #' @export
+#' @rdname change_point_test
 change_point_test.move2 <- change_point_test.data.frame
 
 
-#' @noRd
+#' @examples
+#' library(sftrack)
+#' data("path_sftrack", package = "trackframe")
+#' class(path_sftrack)
+#' set.seed(2025L)
+#' cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, N = 500, tol = 0)
+#' summary(cpt_sftrack) 
+#'
 #' @export
+#' @rdname change_point_test
 change_point_test.sftrack <- change_point_test.data.frame
 
 

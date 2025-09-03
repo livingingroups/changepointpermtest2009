@@ -2,6 +2,10 @@
 % Please edit documentation in R/cpt.R
 \name{change_point_test}
 \alias{change_point_test}
+\alias{change_point_test.trackframe}
+\alias{change_point_test.data.frame}
+\alias{change_point_test.move2}
+\alias{change_point_test.sftrack}
 \title{Change Point Detection for Animal Movement Data}
 \usage{
 change_point_test(
@@ -12,6 +16,47 @@ change_point_test(
   tol = 0,
   clu = NULL,
   seed = NULL,
+  ...
+)
+
+\method{change_point_test}{trackframe}(
+  data,
+  alpha = 0.05,
+  q = 4,
+  N = 1000,
+  tol = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
+)
+
+\method{change_point_test}{data.frame}(
+  data,
+  alpha = 0.05,
+  q = 4,
+  N = 1000,
+  tol = 0,
+  clu = NULL,
+  ...
+)
+
+\method{change_point_test}{move2}(
+  data,
+  alpha = 0.05,
+  q = 4,
+  N = 1000,
+  tol = 0,
+  clu = NULL,
+  ...
+)
+
+\method{change_point_test}{sftrack}(
+  data,
+  alpha = 0.05,
+  q = 4,
+  N = 1000,
+  tol = 0,
+  clu = NULL,
   ...
 )
 }
@@ -85,4 +130,30 @@ summary(cpt_tf)
 pvalues <- change_point_test_pvalue(
   cpttestdata[, c("x", "y", "t")], q_max = 3, N = 500)
 pvalues
+tf <- as.trackframe(cpttestdata)
+class(tf)
+set.seed(2025L)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+summary(cpt_tf)
+
+df <- cpttestdata
+class(df)
+set.seed(2025L)
+cpt_df <- change_point_test(df, alpha = 0.05, q = 3, N = 500, tol = 0)
+summary(cpt_df)
+
+library(move2)
+data("path_move2", package = "trackframe")
+class(path_move2)
+set.seed(2025L)
+cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, N = 500, tol = 0)
+summary(cpt_move2) 
+
+library(sftrack)
+data("path_sftrack", package = "trackframe")
+class(path_sftrack)
+set.seed(2025L)
+cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, N = 500, tol = 0)
+summary(cpt_sftrack) 
+
 }

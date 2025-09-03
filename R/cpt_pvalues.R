@@ -16,15 +16,15 @@ change_point_test_pvalue_xyt <- function(x, y, t, q_max = 6, N = 1000, tol = 0, 
   bx <- x[idx]
   by <- y[idx]
   bt <- t[idx]
-  # # calcuate diff of coordinates
-  # bxdiff <- diff(bx)
-  # bydiff <- diff(by)
-  # # remove points at which animal stays still
-  # is_moving <- c(TRUE, sqrt(bxdiff^2 + bydiff^2) > tol)
-  # bxm <- bx[is_moving]
-  # bym <- by[is_moving]
-  # btm <- bt[is_moving]
-  pvalues <- change_point_fit_pvalue_new(bx = bx, by = by, q_max = q_max, N = N)
+  # calcuate diff of coordinates
+  bxdiff <- diff(bx)
+  bydiff <- diff(by)
+  # remove points at which animal stays still
+  is_moving <- c(TRUE, sqrt(bxdiff^2 + bydiff^2) > tol)
+  bxm <- bx[is_moving]
+  bym <- by[is_moving]
+  btm <- bt[is_moving]
+  pvalues <- change_point_fit_pvalue_new(bx = bxm, by = bym, q_max = q_max, N = N)
   
   return(pvalues)
 }
@@ -66,6 +66,11 @@ change_point_test_pvalue_xyt <- function(x, y, t, q_max = 6, N = 1000, tol = 0, 
 #' 
 #' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, N = 100)
 #' pvalues
+change_point_test_pvalue <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, clu = NULL, seed = NULL, ...) {
+  UseMethod("change_point_test_pvalue")
+}
+
+
 change_point_test_pvalue <- function(data, q_max = 6, N = 1000, tol = 0, ...) {
   #FIXME: with S3 classes
   x_col <- colnames(data)[1]

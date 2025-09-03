@@ -5,7 +5,7 @@
 \alias{cpttestdata}
 \title{Test Data}
 \format{
-An object of class \code{data.frame} with 31 rows and 3 columns.
+An object of class \code{data.frame} with 150 rows and 3 columns.
 }
 \usage{
 cpttestdata

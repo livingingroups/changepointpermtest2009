@@ -92,6 +92,30 @@ test_input_formats <- function() {
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_tf))
   expect_equal(result_df[, c("sig", "cp_no")], result_tf[, c("sig", "cp_no")])
+  
+  # move2
+  library(move2)
+  data_move2 <- mt_as_move2(data.frame(t=as.POSIXct(t), x = x, y = y, id = 1),
+                            coords = c("x", "y"),
+                            time_column = "t",
+                            track_id_column = "id",
+                            crs = 32631)
+  as.trackframe(data_move2)
+  set.seed(2025L)
+  result_move2 <- change_point_test(data_move2, alpha = 0.05, q = 2, N = 50, tol = 0)
+  expect_true(is.data.frame(result_move2))
+  expect_equal(result_move2[, c("sig", "cp_no")], result_tf[, c("sig", "cp_no")])
+  
+  # sftrack
+  library(sftrack)
+  data_sftrack <- as_sftrack(data.frame(t=as.POSIXct(t), x = x, y = y, id = 1),
+                             coords = c("x", "y"),
+                             time = "t",
+                             crs = 32632)
+  set.seed(2025L)
+  result_sftrack <- change_point_test(data_move2, alpha = 0.05, q = 2, N = 50, tol = 0)
+  expect_true(is.data.frame(result_sftrack))
+  expect_equal(result_sftrack[, c("sig", "cp_no")], result_move2[, c("sig", "cp_no")])
 }
 
 
