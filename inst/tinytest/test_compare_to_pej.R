@@ -4,14 +4,14 @@ library(trackframe)
 library(cpt)
 
 pej_tf_filter <- \(tf, tol) tf[c(
-  TRUE,
   abs(diff(easting(tf))) > tol &
-    abs(diff(northing(tf))) > tol
+    abs(diff(northing(tf))) > tol,
+  TRUE
 ), ]
 
 
 # not used
-distance_filter  <- \(tf, tol) tf[c(TRUE, sqrt(diff(easting(tf))^2 + diff(northing(tf))^2) > tol), ]
+distance_filter  <- \(tf, tol) tf[c(sqrt(diff(easting(tf))^2 + diff(northing(tf))^2, TRUE) > tol), ]
 
 compare_to_pej <- function(tf, alpha, q, N, tol) {
   tf <- as.trackframe(tf)
@@ -24,21 +24,21 @@ compare_to_pej <- function(tf, alpha, q, N, tol) {
   pej <- pej_implementation(easting(tf), northing(tf), alpha, q, N, tol) #nolint
 
   # reverse it
-  tf <- tf[rev(seq_len(nrow(tf))), ]
+  #tf <- tf[rev(seq_len(nrow(tf))), ]
 
   # filter only when there is movement
   tf_move <- pej_tf_filter(tf, tol)
 
   # For some reason, doesn't work with time in df
   # TODO: MRE and document why this is
-  old_time <- time(tf_move)
-  tf_move[, tf_colnames$time_col] <- seq_len(nrow(tf_move))
+  # reverse time
+  #tf_move[, tf_colnames$time_col] <- -as.numeric(time(tf_move))
 
   rcpp <- change_point_test(tf_move, q = q, N = N, alpha = alpha, seed = 2025)
-  rcpp$sig[1] <- 0
+  #rcpp$sig[length(rcpp$sig)] <- 0
 
-  # put back original times
-  rcpp[, tf_colnames$time_col] <- old_time
+  # un-reverse time
+  #rcpp[, tf_colnames$time_col] <- as.POSIXct(-time(rcpp))
 
   # combine back with the non-moving data
   tf <- merge(tf, rcpp[, c(tf_colnames$time_col, "sig", "cp_no")], by = tf_colnames$time_col, all.x = TRUE, sort = FALSE)
@@ -65,10 +65,14 @@ compare_to_pej <- function(tf, alpha, q, N, tol) {
 
   rownames(cps_rcpp) <- NULL
 
-  expect_equal(pej$bz1, easting(tf_move), info = unique_ids(tf))
-  expect_equal(pej$bz2, northing(tf_move), info = unique_ids(tf))
-  expect_equal(pej$sig, rcpp$sig, info = unique_ids(tf))
+  #if(
+  sum(
+  expect_equal(pej$bz1, rev(easting(tf_move)), info = unique_ids(tf)),
+  expect_equal(pej$bz2, rev(northing(tf_move)), info = unique_ids(tf)),
+  expect_equal(pej$sig, rev(rcpp$sig), info = unique_ids(tf)),
   expect_equal(pej$cps, cps_rcpp, info = unique_ids(tf))
+  )
+  #<2) browser()
 }
 
 data("cpttestdata", package = "cpt")
