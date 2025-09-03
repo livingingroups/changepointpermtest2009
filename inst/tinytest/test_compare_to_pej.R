@@ -10,7 +10,6 @@ pej_tf_filter <- \(tf, tol) tf[c(
 ), ]
 
 
-# not used
 distance_filter  <- \(tf, tol) tf[c(sqrt(diff(easting(tf))^2 + diff(northing(tf))^2, TRUE) > tol), ]
 
 compare_to_pej <- function(tf, alpha, q, N, tol) {
@@ -23,22 +22,13 @@ compare_to_pej <- function(tf, alpha, q, N, tol) {
   )
   pej <- pej_implementation(easting(tf), northing(tf), alpha, q, N, tol) #nolint
 
-  # reverse it
-  #tf <- tf[rev(seq_len(nrow(tf))), ]
-
   # filter only when there is movement
   tf_move <- pej_tf_filter(tf, tol)
 
   # For some reason, doesn't work with time in df
   # TODO: MRE and document why this is
-  # reverse time
-  #tf_move[, tf_colnames$time_col] <- -as.numeric(time(tf_move))
 
   rcpp <- change_point_test(tf_move, q = q, N = N, alpha = alpha, seed = 2025)
-  #rcpp$sig[length(rcpp$sig)] <- 0
-
-  # un-reverse time
-  #rcpp[, tf_colnames$time_col] <- as.POSIXct(-time(rcpp))
 
   # combine back with the non-moving data
   tf <- merge(tf, rcpp[, c(tf_colnames$time_col, "sig", "cp_no")], by = tf_colnames$time_col, all.x = TRUE, sort = FALSE)
@@ -52,7 +42,7 @@ compare_to_pej <- function(tf, alpha, q, N, tol) {
   rownames(tf) <- NULL
   xyt_cp <- tf[tf$cp_no != 0, ]
   xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
-  cps_rcpp <- do.call("rbind", lapply(xyt_cp_split, function(x) setNames(
+  cps_rcpp <- do.call("rbind", lapply(rev(xyt_cp_split), function(x) setNames(
     # pej returns indices, not times.
     # because of tol and how it's used, there may be more than one easting, northing
     # pej takes the last one
@@ -65,14 +55,15 @@ compare_to_pej <- function(tf, alpha, q, N, tol) {
 
   rownames(cps_rcpp) <- NULL
 
-  #if(
+  if(
   sum(
   expect_equal(pej$bz1, rev(easting(tf_move)), info = unique_ids(tf)),
   expect_equal(pej$bz2, rev(northing(tf_move)), info = unique_ids(tf)),
   expect_equal(pej$sig, rev(rcpp$sig), info = unique_ids(tf)),
   expect_equal(pej$cps, cps_rcpp, info = unique_ids(tf))
   )
-  #<2) browser()
+  == 8) browser()
+  #<4) browser()
 }
 
 data("cpttestdata", package = "cpt")
