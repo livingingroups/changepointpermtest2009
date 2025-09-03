@@ -13,24 +13,7 @@ pej_tf_filter <- \(tf, tol) {
   tf
 }
 
-
-distance_filter  <- \(tf, tol) tf[c(sqrt(diff(easting(tf))^2 + diff(northing(tf))^2, TRUE) > tol), ]
-
-compare_to_pej <- function(tf, alpha, q, N, tol) {
-  tf <- as.trackframe(tf)
-  tf_colnames <- list(
-    time_col = attr(tf, "time"),
-    easting_col = attr(tf, "easting"),
-    northing_col = attr(tf, "northing"),
-    id_col = attr(tf, "id")
-  )
-  pej <- pej_implementation(easting(tf), northing(tf), alpha, q, N, tol) #nolint
-
-
-  tf <- change_point_test(tf, q = q, N = N, alpha = alpha, seed = 2025, legacy_movement_criteria = TRUE)
-
-  # convert cps into format pej outputs
-  rownames(tf) <- NULL
+pej_style_cps <- \(tf) {
   xyt_cp <- tf[tf$cp_no != 0, ]
   xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
   cps_rcpp <- do.call("rbind", lapply(xyt_cp_split, function(x) setNames(
@@ -40,24 +23,37 @@ compare_to_pej <- function(tf, alpha, q, N, tol) {
     as.numeric(c(min(rownames(x)), max(rownames(x)), tail(easting(x), 1), tail(northing(x), 1))),
     c("first", "last", "north", "east")
   )))
-
-  # Default in case no change points
-  if (is.null(cps_rcpp)) cps_rcpp <- structure(-Inf, dim = c(1L, 1L), dimnames = list(NULL, "first"))
-
   rownames(cps_rcpp) <- NULL
 
-  # filter only when there is movement and reverse
-  bztf <- pej_tf_filter(tf, tol)
-
-  if(
-  sum(
-  expect_equal(pej$bz1, easting(bztf), info = unique_ids(tf)),
-  expect_equal(pej$bz2, northing(bztf), info = unique_ids(tf)),
-  expect_equal(pej$sig, bztf$sig, info = unique_ids(tf)),
-  expect_equal(pej$cps, cps_rcpp, info = unique_ids(tf))
+  # Default in case no change points
+  if (is.null(cps_rcpp)) cps_rcpp <- structure(
+    -Inf,
+    dim = c(1L, 1L), dimnames = list(NULL, "first")
   )
-  == 8) browser()
-  #<4) browser()
+  cps_rcpp
+}
+
+compare_to_pej <- function(tf, alpha, q, N, tol) {
+  tf <- as.trackframe(tf)
+
+  cp_tf <- change_point_test(
+    tf, q = q, N = N, alpha = alpha, seed = 2025, legacy_movement_criteria = TRUE
+  )
+
+  if (sum(cp_tf$sig) == 0) expect_warning(
+    pej <- pej_implementation(easting(tf), northing(tf), alpha, q, N, tol) #nolint
+  ) else pej <- pej_implementation(easting(tf), northing(tf), alpha, q, N, tol) #nolint
+
+  # convert cps into format pej outputs
+  cps_rcpp <- pej_style_cps(cp_tf)
+
+  # filter only when there is movement and reverse
+  bztf <- pej_tf_filter(cp_tf, tol)
+
+  expect_equal(pej$bz1, easting(bztf), info = unique_ids(cp_tf))
+  expect_equal(pej$bz2, northing(bztf), info = unique_ids(cp_tf))
+  expect_equal(pej$sig, bztf$sig, info = unique_ids(cp_tf))
+  expect_equal(pej$cps, cps_rcpp, info = unique_ids(cp_tf))
 }
 
 data("cpttestdata", package = "cpt")
