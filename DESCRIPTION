@@ -12,7 +12,7 @@ Authors@R: c(
 Description:
     Implements a permutation-based approach for detecting directional changes in animal movement trajectory data.
     Methodology published in "How did they get here from there? Detecting changes of direction in terrestrial ranging"
-    by R.W. Byrne, R. Noser, L.A. Bates, P.E. Jupp (2009, DOI: 10.1016/j.anbehav.2008.11.014)
+    by R.W. Byrne, R. Noser, L.A. Bates, P.E. Jupp (2009, <doi:10.1016/j.anbehav.2008.11.014>).
 License: GPL (>= 2)
 Imports: checkmate, Rcpp (>= 1.0.14), trackframe
 Depends: R (>= 4.0.0), zoo
