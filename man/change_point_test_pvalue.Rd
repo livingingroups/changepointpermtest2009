@@ -2,9 +2,61 @@
 % Please edit documentation in R/cpt_pvalues.R
 \name{change_point_test_pvalue}
 \alias{change_point_test_pvalue}
+\alias{change_point_test_pvalue.trackframe}
+\alias{change_point_test_pvalue.data.frame}
+\alias{change_point_test_pvalue.move2}
+\alias{change_point_test_pvalue.sftrack}
 \title{Change Point Detection for Animal Movement Data}
 \usage{
-change_point_test_pvalue(data, q_max = 6, N = 1000, tol = 0, ...)
+change_point_test_pvalue(
+  data,
+  q_max = 4,
+  N = 10000,
+  tol = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
+)
+
+\method{change_point_test_pvalue}{trackframe}(
+  data,
+  q_max = 4,
+  N = 10000,
+  tol = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
+)
+
+\method{change_point_test_pvalue}{data.frame}(
+  data,
+  q_max = 4,
+  N = 10000,
+  tol = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
+)
+
+\method{change_point_test_pvalue}{move2}(
+  data,
+  q_max = 4,
+  N = 10000,
+  tol = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
+)
+
+\method{change_point_test_pvalue}{sftrack}(
+  data,
+  q_max = 4,
+  N = 10000,
+  tol = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
+)
 }
 \arguments{
 \item{data}{a matrix or data frame with columns for x-coordinates, y-coordinates, and time.
@@ -17,6 +69,19 @@ Higher values provide more accurate p-values but increase computation time.}
 
 \item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
 Points with movements smaller than this threshold will be considered stationary.}
+
+\item{clu}{optional parameter determining whether parallelization with the parallel package is used.
+Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
+\itemize{
+  \item If \code{NULL} (default) no parallel processing is used.
+  \item If of class \code{"numeric"}, it gives the number of cores,
+    passed as integer to \code{parallel::makePSOCKcluster}.
+  \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel} package.
+    Allowed is any object which inherits from \code{"cluster"} and can be passed to
+    \code{parallel::parLapply}.
+}}
+
+\item{seed}{seed to be passed to random number generator}
 
 \item{...}{additional arguments passed to methods.}
 }
@@ -45,4 +110,31 @@ data("cpttestdata", package = "cpt")
 
 pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, N = 100)
 pvalues
+library(trackframe)
+tf <- as.trackframe(cpttestdata)
+class(tf)
+set.seed(2025L)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+summary(cpt_tf)
+
+df <- cpttestdata
+class(df)
+set.seed(2025L)
+cpt_df <- change_point_test(df, alpha = 0.05, q = 3, N = 500, tol = 0)
+summary(cpt_df)
+
+library(move2)
+data("path_move2", package = "trackframe")
+class(path_move2)
+set.seed(2025L)
+cpt_move2 <- change_point_test_pvalue(path_move2, q_max = 3, N = 500, tol = 0)
+summary(cpt_move2) 
+
+library(sftrack)
+data("path_sftrack", package = "trackframe")
+class(path_sftrack)
+set.seed(2025L)
+cpt_sftrack <- change_point_test_pvalue(path_sftrack, q_max = 3, N = 500, tol = 0)
+summary(cpt_sftrack) 
+
 }

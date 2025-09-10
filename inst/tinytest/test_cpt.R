@@ -100,7 +100,6 @@ test_input_formats <- function() {
                             time_column = "t",
                             track_id_column = "id",
                             crs = 32631)
-  as.trackframe(data_move2)
   set.seed(2025L)
   result_move2 <- change_point_test(data_move2, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_move2))
