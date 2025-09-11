@@ -2,6 +2,7 @@
 # Test cases for change_point_fit function
 library(cpt)
 library(trackframe)
+attach(getNamespace("cpt"))
 
 # Tests core functionality with a trajectory containing a clear change point
 test_basic_functionality <- function() {

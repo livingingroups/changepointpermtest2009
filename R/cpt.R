@@ -1,6 +1,8 @@
-#' Change Point Test
+#' Change Point Detection for Animal Movement Data - xyt data
 #' 
-#' Detecting change points in animal ranging data
+#' Detects significant change points in animal movement trajectory data using a permutation-based approach.
+#' This function identifies locations where the movement pattern significantly changes, which can represent
+#' behavioral transitions or responses to environmental stimuli.
 #'
 #' @param easting a numeric vector of x-coordinates (easting) of the trajectory backwards in time.
 #' @param northing a numeric vector of y-coordinates (northing) of the trajectory backwards in time.
@@ -95,26 +97,26 @@ change_point_test_trackframe_single_id <- function(data, alpha, q, N, tol, seed 
 }
 
 
-#' Change Point Test Fitting
-#'
-#' Detects change points in animal movement trajectory data using a permutation-based approach.
-#' This function identifies locations where the movement pattern significantly changes.
-#'
-#' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
-#' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
-#' @param q an integer specifying the minimum segment length between potential change points.
-#' @param N an integer specifying the number of random permutations for the permutation test.
-#' @param alpha a numeric value specifying the significance level for detecting change points.
-#'
-#' @return A numeric vector of the same length as the input coordinates, where 1 indicates
-#'         a change point at that position and 0 indicates no change point.
-#'
-#' @details This function implements a sequential change point detection algorithm that uses
-#'          a permutation test to identify significant changes in movement patterns. It compares
-#'          the sum of distances between consecutive points against randomly permuted sequences
-#'          to determine if a change point exists.
-#'
-#' @export
+# #' Change Point Test Fitting
+# #'
+# #' Detects change points in animal movement trajectory data using a permutation-based approach.
+# #' This function identifies locations where the movement pattern significantly changes.
+# #'
+# #' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
+# #' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
+# #' @param q an integer specifying the minimum segment length between potential change points.
+# #' @param N an integer specifying the number of random permutations for the permutation test.
+# #' @param alpha a numeric value specifying the significance level for detecting change points.
+# #'
+# #' @return A numeric vector of the same length as the input coordinates, where 1 indicates
+# #'         a change point at that position and 0 indicates no change point.
+# #'
+# #' @details This function implements a sequential change point detection algorithm that uses
+# #'          a permutation test to identify significant changes in movement patterns. It compares
+# #'          the sum of distances between consecutive points against randomly permuted sequences
+# #'          to determine if a change point exists.
+# #'
+# #' @export
 change_point_fit <- function(bx, by, q, N, alpha) {
   checkmate::assert_numeric(bx, any.missing = FALSE)
   checkmate::assert_numeric(by, len = length(bx), any.missing = FALSE)
@@ -139,7 +141,7 @@ refine_cluster_input <- function(clu) {
 }
 
 
-#' Change Point Detection for Animal Movement Data
+#' Change Point Detection for Animal Movement Data - S3 Methods
 #'
 #' Detects significant change points in animal movement trajectory data using a permutation-based approach.
 #' This function identifies locations where the movement pattern significantly changes, which can represent

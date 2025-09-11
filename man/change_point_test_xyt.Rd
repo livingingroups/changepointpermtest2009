@@ -2,7 +2,7 @@
 % Please edit documentation in R/cpt.R
 \name{change_point_test_xyt}
 \alias{change_point_test_xyt}
-\title{Change Point Test}
+\title{Change Point Detection for Animal Movement Data - xyt data}
 \usage{
 change_point_test_xyt(
   easting,
@@ -39,7 +39,9 @@ Points with movements smaller than this threshold will be considered stationary.
 An augmented data frame containing the original data with additional columns:
 }
 \description{
-Detecting change points in animal ranging data
+Detects significant change points in animal movement trajectory data using a permutation-based approach.
+This function identifies locations where the movement pattern significantly changes, which can represent
+behavioral transitions or responses to environmental stimuli.
 }
 \examples{
 

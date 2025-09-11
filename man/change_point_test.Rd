@@ -6,7 +6,7 @@
 \alias{change_point_test.data.frame}
 \alias{change_point_test.move2}
 \alias{change_point_test.sftrack}
-\title{Change Point Detection for Animal Movement Data}
+\title{Change Point Detection for Animal Movement Data - S3 Methods}
 \usage{
 change_point_test(
   data,
