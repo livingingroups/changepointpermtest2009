@@ -295,7 +295,27 @@ change_point_test.data.frame <- function(data,
 #'
 #' @export
 #' @rdname change_point_test
-change_point_test.move2 <- change_point_test.data.frame
+change_point_test.move2 <- function(data,
+                                    alpha = 0.05,
+                                    q = 4,
+                                    N = 1000,
+                                    tol = 0,
+                                    clu = NULL,
+                                    ...) {
+  
+  cpt <- change_point_test.data.frame(data = data,
+                                      alpha = alpha,
+                                      q = q,
+                                      N = N,
+                                      tol = tol,
+                                      clu = clu,
+                                      ...)
+  cpt <- tf_backtransform(cpt)
+  class(cpt) <- c("change_point_test", class(cpt))
+  return(cpt)
+}
+  
+
 
 
 #' @examples
@@ -308,7 +328,7 @@ change_point_test.move2 <- change_point_test.data.frame
 #'
 #' @export
 #' @rdname change_point_test
-change_point_test.sftrack <- change_point_test.data.frame
+change_point_test.sftrack <- change_point_test.move2
 
 
 
@@ -344,7 +364,6 @@ change_point_test.sftrack <- change_point_test.data.frame
 #' summary(cpt)
 summary.change_point_test <- function(object, ...) {
   
-
   if(inherits(object, "trackframe")) {
     tf_ids <- unlist(unique_ids(object))
     if(length(tf_ids) <= 1) {
@@ -357,7 +376,6 @@ summary.change_point_test <- function(object, ...) {
                          "north" = x[, attr(object, "northing")][1])
       }))
     } else{
-      unique(object[, attr(object, "id")])
       tf_split <- split(object, f = object[,attr(object, "id")])
       summary <- do.call("rbind", lapply(tf_split, function(xyt){
         xyt_cp <- xyt[xyt$sig != 0,]
@@ -374,6 +392,45 @@ summary.change_point_test <- function(object, ...) {
         summary_i
       }))
     }
+  } else if (inherits(object, c("move2", "sftrack"))){
+    if(inherits(object, c("move2"))) {
+      ids <- unique(object[[attr(object, "track_id_column")]])
+    } else {
+      ids <- unique(object[["id"]])
+    }
+    # tf_ids <- unlist(unique_ids(object))
+    if(length(ids) <= 1) {
+      xyt_cp <- object[object$sig != 0,]
+      xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
+      summary <- do.call("rbind", lapply(xyt_cp_split, function(x) {
+        cbind.data.frame("first" = min(x[[attr(object, "time")]]),
+                         "last" = max(x[[attr(object, "time")]]),
+                         "east" = sf::st_coordinates(x)[1,1],
+                         "north" = sf::st_coordinates(x)[1,2])
+      }))
+    } else{
+      if(inherits(object, c("move2"))) {
+        id_col <- attr(object, "track_id_column")
+      } else {
+        id_col <- "id"
+      }
+      tf_split <- split(object, f = object[[id_col]])
+      summary <- do.call("rbind", lapply(tf_split, function(xyt){
+        xyt_cp <- xyt[xyt$sig != 0,]
+        xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
+        
+        summary_i <- do.call("rbind", lapply(xyt_cp_split, function(x) {
+          # x <- xyt_cp_split[[1]]
+          cbind.data.frame("first" = min(x[[attr(xyt, "time")]]),
+                           "last" = max(x[[attr(xyt, "time")]]),
+                           "east" = sf::st_coordinates(xyt)[1,1],
+                           "north" = sf::st_coordinates(xyt)[1,2],
+                           "id" = x[[id_col]][1])
+        }))
+        summary_i
+      }))
+    }
+    
   } else if(inherits(object, c("matrix", "data.frame"))) {
     xyt_cp <- object[object[, "sig"] != 0,]
     xyt_cp_split <- split(as.data.frame(xyt_cp), f = xyt_cp[, "cp_no"])
