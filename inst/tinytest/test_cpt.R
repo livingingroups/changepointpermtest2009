@@ -1,6 +1,4 @@
-if(FALSE) {
-  library(tinytest)
-}
+library(tinytest)
 # Test Suite for change_point_test Function
 library(cpt)
 library(trackframe)
@@ -79,7 +77,7 @@ test_input_formats <- function() {
   # Test with data frame
   data_df <- data.frame(x = x, y = y, t = t)
   result_df <- change_point_test(data_df, alpha = 0.05, q = 3, N = 100, tol = 0)
-  t <- as.POSIXct(1:40)
+  t <- as.POSIXct(1:10)
   data_df <- data.frame(x = x, y = y, t = t)
   set.seed(2025L)
   result_df <- change_point_test(data_df, alpha = 0.05, q = 2, N = 50, tol = 0)
@@ -90,7 +88,7 @@ test_input_formats <- function() {
   data_tf <- as.trackframe(data.frame(t=as.POSIXct(t), x = x, y = y), 't', 'x', 'y')
   set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
-  expect_true(is.data.frame(result_tf))
+  expect_inherits(result_tf, class(data_tf))
   expect_equal(result_df[, c("sig", "cp_no")], result_tf[, c("sig", "cp_no")])
   
   # move2
@@ -102,8 +100,9 @@ test_input_formats <- function() {
                             crs = 32631)
   set.seed(2025L)
   result_move2 <- change_point_test(data_move2, alpha = 0.05, q = 2, N = 50, tol = 0)
-  expect_true(is.data.frame(result_move2))
-  expect_equal(result_move2[, c("sig", "cp_no")], result_tf[, c("sig", "cp_no")])
+  expect_inherits(result_move2, class(data_move2))
+  expect_equal(result_move2[["sig"]], result_tf[["sig"]])
+  expect_equal(result_move2[["cp_no"]], result_tf[["cp_no"]])
   
   # sftrack
   library(sftrack)
@@ -112,9 +111,10 @@ test_input_formats <- function() {
                              time = "t",
                              crs = 32632)
   set.seed(2025L)
-  result_sftrack <- change_point_test(data_move2, alpha = 0.05, q = 2, N = 50, tol = 0)
-  expect_true(is.data.frame(result_sftrack))
-  expect_equal(result_sftrack[, c("sig", "cp_no")], result_move2[, c("sig", "cp_no")])
+  result_sftrack <- change_point_test(data_sftrack, alpha = 0.05, q = 2, N = 50, tol = 0)
+  expect_inherits(result_sftrack, class(data_sftrack))
+  expect_equal(result_sftrack[["sig"]], result_tf[["sig"]])
+  expect_equal(result_sftrack[["cp_no"]], result_tf[["cp_no"]])
 }
 
 
