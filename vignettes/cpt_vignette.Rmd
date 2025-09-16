@@ -241,6 +241,8 @@ Load data
 data("cptfiguredata_tf")
 str(cptfiguredata_tf)
 tf <- cptfiguredata_tf
+#FIXME
+tf$y <- tf$y * (-1)
 ```
 
 
@@ -253,7 +255,7 @@ library(ggplot2)
 ```{r, out.width="100%", fig.width=7}
 tf3 <- tf[startsWith(tf$track_id, '3'),]
 
-ggplot() + geom_path(data = tf3[order(index(tf3)),],
+ggplot() + geom_path(data = tf3[order(time(tf3)),],
                      mapping = aes(x = easting(tf3), y = northing(tf3), group = track_id)) +
   coord_fixed()
   # TODO:
@@ -271,15 +273,17 @@ tf4 <- tf[startsWith(tf$track_id, '4'),]
 cp <- change_point_test(
   tf4,
   alpha = .01,
+  N=10000,
   q = 6
 )
 ```
 
 ```{r, out.width="100%"}
-ggplot() + geom_path(data = tf4[order(index(tf4)),],
+
+ggplot() + geom_path(data = tf4[order(time(tf4)),],
                      mapping = aes(x = easting(tf4), y = northing(tf4), group = track_id)) +
   coord_fixed() +
-  geom_point(data = cp[cp$sig == 1,], aes(x=x, y=y), shape="\u2605", size = 8)
+  geom_point(data = cp[cp$sig == 1,], aes(x=x, y=y), color = "red")
 ```
 
 ### Fig 5
@@ -355,10 +359,10 @@ cp <- change_point_test(
 ```
 
 ```{r, out.width="100%"}
-ggplot() + geom_path(data = tf7[order(index(tf7)),],
+ggplot() + geom_path(data = tf7[order(time(tf7)),],
                      mapping = aes(x = easting(tf7), y = northing(tf7), group = track_id)) +
   coord_fixed() +
-  geom_point(data = cp[cp$sig == 1,], aes(x=x, y=y), shape="\u2605", size = 8)
+  geom_point(data = cp[cp$sig == 1,], aes(x=x, y=y), color = "red")
 ```
 
 ### Fig 8
