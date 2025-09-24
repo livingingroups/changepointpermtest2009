@@ -114,27 +114,23 @@ library(trackframe)
 tf <- as.trackframe(cpttestdata)
 class(tf)
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
-summary(cpt_tf)
+cpt_tf <- change_point_test_pvalue(tf, q_max = 3, N = 100, tol = 0)
 
 df <- cpttestdata
 class(df)
 set.seed(2025L)
-cpt_df <- change_point_test(df, alpha = 0.05, q = 3, N = 500, tol = 0)
-summary(cpt_df)
+cpt_df <- change_point_test_pvalue(df, q_max = 3, N = 100, tol = 0)
 
 library(move2)
 data("path_move2", package = "trackframe")
 class(path_move2)
 set.seed(2025L)
-cpt_move2 <- change_point_test_pvalue(path_move2, q_max = 3, N = 500, tol = 0)
-summary(cpt_move2) 
+cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, N = 100, tol = 0)
 
 library(sftrack)
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
 set.seed(2025L)
-cpt_sftrack <- change_point_test_pvalue(path_sftrack, q_max = 3, N = 500, tol = 0)
-summary(cpt_sftrack) 
+cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, N = 100, tol = 0)
 
 }

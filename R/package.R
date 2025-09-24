@@ -2,7 +2,11 @@
 #' @import checkmate
 #' @import trackframe
 #' @import Rcpp
-#' @importFrom stats runif setNames
+#' @import tinyplot
+#' @importFrom graphics arrows par
+#' @importFrom utils modifyList
+#' @importFrom reshape2 melt
+#' @importFrom stats runif setNames as.formula
 #' @importFrom zoo na.fill na.locf
 #' @importFrom parallel parLapply stopCluster makePSOCKcluster
 #' @useDynLib cpt, .registration = TRUE

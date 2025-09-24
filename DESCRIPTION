@@ -14,7 +14,7 @@ Description:
     Methodology published in "How did they get here from there? Detecting changes of direction in terrestrial ranging"
     by R.W. Byrne, R. Noser, L.A. Bates, P.E. Jupp (2009, <doi:10.1016/j.anbehav.2008.11.014>).
 License: GPL (>= 2)
-Imports: checkmate, Rcpp (>= 1.0.14), trackframe
+Imports: checkmate, Rcpp (>= 1.0.14), trackframe, tinyplot, reshape2
 Depends: R (>= 4.0.0), zoo
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: tinytest, knitr, markdown, ggplot2, sf, move2, sftrack, travelpaths
