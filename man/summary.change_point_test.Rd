@@ -30,7 +30,7 @@ containing the temporal and spatial information for each identified change point
 library("cpt")
 
 # First detect change points
-cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500)
 
 # Then extract the change points into a summarized format
 summary(cpt)

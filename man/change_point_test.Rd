@@ -12,7 +12,7 @@ change_point_test(
   data,
   alpha = 0.05,
   q = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -23,7 +23,7 @@ change_point_test(
   data,
   alpha = 0.05,
   q = 4,
-  N = 1000,
+  n = 1000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -34,7 +34,7 @@ change_point_test(
   data,
   alpha = 0.05,
   q = 4,
-  N = 1000,
+  n = 1000,
   tol = 0,
   clu = NULL,
   ...
@@ -44,7 +44,7 @@ change_point_test(
   data,
   alpha = 0.05,
   q = 4,
-  N = 1000,
+  n = 1000,
   tol = 0,
   clu = NULL,
   ...
@@ -54,7 +54,7 @@ change_point_test(
   data,
   alpha = 0.05,
   q = 4,
-  N = 1000,
+  n = 1000,
   tol = 0,
   clu = NULL,
   ...
@@ -67,7 +67,7 @@ change_point_test(
 
 \item{q}{an integer specifying the minimum segment length between potential change points.}
 
-\item{N}{an integer specifying the number of random permutations for thepermutation test.
+\item{n}{an integer specifying the number of random permutations for thepermutation test.
 Higher values provide more accurate p-values but increase computation time.}
 
 \item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
@@ -103,7 +103,7 @@ This function implements a sequential change point detection algorithm that uses
          a permutation test to identify significant changes in movement patterns. It compares
          the sum of distances between consecutive points against randomly permuted sequences
          to determine if a change point exists.
-         
+
          The first point in the trajectory is never considered a change point, as it represents
          the starting location.
 }
@@ -111,7 +111,7 @@ This function implements a sequential change point detection algorithm that uses
 library("cpt")
 # First detect change points
 set.seed(2025L)
-cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500)
 
 # Second show the change points in a summarized format
 summary(cpt)
@@ -123,37 +123,37 @@ df <- data.frame(x = cpttestdata[, 1],
                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
 tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
 summary(cpt_tf)
 
 # Get probability values instead of binary indicators
 pvalues <- change_point_test_pvalue(
-  cpttestdata[, c("x", "y", "t")], q_max = 3, N = 500)
+  cpttestdata[, c("x", "y", "t")], q_max = 3, n = 500)
 pvalues
 tf <- as.trackframe(cpttestdata)
 class(tf)
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
 summary(cpt_tf)
 
 df <- cpttestdata
 class(df)
 set.seed(2025L)
-cpt_df <- change_point_test(df, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_df <- change_point_test(df, alpha = 0.05, q = 3, n = 500, tol = 0)
 summary(cpt_df)
 
 library(move2)
 data("path_move2", package = "trackframe")
 class(path_move2)
 set.seed(2025L)
-cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, N = 500, tol = 0)
-summary(cpt_move2) 
+cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, n = 500, tol = 0)
+summary(cpt_move2)
 
 library(sftrack)
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
 set.seed(2025L)
-cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, N = 500, tol = 0)
-summary(cpt_sftrack) 
+cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, n = 500, tol = 0)
+summary(cpt_sftrack)
 
 }

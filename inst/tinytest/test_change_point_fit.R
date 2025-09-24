@@ -1,8 +1,9 @@
-# library(tinytest)
 # Test cases for change_point_fit function
+library(tinytest)
 library(cpt)
 library(trackframe)
 attach(getNamespace("cpt"))
+
 
 # Tests core functionality with a trajectory containing a clear change point
 test_basic_functionality <- function() {
@@ -18,7 +19,7 @@ test_basic_functionality <- function() {
 
   # Run change point detection
   set.seed(2025L)
-  result <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.05)
+  result <- change_point_fit(x, y, q = 3, n = 100, alpha = 0.05)
 
   # Check that the output is a numeric vector
   expect_true(is.numeric(result))
@@ -33,6 +34,7 @@ test_basic_functionality <- function() {
   # expect_true(sum(result) > 0)
 }
 
+
 # Tests behavior with a trajectory that has no clear change points
 test_no_change_points <- function() {
   # Create a trajectory with no clear change points
@@ -41,7 +43,7 @@ test_no_change_points <- function() {
   y <- cumsum(rnorm(40, 0, 0.5))
 
   set.seed(2025L)
-  result <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.05)
+  result <- change_point_fit(x, y, q = 3, n = 100, alpha = 0.05)
 
   # There might be some change points detected by chance, but should be few
   expect_true(sum(result) < length(result) * 0.1) # Less than 10% should be change points
@@ -56,15 +58,16 @@ test_alpha_parameter <- function() {
 
   # With small alpha (more stringent), we expect fewer change points
   set.seed(2025L)
-  result_small_alpha <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.01)
+  result_small_alpha <- change_point_fit(x, y, q = 3, n = 100, alpha = 0.01)
 
   # With large alpha (less stringent), we expect more change points
   set.seed(2025L)
-  result_large_alpha <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.1)
+  result_large_alpha <- change_point_fit(x, y, q = 3, n = 100, alpha = 0.1)
 
   # The number of change points should be greater or equal with larger alpha
   expect_true(sum(result_large_alpha) >= sum(result_small_alpha))
 }
+
 
 # Test input validation
 test_input_validation <- function() {
@@ -74,28 +77,28 @@ test_input_validation <- function() {
   # Test with invalid x (contains NA)
   x_na <- c(1:5, NA, 7:10)
   set.seed(2025L)
-  expect_error(change_point_fit(x_na, y, q = 3, N = 100, alpha = 0.05))
+  expect_error(change_point_fit(x_na, y, q = 3, n = 100, alpha = 0.05))
 
   # Test with invalid y (different length)
   y_short <- 1:9
   set.seed(2025L)
-  expect_error(change_point_fit(x, y_short, q = 3, N = 100, alpha = 0.05))
+  expect_error(change_point_fit(x, y_short, q = 3, n = 100, alpha = 0.05))
 
   # Test with invalid q (not numeric/integer)
   set.seed(2025L)
-  expect_error(change_point_fit(x, y, q = "three", N = 100, alpha = 0.05))
+  expect_error(change_point_fit(x, y, q = "three", n = 100, alpha = 0.05))
 
-  # Test with invalid N (negative)
+  # Test with invalid n (negative)
   set.seed(2025L)
-  expect_error(change_point_fit(x, y, q = 3, N = -10, alpha = 0.05))
+  expect_error(change_point_fit(x, y, q = 3, n = -10, alpha = 0.05))
 
   # Test with invalid alpha (not numeric)
   set.seed(2025L)
-  expect_error(change_point_fit(x, y, q = 3, N = 100, alpha = "0.05"))
+  expect_error(change_point_fit(x, y, q = 3, n = 100, alpha = "0.05"))
 
   # Test with invalid alpha (negative)
   set.seed(2025L)
-  expect_error(change_point_fit(x, y, q = 3, N = 100, alpha = -0.05))
+  expect_error(change_point_fit(x, y, q = 3, n = 100, alpha = -0.05))
 }
 
 
@@ -106,10 +109,11 @@ test_constant_coordinates <- function() {
 
   # With constant coordinates, there should be no change points
   set.seed(2025L)
-  result <- change_point_fit(x, y, q = 3, N = 100, alpha = 0.05)
+  result <- change_point_fit(x, y, q = 3, n = 100, alpha = 0.05)
 
   expect_equal(sum(result), 0)
 }
+
 
 # Run all tests
 test_basic_functionality()

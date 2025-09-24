@@ -24,6 +24,7 @@ if (getRversion() <= "4.4.0") {
   }
 }
 
+
 set_facet_ncol <- function(n) {
   if (n > 4) {
     if (n %% 4 == 0) {
@@ -41,7 +42,8 @@ set_facet_ncol <- function(n) {
   return(n_col)
 }
 
-#' @title Plot trackframes
+
+#' Plot trackframes
 #'
 #' Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on
 #' \code{\link[tinyplot]{tinyplot}} functionality.
@@ -126,13 +128,13 @@ plot.trackframe <- function(
     ))
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  do.call(tinyplot, c(list(form, data = x), control))
+  do.call(tinyplot::tinyplot, c(list(form, data = x), control))
   # TODO: do we also want to plot starting and endpoints here?
 
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
     arrow_points <- get_arrow_points(x)
-    tinyplot_add(
+    tinyplot::tinyplot_add(
       form,
       data = x,
       type = type_arrows(
@@ -189,7 +191,7 @@ plot.trackframe <- function(
 #' plot(select_id(data, "4a"))
 #'
 #' # calculate change points
-#' cpt <- change_point_test(data, alpha = .01, N = 10000, q = 6)
+#' cpt <- change_point_test(data, alpha = .01, n = 10000, q = 6)
 #' class(cpt)
 #'
 #' plot(cpt)
@@ -228,12 +230,12 @@ plot.change_point_test <- function(
 }
 
 
-#' @noRd
+#' @keywords internal
 plotcpt <- function(
   data,
   alpha = 0.05,
   q = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -243,6 +245,7 @@ plotcpt <- function(
 }
 
 
+#' @keywords internal
 plotcpt.trackframe <- function(
   cpt,
   direction = FALSE,
@@ -294,9 +297,9 @@ plotcpt.trackframe <- function(
     arrows_facet <- id
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  do.call(tinyplot, c(list(form, data = cpt), control))
+  do.call(tinyplot::tinyplot, c(list(form, data = cpt), control))
   # add change points
-  tinyplot_add(
+  tinyplot::tinyplot_add(
     form,
     data = cpt[cpt[["sig"]] == 1, ],
     type = "p",
@@ -305,7 +308,7 @@ plotcpt.trackframe <- function(
     col = cp_col
   ) # NOTE: do we want to add cp numbers?
   # add starting point
-  tinyplot_add(
+  tinyplot::tinyplot_add(
     form,
     data = cpt[!duplicated(cpt[[id]]), ],
     type = "p",
@@ -316,7 +319,7 @@ plotcpt.trackframe <- function(
   # tinyplot_add(form, data = cpt[!duplicated(cpt[[id]]), ],
   # type = "text", labels = "t=0", pos = 1)
   # add end point
-  tinyplot_add(
+  tinyplot::tinyplot_add(
     form,
     data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ],
     type = "p",
@@ -330,7 +333,7 @@ plotcpt.trackframe <- function(
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
     arrow_points <- get_arrow_points(cpt)
-    tinyplot_add(
+    tinyplot::tinyplot_add(
       form,
       data = cpt,
       type = type_arrows(
@@ -350,6 +353,7 @@ plotcpt.trackframe <- function(
 }
 
 
+#' @keywords internal
 plotcpt.sftrack <- function(
   cpt,
   direction = FALSE,
@@ -372,6 +376,8 @@ plotcpt.sftrack <- function(
   )
 }
 
+
+#' @keywords internal
 plotcpt.move2 <- plotcpt.sftrack
 
 
@@ -393,19 +399,15 @@ plotcpt.move2 <- plotcpt.sftrack
 #' data("cptfiguredata_tf")
 #' data <- select_id(cptfiguredata_tf, "4a")
 #' set.seed(2025)
-#' P = change_point_test_pvalue(
-#'   data,
-#'   q_max = 10,
-#'     N = 100
-#'     )
+#' P = change_point_test_pvalue(data, q_max = 10, n = 100)
 #'
 #' tinytheme("clean2")
 #'
 #' plot(P)
 plot.change_point_test_pvalue <- function(x, ...) {
-  P_long <- melt(x)
-  colnames(P_long) <- c("n", "q", "value")
-  P_long$value <- -log(P_long$value)
+  p_long <- reshape2::melt(x)
+  colnames(p_long) <- c("n", "q", "value")
+  p_long$value <- -log(p_long$value)
 
   form <- value ~ n | q
   default_options <- list(
@@ -427,10 +429,10 @@ plot.change_point_test_pvalue <- function(x, ...) {
     ))
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  do.call(tinyplot, c(list(form, data = P_long), control))
-  tinyplot_add(type = type_hline(h = -log(0.10)), col = "blue")
-  tinyplot_add(type = type_hline(h = -log(0.05)), col = "red")
-  tinyplot_add(type = type_hline(h = -log(0.01)), col = "green")
+  do.call(tinyplot::tinyplot, c(list(form, data = p_long), control))
+  tinyplot::tinyplot_add(type = tinyplot::type_hline(h = -log(0.10)), col = "blue")
+  tinyplot::tinyplot_add(type = tinyplot::type_hline(h = -log(0.05)), col = "red")
+  tinyplot::tinyplot_add(type = tinyplot::type_hline(h = -log(0.01)), col = "green")
 }
 
 
@@ -471,7 +473,7 @@ plot.change_point_test_pvalue <- function(x, ...) {
 #' plot_n_cp_by_q(data = n_cp_by_q, id_col = "track_id")
 plot_n_cp_by_q <- function(data, id_col, ...) {
   form <- as.formula(paste("n_cp ~ q |", id_col))
-  default_options <- list(type = type_spline(n = 100), grid = TRUE)
+  default_options <- list(type = tinyplot::type_spline(n = 100), grid = TRUE)
 
   # delete restricted elements
   restricted <- c("x", "y", "data")
@@ -483,7 +485,7 @@ plot_n_cp_by_q <- function(data, id_col, ...) {
     ))
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  do.call(tinyplot, c(list(form, data = data), control))
+  do.call(tinyplot::tinyplot, c(list(form, data = data), control))
 }
 
 
@@ -503,10 +505,6 @@ plot_n_cp_by_q <- function(data, id_col, ...) {
 #' @param arrow_lwd lwd in \code{\link[graphics]{arrows}}
 #'
 #' @export
-#'
-#' @examples
-#'
-#'
 type_arrows <- function(
   x0,
   y0,
@@ -547,7 +545,7 @@ type_arrows <- function(
       type_info,
       ...
     ) {
-      grp_aes = type_info[["ul_col"]] == 1 ||
+      grp_aes <- type_info[["ul_col"]] == 1 ||
         type_info[["ul_lty"]] == ngrps ||
         type_info[["ul_lwd"]] == ngrps
       if (length(x0) != 1) {
@@ -560,19 +558,19 @@ type_arrows <- function(
                 nfacets
             )
         ) {
-          msg = "Length of 'x0' must be 1, or equal to the number of facets or number of groups 
+          msg <- "Length of 'x0' must be 1, or equal to the number of facets or number of groups 
           (or product thereof)."
           stop(msg, call. = FALSE)
         }
         if (!facet_by && length(x0) == nfacets) {
-          x0 = x0[ifacet]
-          y0 = y0[ifacet]
-          x1 = x1[ifacet]
-          y1 = y1[ifacet]
+          x0 <- x0[ifacet]
+          y0 <- y0[ifacet]
+          x1 <- x1[ifacet]
+          y1 <- y1[ifacet]
           if (!grp_aes && type_info[["ul_col"]] != ngrps) {
-            icol = 1
+            icol <- 1
           } else if (by_continuous) {
-            icol = 1
+            icol <- 1
           }
         } else if (
           !by_continuous &&
@@ -580,18 +578,18 @@ type_arrows <- function(
               ngrps *
                 nfacets
         ) {
-          x0 = x0[ifacet * ngrps - c(ngrps - iby)]
-          y0 = y0[ifacet * ngrps - c(ngrps - iby)]
-          x1 = x1[ifacet * ngrps - c(ngrps - iby)]
-          y1 = y1[ifacet * ngrps - c(ngrps - iby)]
+          x0 <- x0[ifacet * ngrps - c(ngrps - iby)]
+          y0 <- y0[ifacet * ngrps - c(ngrps - iby)]
+          x1 <- x1[ifacet * ngrps - c(ngrps - iby)]
+          y1 <- y1[ifacet * ngrps - c(ngrps - iby)]
         } else if (!by_continuous) {
-          x0 = x0[iby]
-          y0 = y0[iby]
-          x1 = x1[iby]
-          y1 = y1[iby]
+          x0 <- x0[iby]
+          y0 <- y0[iby]
+          x1 <- x1[iby]
+          y1 <- y1[iby]
         }
       } else if (!grp_aes) {
-        icol = 1
+        icol <- 1
       }
       arrows(
         x0 = x0,

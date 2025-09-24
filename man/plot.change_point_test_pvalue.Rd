@@ -12,7 +12,7 @@
 \item{...}{other arguments used in \code{\link[tinyplot]{tinyplot}}}
 }
 \description{
-Plots change points of objects of class \code{\link[cpt]{change_point_test_pvalue}} based on 
+Plots change points of objects of class \code{\link[cpt]{change_point_test_pvalue}} based on
 \code{\link[tinyplot]{tinyplot}} functionality.
 }
 \examples{
@@ -23,12 +23,8 @@ library(tinyplot)
 data("cptfiguredata_tf")
 data <- select_id(cptfiguredata_tf, "4a")
 set.seed(2025)
-P = change_point_test_pvalue(
-  data,
-  q_max = 10,
-    N = 100
-    )
-    
+P = change_point_test_pvalue(data, q_max = 10, n = 100)
+
 tinytheme("clean2")
 
 plot(P)

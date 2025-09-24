@@ -10,7 +10,7 @@ change_point_test_xyt(
   time,
   alpha = 0.05,
   q = 4,
-  N = 1000,
+  n = 1000,
   tol = 0,
   ...
 )
@@ -27,7 +27,7 @@ containing the timestamps corresponding to the easting and northing coordinates.
 
 \item{q}{an integer specifying the minimum segment length between potential change points.}
 
-\item{N}{an integer specifying the number of random permutations for thepermutation test.
+\item{n}{an integer specifying the number of random permutations for thepermutation test.
 Higher values provide more accurate p-values but increase computation time.}
 
 \item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
@@ -52,6 +52,6 @@ cpt <- change_point_test_xyt(cpttestdata[, "x"],
                              cpttestdata[, "t"],
                              alpha = 0.05,
                              q = 3,
-                             N = 500)
+                             n = 500)
 summary(cpt)
 }

@@ -34,7 +34,7 @@ library(cpt)
 data("cpttestdata", package = "cpt")
 
 # First detect change points
-result <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
+result <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500)
 head(result)
 
 # Then extract the change points into a summarized format
@@ -42,14 +42,14 @@ change_points <- summary(result)
 change_points
 
 # Get probability values instead of binary indicators
-prob_values <- change_point_test_pvalue(cpttestdata, q_max = 3, N = 500)
+prob_values <- change_point_test_pvalue(cpttestdata, q_max = 3, n = 500)
 ```
 
 ### Parameters
 
 - `alpha`: Significance level for detecting change points (default: 0.05)
 - `q`: Minimum segment length between potential change points (default: 4)
-- `N`: Number of random permutations for the Monte Carlo test (default: 1000)
+- `n`: Number of random permutations for the Monte Carlo test (default: 1000)
 - `tol`: Maximum distance between indistinguishable positions (default: 0)
 
 ## Documentation

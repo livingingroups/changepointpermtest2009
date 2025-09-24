@@ -8,3 +8,6 @@ Taskfile.yml
 ^\.Rproj\.user$
 ^archive$
 ^temp$
+^air.toml$
+^run_lintr.R$
+.vscode

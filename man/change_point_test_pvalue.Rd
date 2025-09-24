@@ -11,7 +11,7 @@
 change_point_test_pvalue(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -21,7 +21,7 @@ change_point_test_pvalue(
 \method{change_point_test_pvalue}{trackframe}(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -31,7 +31,7 @@ change_point_test_pvalue(
 \method{change_point_test_pvalue}{data.frame}(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -41,7 +41,7 @@ change_point_test_pvalue(
 \method{change_point_test_pvalue}{move2}(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -51,7 +51,7 @@ change_point_test_pvalue(
 \method{change_point_test_pvalue}{sftrack}(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -64,7 +64,7 @@ For the default method, this should be a matrix or data frame with at least 3 co
 
 \item{q_max}{an integer specifying the maximum value of q.}
 
-\item{N}{an integer specifying the number of random permutations for the permutation test
+\item{n}{an integer specifying the number of random permutations for the permutation test
 Higher values provide more accurate p-values but increase computation time.}
 
 \item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
@@ -100,7 +100,7 @@ This function implements a sequential change point detection algorithm that uses
          a permutation test to identify significant changes in movement patterns. It compares
          the sum of distances between consecutive points against randomly permuted sequences
          to determine if a change point exists.
-         
+
          The first point in the trajectory is never considered a change point, as it represents
          the starting location.
 }
@@ -108,29 +108,29 @@ This function implements a sequential change point detection algorithm that uses
 library(cpt)
 data("cpttestdata", package = "cpt")
 
-pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, N = 100)
+pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, n = 100)
 pvalues
 library(trackframe)
 tf <- as.trackframe(cpttestdata)
 class(tf)
 set.seed(2025L)
-cpt_tf <- change_point_test_pvalue(tf, q_max = 3, N = 100, tol = 0)
+cpt_tf <- change_point_test_pvalue(tf, q_max = 3, n = 100, tol = 0)
 
 df <- cpttestdata
 class(df)
 set.seed(2025L)
-cpt_df <- change_point_test_pvalue(df, q_max = 3, N = 100, tol = 0)
+cpt_df <- change_point_test_pvalue(df, q_max = 3, n = 100, tol = 0)
 
 library(move2)
 data("path_move2", package = "trackframe")
 class(path_move2)
 set.seed(2025L)
-cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, N = 100, tol = 0)
+cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, n = 100, tol = 0)
 
 library(sftrack)
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
 set.seed(2025L)
-cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, N = 100, tol = 0)
+cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, tol = 0)
 
 }

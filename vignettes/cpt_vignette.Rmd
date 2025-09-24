@@ -49,7 +49,7 @@ cpt <- change_point_test_xyt(
   time = path_matrix[, "time"],
   alpha = 0.05,
   q = 3,
-  N = 500
+  n = 500
 )
 class(cpt)
 ```
@@ -82,7 +82,7 @@ class(tf)
 
 ```{r}
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
 class(cpt_tf)
 ```
 
@@ -102,7 +102,7 @@ class(paths_trackframe)
 
 ```{r}
 set.seed(2025L)
-cpt_mt <- change_point_test(paths_trackframe, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_mt <- change_point_test(paths_trackframe, alpha = 0.05, q = 3, n = 500, tol = 0)
 class(cpt_mt)
 ```
 
@@ -124,7 +124,7 @@ Detect change points
 data("path_data_frame", package = "trackframe")
 class(path_data_frame)
 set.seed(2025L)
-cpt <- change_point_test(path_data_frame, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(path_data_frame, alpha = 0.05, q = 3, n = 500)
 class(cpt)
 ```
 
@@ -133,7 +133,7 @@ Alternatively, in order to remove the warning coerce to trackframe first by sett
 ```{r}
 tf <- as.trackframe(path_data_frame, crs_input = 4326)
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500)
 all.equal(cpt$sig, cpt_tf$sig)
 ```
 
@@ -149,7 +149,7 @@ Detect change points
 data("path_move2", package = "trackframe")
 class(path_move2)
 set.seed(2025L)
-cpt <- change_point_test(path_move2, alpha = 0.05, q = 3, N = 100)
+cpt <- change_point_test(path_move2, alpha = 0.05, q = 3, n = 100)
 class(cpt)
 ```
 
@@ -165,7 +165,7 @@ Detect change points
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
 set.seed(2025L)
-cpt <- change_point_test(path_sftrack, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(path_sftrack, alpha = 0.05, q = 3, n = 500)
 class(cpt)
 ```
 
@@ -182,7 +182,7 @@ Create cocomo format data
 ```{r}
 padding <- 25
 n_times <- 20 + 3 * padding
-N <- 2
+n <- 2
 
 xs <- matrix(
   c(
@@ -193,13 +193,13 @@ xs <- matrix(
     rep(1, padding),
     rep(0, n_times)
   ),
-  N,
+  n,
   n_times,
   byrow = TRUE
 )
 ys <- matrix(
-  rep(0, N * n_times),
-  N,
+  rep(0, n * n_times),
+  n,
   n_times,
   byrow = TRUE
 )
@@ -221,7 +221,7 @@ class(cocomo_tf)
 Detect change points
 ```{r}
 set.seed(2025L)
-cpt <- change_point_test(cocomo_tf, alpha = 0.05, q = 3, N = 500)
+cpt <- change_point_test(cocomo_tf, alpha = 0.05, q = 3, n = 500)
 class(cpt)
 ```
 
@@ -238,7 +238,7 @@ summary(cpt)
 Get probability values instead of binary indicators
 ```{r}
 data("cpttestdata")
-pvalues <- change_point_test_pvalue(cpttestdata, q_max = 5, N = 500)
+pvalues <- change_point_test_pvalue(cpttestdata, q_max = 5, n = 500)
 tail(pvalues)
 ```
 
@@ -284,7 +284,7 @@ tf4 <- tf[startsWith(tf$track_id, '4'), ]
 cp <- change_point_test(
   tf4,
   alpha = .01,
-  N = 10000,
+  n = 10000,
   q = 6
 )
 ```
@@ -303,14 +303,14 @@ ggplot() +
 ### Fig 5
 
 ```{r, out.width="100%", fig.height=10, , fig.width=5}
-N = 100
+n <- 100
 tf_4a <- tf[tf$track_id == '4a', ]
 set.seed(2025)
 P = change_point_test_pvalue(
   # P = cpt:::change_point_test_pvalue_old( #gives different result due to different calculation order
   tf_4a,
   q_max = 10,
-  N = N
+  n = n
 )
 
 # plot results (- log(P) vs k for q = 1, .. , q_max)
@@ -320,12 +320,12 @@ k <- c(1:no.of.t)
 s <- seq(no.of.t - 1)
 
 par(mfrow = c(5, 2))
-for (i in 1:NCOL(P)) {
+for (i in seq_len(NCOL(P))) {
   plot(
     k,
     -log(P[k, i]),
     xlim = c(0, no.of.t + 1),
-    ylim = c(0, log(N)),
+    ylim = c(0, log(n)),
     pch = 4,
     main = sprintf("q = %i", i)
   )
@@ -399,7 +399,7 @@ ggplot() +
 ### Fig 8
 
 ```{r, out.width="100%", fig.height=10, , fig.width=5}
-N = 100
+n <- 100
 tf_7a <- tf[tf$track_id == '7a', ]
 set.seed(2025)
 data <- tf_7a
@@ -408,7 +408,7 @@ P = change_point_test_pvalue(
   # P = cpt:::change_point_test_pvalue_old(
   data,
   q_max = 6,
-  N = N
+  n = n
 )
 
 
@@ -419,12 +419,12 @@ k <- c(1:no.of.t)
 s <- seq(no.of.t - 1)
 
 par(mfrow = c(3, 2))
-for (i in 1:NCOL(P)) {
+for (i in seq_len(NCOL(P))) {
   plot(
     k,
     -log(P[k, i]),
     xlim = c(0, no.of.t + 1),
-    ylim = c(0, log(N)),
+    ylim = c(0, log(n)),
     pch = 4,
     main = sprintf("q = %i", i)
   )

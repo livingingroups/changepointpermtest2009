@@ -2,10 +2,7 @@
 % Please edit documentation in R/cpt_plots.R
 \name{plot.trackframe}
 \alias{plot.trackframe}
-\title{Plot trackframes
-
-Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on 
-\code{\link[tinyplot]{tinyplot}} functionality.}
+\title{Plot trackframes}
 \usage{
 \method{plot}{trackframe}(
   x,
@@ -24,19 +21,19 @@ Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based
 
 \item{direction}{logical indicator if the path direction should be added to the plot}
 
-\item{arrow_length}{length of the arrow of the direction (argument passed to 
+\item{arrow_length}{length of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_code}{code of the arrow of the direction (argument passed to 
+\item{arrow_code}{code of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_col}{color of the arrow of the direction (argument passed to 
+\item{arrow_col}{color of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_lty}{line type of the arrow of the direction (argument passed to 
+\item{arrow_lty}{line type of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_lwd}{line width of the arrow of the direction (argument passed to 
+\item{arrow_lwd}{line width of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
 \item{nfacet_col}{number of columns used in facet.args argument ncol}
@@ -44,9 +41,7 @@ Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based
 \item{...}{other arguments used in \code{\link[tinyplot]{tinyplot}}}
 }
 \description{
-Plot trackframes
-
-Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on 
+Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on
 \code{\link[tinyplot]{tinyplot}} functionality.
 }
 \examples{

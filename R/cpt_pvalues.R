@@ -10,7 +10,7 @@
 #' @param time a vecor inheriting from \code{numeric} or \code{POSIXt} or \code{Date}
 #'        containing the timestamps corresponding to the easting and northing coordinates.
 #' @param q_max FIXME
-#' @param N an integer specifying the number of random permutations for thepermutation test.
+#' @param n an integer specifying the number of random permutations for thepermutation test.
 #'        Higher values provide more accurate p-values but increase computation time.
 #' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
 #'        Points with movements smaller than this threshold will be considered stationary.
@@ -26,14 +26,14 @@
 #' cpt_pvalues <- change_point_test_pvalue_xyt(cpttestdata[, "x"],
 #'                              cpttestdata[, "y"],
 #'                              cpttestdata[, "t"],
-#'                              N = 500)
+#'                              n = 500)
 #' tail(cpt_pvalues)
 change_point_test_pvalue_xyt <- function(
   x,
   y,
   time,
   q_max = 6,
-  N = 1000,
+  n = 1000,
   tol = 0,
   ...
 ) {
@@ -41,14 +41,14 @@ change_point_test_pvalue_xyt <- function(
   checkmate::assert_numeric(y, len = length(x), any.missing = FALSE)
   checkmate::assert_numeric(time, len = length(x), any.missing = FALSE)
   checkmate::assert_integerish(q_max, len = 1, any.missing = FALSE, lower = 1)
-  checkmate::assert_integerish(N, len = 1, any.missing = FALSE, lower = 1)
+  checkmate::assert_integerish(n, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_numeric(tol, len = 1, any.missing = FALSE, lower = 0)
 
   # Reverse the time-ordering so that (bx[1], by[1]) refers to (final)
   idx <- order(time, decreasing = TRUE)
   bx <- x[idx]
   by <- y[idx]
-  bt <- time[idx]
+  # bt <- time[idx]
   # calcuate diff of coordinates
   bxdiff <- diff(bx)
   bydiff <- diff(by)
@@ -66,8 +66,8 @@ change_point_test_pvalue_xyt <- function(
   }
   bxm <- bx[is_moving]
   bym <- by[is_moving]
-  btm <- bt[is_moving]
-  pvalues <- change_point_fit_pvalue(bx = bxm, by = bym, q_max = q_max, N = N)
+  # btm <- bt[is_moving]
+  pvalues <- change_point_fit_pvalue(bx = bxm, by = bym, q_max = q_max, n = n)
 
   pvalues_all <- matrix(NA, nrow = length(x), ncol = q_max)
   pvalues_all[is_moving, ] <- pvalues
@@ -83,7 +83,7 @@ change_point_test_pvalue_xyt <- function(
 change_point_test_pvalue_internal <- function(
   data,
   q_max = 6,
-  N = 1000,
+  n = 1000,
   tol = 0,
   seed = NULL,
   verify = FALSE,
@@ -97,7 +97,7 @@ change_point_test_pvalue_internal <- function(
     y = data[[attr(data, "northing")]],
     time = data[[attr(data, "time")]],
     q_max = q_max,
-    N = N,
+    n = n,
     tol = tol
   )
 }
@@ -111,7 +111,7 @@ change_point_test_pvalue_internal <- function(
 #' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
 #' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
 #' @param q_max FIXME
-#' @param N an integer specifying the number of random permutations for the permutation test.
+#' @param n an integer specifying the number of random permutations for the permutation test.
 #'
 #' @return FIXME
 #'
@@ -119,52 +119,52 @@ change_point_test_pvalue_internal <- function(
 #'
 #' @export
 # FIXME: implemented in c++
-change_point_fit_pvalue <- function(bx, by, q_max, N) {
+change_point_fit_pvalue <- function(bx, by, q_max, n) {
   bxdiff <- diff(bx)
   bydiff <- diff(by)
   # q_max = maximum value of q
   # q_max =6 is a convenient default
 
-  # last.t = "time" (backwards in time) of last position of interest
+  # last_t = "time" (backwards in time) of last position of interest
   # (and includes all the positions)
   n_obs <- length(bx)
-  last.t <- length(bx) - q_max - 1
+  # last_t <- length(bx) - q_max - 1
 
-  no.of.t <- last.t + 1
+  # no_of_t <- last_t + 1
 
-  # Set up matrix P in which to store P-values
-  # P <- matrix(rep(exp(2), q_max * no.of.t), nrow = no.of.t, ncol = q_max)
-  P <- matrix(rep(NA, q_max * n_obs), nrow = n_obs, ncol = q_max)
+  # Set up matrix pmat in which to store pmat-values
+  # pmat <- matrix(rep(exp(2), q_max * no_of_t), nrow = no_of_t, ncol = q_max)
+  pmat <- matrix(rep(NA, q_max * n_obs), nrow = n_obs, ncol = q_max)
 
-  # N = total number of permutations (1 observed and N-1 simulated)
-  # N = 1000 is a convenient number
+  # n = total number of permutations (1 observed and N-1 simulated)
+  # n = 1000 is a convenient number
 
-  Rsumrand <- 0 * c(1:N)
+  r_sumrand <- 0 * seq_len(n)
 
-  for (q in 1:q_max) {
+  for (q in seq_len(q_max)) {
     # start of q loop
     k_max <- n_obs - q - 1L
     for (k in 1:k_max) {
       # start of k loop
 
-      R1 <- sqrt(
+      r1 <- sqrt(
         (bx[k + 1] - bx[1])^2 +
           (by[k + 1] - by[1])^2
       )
-      R2 <- sqrt(
+      r2 <- sqrt(
         (bx[k + q + 1] - bx[k + 1])^2 +
           (by[k + q + 1] - by[k + 1])^2
       )
 
-      Rsum <- R1 + R2
-      # writeLines(paste(q, k, R1, R2, sep = ";"))
+      r_sum <- r1 + r2
+      # writeLines(paste(q, k, r1, r2, sep = ";"))
 
-      # Rsumrand[1] = observed value of statistic R1 + R2
-      Rsumrand[1] <- Rsum
+      # r_sumrand[1] = observed value of statistic r1 + r2
+      r_sumrand[1] <- r_sum
 
-      # Now calculate statistic R1 + R2 for a further N-1 random permutations
-      # and store in Rsumrand
-      for (it in 2:N) {
+      # Now calculate statistic r1 + r2 for a further N-1 random permutations
+      # and store in r_sumrand
+      for (it in seq(2, n)) {
         # start of it loop
         u <- runif(k + q, 0, 1) # FIXME: Why here "+ q" is needed?
         perm <- order(u)
@@ -176,17 +176,17 @@ change_point_fit_pvalue <- function(bx, by, q_max, N) {
           byr <- byr + bydiff[perm[j]]
         } # end of j loop
 
-        R1rand <- sqrt((bxr - bx[1])^2 + (byr - by[1])^2)
-        R2rand <- sqrt((bx[k + q + 1] - bxr)^2 + (by[k + q + 1] - byr)^2)
-        # writeLines(paste(R1rand, R2rand, sep = ";"))
-        Rsumrand[it] <- R1rand + R2rand
+        r1_rand <- sqrt((bxr - bx[1])^2 + (byr - by[1])^2)
+        r2_rand <- sqrt((bx[k + q + 1] - bxr)^2 + (by[k + q + 1] - byr)^2)
+        # writeLines(paste(r1_rand, r2_rand, sep = ";"))
+        r_sumrand[it] <- r1_rand + r2_rand
       } # end of it loop
 
-      # calculate P-values
-      P[k, q] <- sum(Rsumrand >= Rsum) / N
+      # calculate pmat-values
+      pmat[k, q] <- sum(r_sumrand >= r_sum) / n
     } # end of k loop
   } # end of q loop
-  return(P)
+  pmat
 }
 
 
@@ -199,7 +199,7 @@ change_point_fit_pvalue <- function(bx, by, q_max, N) {
 #' @param data a matrix or data frame with columns for x-coordinates, y-coordinates, and time.
 #'   For the default method, this should be a matrix or data frame with at least 3 columns.
 #' @param q_max an integer specifying the maximum value of q.
-#' @param N an integer specifying the number of random permutations for the permutation test
+#' @param n an integer specifying the number of random permutations for the permutation test
 #'   Higher values provide more accurate p-values but increase computation time.
 #' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
 #'   Points with movements smaller than this threshold will be considered stationary.
@@ -234,13 +234,13 @@ change_point_fit_pvalue <- function(bx, by, q_max, N) {
 #' library(cpt)
 #' data("cpttestdata", package = "cpt")
 #'
-#' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, N = 100)
+#' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, n = 100)
 #' pvalues
 #' @rdname change_point_test_pvalue
 change_point_test_pvalue <- function(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -255,14 +255,14 @@ change_point_test_pvalue <- function(
 #' tf <- as.trackframe(cpttestdata)
 #' class(tf)
 #' set.seed(2025L)
-#' cpt_tf <- change_point_test_pvalue(tf, q_max = 3, N = 100, tol = 0)
+#' cpt_tf <- change_point_test_pvalue(tf, q_max = 3, n = 100, tol = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue
 change_point_test_pvalue.trackframe <- function(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -281,7 +281,7 @@ change_point_test_pvalue.trackframe <- function(
       y = data[[attr(data, "northing")]],
       time = data[[attr(data, "time")]],
       q_max = q_max,
-      N = N,
+      n = n,
       tol = tol
     )
   } else {
@@ -291,7 +291,7 @@ change_point_test_pvalue.trackframe <- function(
         cpt,
         change_point_test_pvalue_internal,
         q_max = q_max,
-        N = N,
+        n = n,
         tol = tol,
         seed = seed,
         verify = verify
@@ -311,7 +311,7 @@ change_point_test_pvalue.trackframe <- function(
         cpt,
         change_point_test_pvalue_internal,
         q_max = q_max,
-        N = N,
+        n = n,
         tol = tol,
         seed = seed,
         verify = verify
@@ -329,14 +329,14 @@ change_point_test_pvalue.trackframe <- function(
 #' df <- cpttestdata
 #' class(df)
 #' set.seed(2025L)
-#' cpt_df <- change_point_test_pvalue(df, q_max = 3, N = 100, tol = 0)
+#' cpt_df <- change_point_test_pvalue(df, q_max = 3, n = 100, tol = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue
 change_point_test_pvalue.data.frame <- function(
   data,
   q_max = 4,
-  N = 10000,
+  n = 10000,
   tol = 0,
   clu = NULL,
   seed = NULL,
@@ -345,7 +345,7 @@ change_point_test_pvalue.data.frame <- function(
   change_point_test_pvalue.trackframe(
     data = as.trackframe(data),
     q_max = q_max,
-    N = N,
+    n = n,
     tol = tol,
     clu = clu,
     ...
@@ -358,7 +358,7 @@ change_point_test_pvalue.data.frame <- function(
 #' data("path_move2", package = "trackframe")
 #' class(path_move2)
 #' set.seed(2025L)
-#' cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, N = 100, tol = 0)
+#' cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, n = 100, tol = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue
@@ -370,7 +370,7 @@ change_point_test_pvalue.move2 <- change_point_test_pvalue.data.frame
 #' data("path_sftrack", package = "trackframe")
 #' class(path_sftrack)
 #' set.seed(2025L)
-#' cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, N = 100, tol = 0)
+#' cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, tol = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue

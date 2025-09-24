@@ -24,19 +24,19 @@
 
 \item{cp_col}{color of the change points}
 
-\item{arrow_length}{length of the arrow of the direction (argument passed to 
+\item{arrow_length}{length of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_code}{code of the arrow of the direction (argument passed to 
+\item{arrow_code}{code of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_col}{color of the arrow of the direction (argument passed to 
+\item{arrow_col}{color of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_lty}{line type of the arrow of the direction (argument passed to 
+\item{arrow_lty}{line type of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
-\item{arrow_lwd}{line width of the arrow of the direction (argument passed to 
+\item{arrow_lwd}{line width of the arrow of the direction (argument passed to
 \code{\link[graphics]{arrows}})}
 
 \item{nfacet_col}{number of columns used in facet.args argument ncol}
@@ -61,7 +61,7 @@ plot(data)
 plot(select_id(data, "4a"))
 
 # calculate change points
-cpt <- change_point_test(data, alpha = .01, N = 10000, q = 6)
+cpt <- change_point_test(data, alpha = .01, n = 10000, q = 6)
 class(cpt)
 
 plot(cpt)

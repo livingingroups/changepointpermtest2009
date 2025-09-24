@@ -10,7 +10,8 @@ if (file.exists(file)) {
   inp <- scan(file, list(x1 = 0, x2 = 0))
   df <- as.data.frame(inp)
   head(df)
-  df$t <- 1:NROW(df) #seq.POSIXt(from = as.POSIXct("2025-01-01"), by = "min", length.out = nrow(df))
+  #seq.POSIXt(from = as.POSIXct("2025-01-01"), by = "min", length.out = nrow(df))
+  df$t <- seq_len(NROW(df))
   colnames(df)[1:2] <- c("x", "y")
   cpttestdata <- df
   cpttestdata_tf <- as.trackframe(cpttestdata)
@@ -18,15 +19,15 @@ if (file.exists(file)) {
   # data("cpttestdata", package = "cpt")
   xyt <- cpttestdata
   set.seed(2025L)
-  cpt <- change_point_test(xyt, alpha = 0.05, q = 4, N = 1000, tol = 0)
+  cpt <- change_point_test(xyt, alpha = 0.05, q = 4, n = 1000, tol = 0)
   # cat(deparse(cpt$sig))
   results_orig <- c(
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0
   )
@@ -39,12 +40,12 @@ if (file.exists(file)) {
       x = cpttestdata[, 1],
       y = cpttestdata[, 2]
     ),
-    't',
-    'x',
-    'y'
+    "t",
+    "x",
+    "y"
   )
   set.seed(2025L)
-  cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, tol = 0)
+  cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, n = 1000, tol = 0)
   expect_equal(cpt_tf$sig, results_orig)
   expect_equal(
     summary(cpt_tf)[, "east"],

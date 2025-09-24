@@ -1,6 +1,5 @@
 #' @import checkmate
 #' @import trackframe
-#' @importFrom trackframe time.trackframe
 #' @import Rcpp
 #' @import tinyplot
 #' @importFrom graphics arrows par

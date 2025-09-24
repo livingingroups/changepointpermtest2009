@@ -4,7 +4,7 @@
 \alias{change_point_fit_pvalue}
 \title{Change Point Test Fitting}
 \usage{
-change_point_fit_pvalue(bx, by, q_max, N)
+change_point_fit_pvalue(bx, by, q_max, n)
 }
 \arguments{
 \item{bx}{a numeric vector of x-coordinates of the trajectory backwards in time.}
@@ -13,7 +13,7 @@ change_point_fit_pvalue(bx, by, q_max, N)
 
 \item{q_max}{FIXME}
 
-\item{N}{an integer specifying the number of random permutations for the permutation test.}
+\item{n}{an integer specifying the number of random permutations for the permutation test.}
 }
 \value{
 FIXME
