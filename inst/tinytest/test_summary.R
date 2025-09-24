@@ -1,6 +1,6 @@
 library("tinytest")
 library("cpt")
- 
+
 # First detect change points
 cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, N = 500)
 expect_inherits(cpt, class(cpttestdata))
@@ -34,7 +34,10 @@ cpt <- change_point_test(path_move2, alpha = 0.05, q = 3, N = 100)
 expect_inherits(cpt, class(path_move2))
 summary_move2 <- summary(cpt)
 # compare with tf by coordinates transformation
-utm_coords <- cbind.data.frame(cpt$time, sf::st_coordinates(sf::st_transform(cpt, attr(path_trackframe, "utm_epsg"))))
+utm_coords <- cbind.data.frame(
+  cpt$time,
+  sf::st_coordinates(sf::st_transform(cpt, attr(path_trackframe, "utm_epsg")))
+)
 idx <- match(as.character(summary_tf$first), as.character(utm_coords$`cpt$time`))
 expect_equal(utm_coords[idx, 2], summary_tf$east)
 expect_equal(utm_coords[idx, 3], summary_tf$north)
@@ -68,9 +71,15 @@ expect_inherits(cpt, class(paths_move2))
 summary_move2 <- summary(cpt)
 
 # compare with tf by coordinates transformation
-utm_coords <- cbind.data.frame(cpt$time, cpt$id, sf::st_coordinates(sf::st_transform(cpt, attr(paths_trackframe, "utm_epsg"))))
-idx <- match(paste0(as.character(summary_tf$first), summary_tf$id),
-             paste0(as.character(utm_coords$`cpt$time`), utm_coords$`cpt$id`))
+utm_coords <- cbind.data.frame(
+  cpt$time,
+  cpt$id,
+  sf::st_coordinates(sf::st_transform(cpt, attr(paths_trackframe, "utm_epsg")))
+)
+idx <- match(
+  paste0(as.character(summary_tf$first), summary_tf$id),
+  paste0(as.character(utm_coords$`cpt$time`), utm_coords$`cpt$id`)
+)
 expect_equal(utm_coords[idx, 3], summary_tf$east)
 expect_equal(utm_coords[idx, 4], summary_tf$north)
 
@@ -83,5 +92,3 @@ cpt <- change_point_test(paths_sftrack, alpha = 0.05, q = 3, N = 100)
 expect_inherits(cpt, class(paths_sftrack))
 summary_sftrack <- summary(cpt)
 expect_equal(summary_sftrack, summary_move2)
-
-

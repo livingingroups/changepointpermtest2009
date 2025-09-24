@@ -1,4 +1,3 @@
-
 #' @import checkmate
 #' @import trackframe
 #' @importFrom trackframe time.trackframe

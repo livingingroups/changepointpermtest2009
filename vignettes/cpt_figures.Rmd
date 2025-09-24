@@ -32,7 +32,7 @@ tinytheme("clean2")
 ### Fig  3
 
 ```{r}
-tf3 <- tf[startsWith(tf$track_id, '3'),]
+tf3 <- tf[startsWith(tf$track_id, '3'), ]
 ```
 
 #### multiple tracks
@@ -55,12 +55,12 @@ plot(select_id(tf3, "3a"))
 ### Fig 4
 
 ```{r}
-tf4 <- tf[startsWith(tf$track_id, '4'),]
+tf4 <- tf[startsWith(tf$track_id, '4'), ]
 
 cpt <- change_point_test(
   tf4,
   alpha = .01,
-  N=10000,
+  N = 10000,
   q = 6
 )
 
@@ -101,23 +101,28 @@ plot(P)
 ### Fig 6 
 
 ```{r}
-calculate_n_cp_by_q <- function(tf, q=seq_len(10), alpha = 0.01) {
+calculate_n_cp_by_q <- function(tf, q = seq_len(10), alpha = 0.01) {
   # tf <- tf[startsWith(tf$track_id, '4'), ]
-  if(length(attr(tf, 'id'))!=1) stop('only implemented for 1 id col')
-  do.call(rbind, lapply(seq_len(10), function(q) {
-    cp <- change_point_test(
-      tf,
-      alpha = alpha,
-      q = q
-    )
-    # cp <- do.call(rbind, lapply(seq_len(cp), function(i) cbind(cp, "track_id" = i)))
-    df <- as.data.frame(rowsum(cp$sig, as.factor(cp[,attr(tf, 'id')])))
-    names(df) <- 'n_cp'
-    df$track_id <- rownames(df)
-    rownames(df) <- NULL
-    df$q <- q
-    df
-  }))
+  if (length(attr(tf, 'id')) != 1) {
+    stop('only implemented for 1 id col')
+  }
+  do.call(
+    rbind,
+    lapply(seq_len(10), function(q) {
+      cp <- change_point_test(
+        tf,
+        alpha = alpha,
+        q = q
+      )
+      # cp <- do.call(rbind, lapply(seq_len(cp), function(i) cbind(cp, "track_id" = i)))
+      df <- as.data.frame(rowsum(cp$sig, as.factor(cp[, attr(tf, 'id')])))
+      names(df) <- 'n_cp'
+      df$track_id <- rownames(df)
+      rownames(df) <- NULL
+      df$q <- q
+      df
+    })
+  )
 }
 
 fig6_data <- calculate_n_cp_by_q(tf4)
@@ -132,7 +137,7 @@ plot_n_cp_by_q(data = fig6_data, id_col = "track_id")
 ### Fig 7
 
 ```{r}
-tf7 <- tf[startsWith(tf$track_id, '7'),]
+tf7 <- tf[startsWith(tf$track_id, '7'), ]
 cp <- change_point_test(
   tf7,
   alpha = .05,
@@ -157,7 +162,8 @@ N = 100
 tf_7a <- tf[tf$track_id == '7a', ]
 set.seed(2025)
 data <- tf_7a
-P = change_point_test_pvalue( #gives different result due to different calculation order
+P = change_point_test_pvalue(
+  #gives different result due to different calculation order
   # P = cpt:::change_point_test_pvalue_old(
   data,
   q_max = 6,
