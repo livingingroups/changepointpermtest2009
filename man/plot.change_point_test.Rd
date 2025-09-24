@@ -7,11 +7,13 @@
 \method{plot}{change_point_test}(
   x,
   direction = FALSE,
+  cp_col = "black",
   arrow_length = 0.1,
   arrow_code = 2,
   arrow_col = "black",
   arrow_lty = 3,
   arrow_lwd = 1,
+  nfacet_col = NULL,
   ...
 )
 }
@@ -19,6 +21,8 @@
 \item{x}{an object of class \code{change_point_test}}
 
 \item{direction}{logical indicator if the path direction should be added to the plot}
+
+\item{cp_col}{color of the change points}
 
 \item{arrow_length}{length of the arrow of the direction (argument passed to 
 \code{\link[graphics]{arrows}})}
@@ -35,11 +39,13 @@
 \item{arrow_lwd}{line width of the arrow of the direction (argument passed to 
 \code{\link[graphics]{arrows}})}
 
+\item{nfacet_col}{number of columns used in facet.args argument ncol}
+
 \item{...}{other arguments used in \code{\link[tinyplot]{tinyplot}}}
 }
 \description{
-Plots change points of objects of class \code{\link[cpt]{change_point_test}} based on 
-\code{\link[tinyplot]{tinyplot}} functionality.
+Plots change points of objects of class \code{\link[cpt]{change_point_test}}
+based on \code{\link[tinyplot]{tinyplot}} functionality.
 }
 \examples{
 library(cpt)

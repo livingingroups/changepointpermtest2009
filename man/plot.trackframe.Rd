@@ -2,7 +2,10 @@
 % Please edit documentation in R/cpt_plots.R
 \name{plot.trackframe}
 \alias{plot.trackframe}
-\title{Plot trackframes}
+\title{Plot trackframes
+
+Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on 
+\code{\link[tinyplot]{tinyplot}} functionality.}
 \usage{
 \method{plot}{trackframe}(
   x,
@@ -12,7 +15,7 @@
   arrow_col = "black",
   arrow_lty = 3,
   arrow_lwd = 1,
-  ncol = NULL,
+  nfacet_col = NULL,
   ...
 )
 }
@@ -36,11 +39,13 @@
 \item{arrow_lwd}{line width of the arrow of the direction (argument passed to 
 \code{\link[graphics]{arrows}})}
 
-\item{ncol}{number of columns used in facet.args argument ncol}
+\item{nfacet_col}{number of columns used in facet.args argument ncol}
 
 \item{...}{other arguments used in \code{\link[tinyplot]{tinyplot}}}
 }
 \description{
+Plot trackframes
+
 Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on 
 \code{\link[tinyplot]{tinyplot}} functionality.
 }

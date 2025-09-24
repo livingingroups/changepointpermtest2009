@@ -1,12 +1,13 @@
 
 #' @import checkmate
 #' @import trackframe
+#' @importFrom trackframe time.trackframe
 #' @import Rcpp
 #' @import tinyplot
 #' @importFrom graphics arrows par
 #' @importFrom utils modifyList
 #' @importFrom reshape2 melt
-#' @importFrom stats runif setNames as.formula
+#' @importFrom stats runif setNames as.formula time
 #' @importFrom zoo na.fill na.locf
 #' @importFrom parallel parLapply stopCluster makePSOCKcluster
 #' @useDynLib cpt, .registration = TRUE

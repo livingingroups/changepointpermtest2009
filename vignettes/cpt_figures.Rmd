@@ -69,7 +69,6 @@ class(cpt)
 
 
 ```{r}
-class(cpt)
 plot(cpt)
 plot(cpt, direction = TRUE)
 

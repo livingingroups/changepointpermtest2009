@@ -1,8 +1,11 @@
-get_arrow_points <- function(tf) {
+get_arrow_points <- function(tf, sort = TRUE) {
   x <- attr(tf, "easting")
   y <- attr(tf, "northing")
   id <- attr(tf, "id")
   # FIXME: can we ensure that tf is already sorted?
+  if(isTRUE(sort)) {
+    tf <- tf[order(id(tf), time(tf)), ]
+  }
   starting_points <- tf[!duplicated(tf[[id]]), ]
   tf2 <- tf[duplicated(tf[[id]]), ]
   direction_points <- tf2[!duplicated(tf2[[id]]), ]
@@ -13,9 +16,32 @@ get_arrow_points <- function(tf) {
 }
 
 
+if (getRversion() <= "4.4.0") {
+  `%||%` <- function(x, y) {
+    if (is.null(x)) y else x
+  }
+}
+
+set_facet_ncol <- function(n) {
+  if(n > 4) {
+    if(n %% 4 == 0) {
+      n_col <- 4
+    } else if (n %% 3 == 0) {
+      n_col <- 3
+    } else {
+      n_col <- 2
+    }
+  } else if (n == 4){
+    n_col <- 2
+  } else {
+    n_col <- n
+  }
+  return(n_col)
+}
+
 #' @title Plot trackframes
 #'
-#' @description Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on 
+#' Plots coordinates of objects of class \code{\link[trackframe]{trackframe}} based on 
 #' \code{\link[tinyplot]{tinyplot}} functionality.
 #'
 #' @param x an object of class \code{trackframe}
@@ -30,7 +56,7 @@ get_arrow_points <- function(tf) {
 #' \code{\link[graphics]{arrows}})
 #' @param arrow_lwd line width of the arrow of the direction (argument passed to 
 #' \code{\link[graphics]{arrows}})
-#' @param ncol number of columns used in facet.args argument ncol
+#' @param nfacet_col number of columns used in facet.args argument ncol
 #' @param ... other arguments used in \code{\link[tinyplot]{tinyplot}}
 #'
 #' @examples
@@ -63,32 +89,19 @@ plot.trackframe <- function(
     arrow_col = "black",
     arrow_lty = 3,
     arrow_lwd = 1,
-    ncol = NULL,
+    nfacet_col = NULL,
     ...) {
   x_col <- attr(x, "easting")
   y_col <- attr(x, "northing")
   id_col <- attr(x, "id")
   n_id <-  length(unique(id(x)))
-  if(is.null(ncol)) {
-    if(n_id > 4) {
-      if(n_id %% 4 == 0) {
-        ncol <- 4
-      } else if (n_id %% 3 == 0) {
-        ncol <- 3
-      } else {
-        ncol <- 2
-      }
-    } else if (n_id == 4){
-      ncol = 2
-    } else {
-      ncol <- length(unique(id(x)))
-    }
-  }
+  nfacet_col <- nfacet_col %||% set_facet_ncol(n_id)
+  
   if(n_id > 1) {
     form <- as.formula(paste(y_col, "~", x_col, "|", id_col))
     default_options <- list(facet = "by",
                             type = "l",
-                            facet.args = list("free" = TRUE, ncol = ncol),
+                            facet.args = list("free" = TRUE, ncol = nfacet_col),
                             grid = TRUE,
                             main = "Paths")
     arrows_facet <- "by"
@@ -109,7 +122,7 @@ plot.trackframe <- function(
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
   do.call(tinyplot, c(list(form, data = x), control))
-  # FIXME: do we also want to plot starting and endpoints here?
+  # TODO: do we also want to plot starting and endpoints here?
   
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
@@ -134,11 +147,12 @@ plot.trackframe <- function(
 
 #' Plot Change point test output
 #' 
-#' @description Plots change points of objects of class \code{\link[cpt]{change_point_test}} based on 
-#' \code{\link[tinyplot]{tinyplot}} functionality.
+#' Plots change points of objects of class \code{\link[cpt]{change_point_test}}
+#' based on \code{\link[tinyplot]{tinyplot}} functionality.
 #'
 #' @param x an object of class \code{change_point_test}
 #' @param direction logical indicator if the path direction should be added to the plot
+#' @param cp_col color of the change points
 #' @param arrow_length length of the arrow of the direction (argument passed to 
 #'  \code{\link[graphics]{arrows}})
 #' @param arrow_code code of the arrow of the direction (argument passed to 
@@ -149,6 +163,7 @@ plot.trackframe <- function(
 #'  \code{\link[graphics]{arrows}})
 #' @param arrow_lwd line width of the arrow of the direction (argument passed to 
 #'  \code{\link[graphics]{arrows}})
+#' @param nfacet_col number of columns used in facet.args argument ncol
 #' @param ... other arguments used in \code{\link[tinyplot]{tinyplot}}
 #'
 #' @export
@@ -182,17 +197,20 @@ plot.trackframe <- function(
 plot.change_point_test <- function(
     x,
     direction = FALSE,
+    cp_col = "black",
     arrow_length = 0.1,
     arrow_code = 2,
     arrow_col = "black",
     arrow_lty = 3,
     arrow_lwd = 1,
+    nfacet_col = NULL,
     ...
     ) {
   # method dispatch for trackframe, sftrack, move2 +? data.frame
   plotcpt(
-    cpt = x, direction = direction, arrow_length = arrow_length, arrow_code = arrow_code,
-    arrow_col = arrow_col, arrow_lty = arrow_lty, arrow_lwd = arrow_lwd
+    cpt = x, direction = direction, cp_col = cp_col, arrow_length = arrow_length,
+    arrow_code = arrow_code, arrow_col = arrow_col, arrow_lty = arrow_lty, arrow_lwd = arrow_lwd,
+    nfacet_col = nfacet_col
     )
 }
 
@@ -207,16 +225,22 @@ plotcpt <- function(data, alpha = 0.05, q = 4, N = 10000, tol = 0, clu = NULL, s
 plotcpt.trackframe <- function(
     cpt,
     direction = FALSE,
+    cp_col = "red",
     arrow_length = 0.1,
     arrow_code = 2,
     arrow_col = "black",
     arrow_lty = 3,
     arrow_lwd = 1,
+    nfacet_col = NULL,
     ...
     ) {
   x <- attr(cpt, "easting")
   y <- attr(cpt, "northing")
   id <- attr(cpt, "id")
+  
+  n_id <-  length(unique(id(cpt)))
+  nfacet_col <- nfacet_col %||% set_facet_ncol(n_id)
+  print(nfacet_col)
   
   # delete restricted elements
   restricted <- c("x", "y", "data")
@@ -230,7 +254,7 @@ plotcpt.trackframe <- function(
     form <- as.formula(paste(y, "~", x, "|", id))
     default_options <- list(facet = "by",
                             type = "l",
-                            facet.args = list("free" = TRUE, ncol = 2),
+                            facet.args = list("free" = TRUE, ncol = nfacet_col),
                             grid = TRUE,
                             main = "Change Points")
     arrows_facet <- "by"
@@ -240,36 +264,20 @@ plotcpt.trackframe <- function(
                             grid = TRUE,
                             main = paste("Change Points", "-", unique(id(cpt))))
     arrows_facet <- id
-    
-    # # add change points
-    # tinyplot_add(form, data = cpt[cpt[["sig"]] == 1, ], type = "p", cex = 3, pch = "*") # NOTE: do we want to add cp numbers?
-    # # add starting point
-    # tinyplot_add(form, data = cpt[!duplicated(cpt[[id]]), ], type = "p", cex = 1, pch = "1", col = "green")
-    # # tinyplot_add(form, data = cpt[!duplicated(cpt[[id]]), ], type = "text", labels = "t=0", pos = 1)
-    # # add end point
-    # tinyplot_add(form, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p", cex = 1, pch = 4, col = "red")
-    # # tinyplot_add(form, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "text", labels = "t=T", pos = 3)
-    # if (isTRUE(direction)) {
-    #   # add arrow in path direction
-    #   # Add an arrow from (x1, y1) to (x2, y2)
-    #   arrows(x0 = cpt$x[1], y0 = cpt$y[1], x1 = cpt$x[2], y1 = cpt$y[2], col = "green", lwd = 1, length = 0.25, code = 2)
-    # }
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
   do.call(tinyplot, c(list(form, data = cpt), control))
   # add change points
   tinyplot_add(form, data = cpt[cpt[["sig"]] == 1, ],
-               type = "p", cex = 3, pch = "*") # NOTE: do we want to add cp numbers?
+               type = "p", cex = 3, pch = "*", col = cp_col) # NOTE: do we want to add cp numbers?
   # add starting point
   tinyplot_add(form, data = cpt[!duplicated(cpt[[id]]), ],
                type = "p", cex = 1, pch = "1", col = "green")
-  # FIXME: add text?
   # tinyplot_add(form, data = cpt[!duplicated(cpt[[id]]), ],
   # type = "text", labels = "t=0", pos = 1)
   # add end point
   tinyplot_add(form, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ],
                type = "p", cex = 1, pch = 4, col = "red")
-  # FIXME: add text?
   # tinyplot_add(form, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ],
   # type = "text", labels = "t=T", pos = 1)
   
@@ -295,10 +303,24 @@ plotcpt.trackframe <- function(
 }
 
 
-# FIXME: TODO
-# plotcpt.sftrack
-# 
-# plotcpt.move2 <- plotcpt.sftrack
+plotcpt.sftrack <- function(
+    cpt,
+    direction = FALSE,
+    arrow_length = 0.1,
+    arrow_code = 2,
+    arrow_col = "black",
+    arrow_lty = 3,
+    arrow_lwd = 1,
+    ...
+) {
+ cpt_tf <- as.trackframe(cpt)
+ plotcpt(
+   cpt = cpt_tf, direction = direction, arrow_length = arrow_length, arrow_code = arrow_code,
+   arrow_col = arrow_col, arrow_lty = arrow_lty, arrow_lwd = arrow_lwd
+ )
+}
+ 
+plotcpt.move2 <- plotcpt.sftrack
 
 
 #' Plot Change point test pvalues
