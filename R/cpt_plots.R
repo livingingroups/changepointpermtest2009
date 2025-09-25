@@ -117,7 +117,7 @@ plot.trackframe <- function(
   id_col <- attr(x, "id")
   n_id <- length(unique(id(x)))
   nfacet_col <- nfacet_col %||% set_facet_ncol(n_id)
-  
+
   if (n_id > 1) {
     form <- as.formula(paste(y_col, "~", x_col, "|", id_col))
     default_options <- list(
@@ -133,7 +133,7 @@ plot.trackframe <- function(
     default_options <- list(type = "l", grid = TRUE, main = unique(id(x)))
     arrows_facet <- id_col
   }
-  
+
   # delete restricted elements
   restricted <- c("x", "y", "data")
   args <- list(...) # args = list()
@@ -148,7 +148,7 @@ plot.trackframe <- function(
   plt_call <- c(list(tinyplot, form, data = x), control)
   eval_list(plt_call)
   # TODO: do we also want to plot starting and endpoints here?
-  
+
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
     arrow_points <- get_arrow_points(x)
@@ -279,7 +279,7 @@ plotcpt.trackframe <- function(
   x <- attr(cpt, "easting")
   y <- attr(cpt, "northing")
   id <- attr(cpt, "id")
-  
+
   n_id <- length(unique(id(cpt)))
   nfacet_col <- nfacet_col %||% set_facet_ncol(n_id)
 
@@ -292,7 +292,7 @@ plotcpt.trackframe <- function(
       names(args)[names(args) %in% restricted]
     ))
   }
-  
+
   if (length(unique(id(cpt))) > 1) {
     form <- as.formula(paste(y, "~", x, "|", id))
     default_options <- list(
@@ -326,7 +326,7 @@ plotcpt.trackframe <- function(
   # add end point
   plot_add(plt_call, add = TRUE, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p",
     cex = 1, pch = 4, col = "red")
-  
+
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
     arrow_points <- get_arrow_points(cpt)
@@ -406,7 +406,7 @@ plot.change_point_test_pvalue <- function(x, ...) {
   p_long <- reshape2::melt(x)
   colnames(p_long) <- c("n", "q", "value")
   p_long$value <- -log(p_long$value)
-  
+
   form <- value ~ n | q
   default_options <- list(
     facet = "by",
@@ -416,7 +416,7 @@ plot.change_point_test_pvalue <- function(x, ...) {
     pch = 4,
     legend = TRUE
   )
-  
+
   # delete restricted elements
   restricted <- c("x", "y", "data")
   args <- list(...)
@@ -477,7 +477,7 @@ plot.change_point_test_pvalue <- function(x, ...) {
 plot_n_cp_by_q <- function(data, id_col, ...) {
   form <- as.formula(paste("n_cp ~ q |", id_col))
   default_options <- list(type = tinyplot::type_spline(n = 100), grid = TRUE)
-  
+
   # delete restricted elements
   restricted <- c("x", "y", "data")
   args <- list(...) # args = list()
@@ -535,7 +535,7 @@ type_arrows <- function(
       type_info = list(ul_lty = ul_lty, ul_lwd = ul_lwd, ul_col = ul_col)
     ))
   }
-  
+
   draw_arrows <- function() {
     fun <- function(
       ifacet,
