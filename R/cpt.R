@@ -312,7 +312,7 @@ change_point_test.trackframe <- function(
         if (clu <= 0L) {
           ncores <- as.integer(max(1, parallel::detectCores() - 1))
         } else {
-          ncores <- as.integer(clu)
+          ncores <- as.integer(min(clu, parallel::detectCores()))
         }
         clu <- makePSOCKcluster(as.integer(ncores))
         on.exit(stopCluster(clu), add = TRUE)
