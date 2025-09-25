@@ -14,7 +14,7 @@ change_point_test_pvalue_xyt(x, y, time, q_max = 6, n = 1000, tol = 0, ...)
 \item{time}{a vecor inheriting from \code{numeric} or \code{POSIXt} or \code{Date}
 containing the timestamps corresponding to the easting and northing coordinates.}
 
-\item{q_max}{FIXME}
+\item{q_max}{maximum number of q to be tested}
 
 \item{n}{an integer specifying the number of random permutations for thepermutation test.
 Higher values provide more accurate p-values but increase computation time.}
@@ -25,8 +25,8 @@ Points with movements smaller than this threshold will be considered stationary.
 \item{...}{additional arguments passed to methods.}
 }
 \value{
-FIXME: a matrix of pvalues with dimension n x q_max, where n number of observation determined by the length of x.
- Indistinguishable positions are set to NA.
+a matrix of pvalues with dimension n x q_max, where n is the number of observation
+determined by the length of x. Indistinguishable positions are set to NA.
 }
 \description{
 Detecting change points in animal ranging data

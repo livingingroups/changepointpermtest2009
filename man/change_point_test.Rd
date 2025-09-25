@@ -73,16 +73,17 @@ Higher values provide more accurate p-values but increase computation time.}
 \item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
 Points with movements smaller than this threshold will be considered stationary.}
 
-\item{clu}{optional parameter determining whether parallelization with the parallel package is used.
-Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
-\itemize{
-  \item If \code{NULL} (default) no parallel processing is used.
-  \item If of class \code{"numeric"}, it gives the number of cores,
-    passed as integer to \code{parallel::makePSOCKcluster}.
-  \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel} package.
-    Allowed is any object which inherits from \code{"cluster"} and can be passed to
-    \code{parallel::parLapply}.
-}}
+\item{clu}{optional parameter determining whether parallelization with the parallel package is
+used.
+ Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
+ \itemize{
+   \item If \code{NULL} (default) no parallel processing is used.
+   \item If of class \code{"numeric"}, it gives the number of cores,
+     passed as integer to \code{parallel::makePSOCKcluster}.
+   \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel}
+    package. Allowed is any object which inherits from \code{"cluster"} and can be passed to
+     \code{parallel::parLapply}.
+ }}
 
 \item{seed}{seed to be passed to random number generator}
 
@@ -94,9 +95,9 @@ An augmented data frame containing the original data with additional columns:
   \item{cp_no}{Sequential numbering of detected change points}
 }
 \description{
-Detects significant change points in animal movement trajectory data using a permutation-based approach.
-This function identifies locations where the movement pattern significantly changes, which can represent
-behavioral transitions or responses to environmental stimuli.
+Detects significant change points in animal movement trajectory data using a permutation-based
+approach. This function identifies locations where the movement pattern significantly changes,
+which can represent behavioral transitions or responses to environmental stimuli.
 }
 \details{
 This function implements a sequential change point detection algorithm that uses

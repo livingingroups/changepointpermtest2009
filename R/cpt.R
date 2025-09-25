@@ -1,8 +1,8 @@
 #' Change Point Detection for Animal Movement Data - xyt data
 #'
-#' Detects significant change points in animal movement trajectory data using a permutation-based approach.
-#' This function identifies locations where the movement pattern significantly changes, which can represent
-#' behavioral transitions or responses to environmental stimuli.
+#' Detects significant change points in animal movement trajectory data using a permutation-based
+#' approach. This function identifies locations where the movement pattern significantly changes,
+#' which can represent behavioral transitions or responses to environmental stimuli.
 #'
 #' @param easting a numeric vector of x-coordinates (easting) of the trajectory backwards in time.
 #' @param northing a numeric vector of y-coordinates (northing) of the trajectory backwards in time.
@@ -89,7 +89,6 @@ change_point_test_xyt <- function(
   df[["cp_no"]] <- na.locf(df[["cp_no"]], fromLast = TRUE, na.rm = FALSE)
   class(df) <- union("change_point_test", class(df))
   rownames(df) <- NULL
-  # FIXME: Use our constructor?
   attr(df, "time") <- "time"
   attr(df, "easting") <- "easting"
   attr(df, "northing") <- "northing"
@@ -184,9 +183,9 @@ refine_cluster_input <- function(clu) {
 
 #' Change Point Detection for Animal Movement Data - S3 Methods
 #'
-#' Detects significant change points in animal movement trajectory data using a permutation-based approach.
-#' This function identifies locations where the movement pattern significantly changes, which can represent
-#' behavioral transitions or responses to environmental stimuli.
+#' Detects significant change points in animal movement trajectory data using a permutation-based
+#' approach. This function identifies locations where the movement pattern significantly changes,
+#' which can represent behavioral transitions or responses to environmental stimuli.
 #'
 #' @param data a trackframe, or an object coercible to trackframe
 #' @param alpha a numeric value specifying the significance level for detecting change points.
@@ -195,14 +194,15 @@ refine_cluster_input <- function(clu) {
 #'   Higher values provide more accurate p-values but increase computation time.
 #' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
 #'   Points with movements smaller than this threshold will be considered stationary.
-#' @param clu optional parameter determining whether parallelization with the parallel package is used.
+#' @param clu optional parameter determining whether parallelization with the parallel package is
+#'  used.
 #'   Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
 #'   \itemize{
 #'     \item If \code{NULL} (default) no parallel processing is used.
 #'     \item If of class \code{"numeric"}, it gives the number of cores,
 #'       passed as integer to \code{parallel::makePSOCKcluster}.
-#'     \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel} package.
-#'       Allowed is any object which inherits from \code{"cluster"} and can be passed to
+#'     \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel}
+#'      package. Allowed is any object which inherits from \code{"cluster"} and can be passed to
 #'       \code{parallel::parLapply}.
 #'   }
 #' @param seed seed to be passed to random number generator
@@ -550,6 +550,5 @@ summary.change_point_test <- function(object, ...) {
       })
     )
   }
-
   summary
 }

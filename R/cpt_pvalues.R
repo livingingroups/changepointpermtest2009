@@ -1,4 +1,4 @@
-#FIXME:
+# TODO:
 #- rcpp
 
 #' Change Point Test
@@ -9,15 +9,15 @@
 #' @param y a numeric vector of y-coordinates (northing) of the trajectory backwards in time.
 #' @param time a vecor inheriting from \code{numeric} or \code{POSIXt} or \code{Date}
 #'        containing the timestamps corresponding to the easting and northing coordinates.
-#' @param q_max FIXME
+#' @param q_max maximum number of q to be tested
 #' @param n an integer specifying the number of random permutations for thepermutation test.
 #'        Higher values provide more accurate p-values but increase computation time.
 #' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
 #'        Points with movements smaller than this threshold will be considered stationary.
 #' @param ... additional arguments passed to methods.
 #'
-#' @return FIXME: a matrix of pvalues with dimension n x q_max, where n number of observation determined by the length of x.
-#'  Indistinguishable positions are set to NA.
+#' @return a matrix of pvalues with dimension n x q_max, where n is the number of observation
+#' determined by the length of x. Indistinguishable positions are set to NA.
 #
 #' @export
 #'
@@ -78,7 +78,6 @@ change_point_test_pvalue_xyt <- function(
 }
 
 
-#FIXME
 # Wrapper function for change_point_test_xyt to calculate for a single id.
 change_point_test_pvalue_internal <- function(
   data,
@@ -110,15 +109,11 @@ change_point_test_pvalue_internal <- function(
 #'
 #' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
 #' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
-#' @param q_max FIXME
+#' @param q_max q_max maximum number of q to be tested
 #' @param n an integer specifying the number of random permutations for the permutation test.
 #'
-#' @return FIXME
-#'
-#' @details FIXME
-#'
 #' @export
-# FIXME: implemented in c++
+# FIXME: implement in c++
 change_point_fit_pvalue <- function(bx, by, q_max, n) {
   bxdiff <- diff(bx)
   bydiff <- diff(by)
@@ -166,7 +161,7 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
       # and store in r_sumrand
       for (it in seq(2, n)) {
         # start of it loop
-        u <- runif(k + q, 0, 1) # FIXME: Why here "+ q" is needed?
+        u <- runif(k + q, 0, 1) # Q: Why here "+ q" is needed?
         perm <- order(u)
         bxr <- bx[1]
         byr <- by[1]
@@ -192,9 +187,9 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 
 #' Change Point Detection for Animal Movement Data
 #'
-#' Detects significant change points in animal movement trajectory data using a permutation-based approach.
-#' This function identifies locations where the movement pattern significantly changes, which can represent
-#' behavioral transitions or responses to environmental stimuli.
+#' Detects significant change points in animal movement trajectory data using a permutation-based
+#' approach. This function identifies locations where the movement pattern significantly changes,
+#' which can represent behavioral transitions or responses to environmental stimuli.
 #'
 #' @param data a matrix or data frame with columns for x-coordinates, y-coordinates, and time.
 #'   For the default method, this should be a matrix or data frame with at least 3 columns.
@@ -203,14 +198,15 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 #'   Higher values provide more accurate p-values but increase computation time.
 #' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
 #'   Points with movements smaller than this threshold will be considered stationary.
-#' @param clu optional parameter determining whether parallelization with the parallel package is used.
+#' @param clu optional parameter determining whether parallelization with the parallel package is
+#'  used.
 #'   Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
 #'   \itemize{
 #'     \item If \code{NULL} (default) no parallel processing is used.
 #'     \item If of class \code{"numeric"}, it gives the number of cores,
 #'       passed as integer to \code{parallel::makePSOCKcluster}.
-#'     \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel} package.
-#'       Allowed is any object which inherits from \code{"cluster"} and can be passed to
+#'     \item If of class \code{"cluster"}, it is assumed to be a cluster object from \code{parallel}
+#'       package. Allowed is any object which inherits from \code{"cluster"} and can be passed to
 #'       \code{parallel::parLapply}.
 #'   }
 #' @param seed seed to be passed to random number generator

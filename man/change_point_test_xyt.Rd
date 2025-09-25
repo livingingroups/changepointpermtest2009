@@ -39,9 +39,9 @@ Points with movements smaller than this threshold will be considered stationary.
 An augmented data frame containing the original data with additional columns:
 }
 \description{
-Detects significant change points in animal movement trajectory data using a permutation-based approach.
-This function identifies locations where the movement pattern significantly changes, which can represent
-behavioral transitions or responses to environmental stimuli.
+Detects significant change points in animal movement trajectory data using a permutation-based
+approach. This function identifies locations where the movement pattern significantly changes,
+which can represent behavioral transitions or responses to environmental stimuli.
 }
 \examples{
 

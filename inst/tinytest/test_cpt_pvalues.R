@@ -104,7 +104,7 @@ test_input_formats <- function() {
   data_df <- data.frame(x = x, y = y, t = t)
   result_df <- change_point_test_pvalue(data_df, q_max = 3, n = 100, tol = 0)
   expect_equal(NCOL(result_df), 3)
-  t <- as.POSIXct(1:40)
+  t <- as.POSIXct(1:10)
   data_df <- data.frame(x = x, y = y, t = t)
   set.seed(2025L)
   result_df <- change_point_test_pvalue(data_df, q_max = 2, n = 50, tol = 0)
@@ -119,12 +119,13 @@ test_input_formats <- function() {
   )
   set.seed(2025L)
   result_tf <- change_point_test_pvalue(data_tf, q_max = 2, n = 50, tol = 0)
-  result_tf  # FIXME: test
+  expect_inherits(result_tf, "change_point_test_pvalue")
+  expect_equal(result_df, result_tf)
 
   # move2
   library(move2)
   data_move2 <- mt_as_move2(
-    data.frame(t = as.POSIXct(t), x = x, y = y, id = 1),
+    cbind(data_tf, id = 1),
     coords = c("x", "y"),
     time_column = "t",
     track_id_column = "id",
@@ -137,42 +138,25 @@ test_input_formats <- function() {
     n = 50,
     tol = 0
   )
-  result_move2  # FIXME: test
+  expect_inherits(result_move2, "change_point_test_pvalue")
 
   # sftrack
   library(sftrack)
   data_sftrack <- as_sftrack(
-    data.frame(t = as.POSIXct(t), x = x, y = y, id = 1),
+    cbind(data_tf, id = 1),
     coords = c("x", "y"),
     time = "t",
-    crs = 32632
+    crs = 32631
   )
-  data_sftrack  # FIXME: test
-  
   set.seed(2025L)
   result_sftrack <- change_point_test_pvalue(
-    data_move2,
+    data_sftrack,
     q_max = 2,
     n = 50,
     tol = 0
   )
-  result_sftrack  # FIXME: test
-}
-
-
-# Test consistency of cp_no column
-test_cp_no_consistency <- function() {
-  # Create data with multiple potential change points
-  set.seed(303)
-  x <- c(1:10, 20:30, 40:50)
-  y <- c(1:10, 20:30, 40:50)
-  t <- as.POSIXct(seq_along(x) * 5)
-  data <- data.frame(x = x, y = y, t = t)
-
-  # Run change point detection
-  set.seed(2025L)
-  result <- change_point_test_pvalue(data, q_max = 3, n = 100, tol = 0)
-  result  # FIXME: add test
+  expect_inherits(result_sftrack, "change_point_test_pvalue")
+  expect_equal(result_move2, result_sftrack)
 }
 
 
@@ -187,7 +171,6 @@ test_colnames <- function() {
   cn <- c("x", "y", "t")
   colnames(xyt) <- cn
   cpt <- change_point_test(xyt, n = 100)
-  colnames(cpt)
   expect_equal(colnames(cpt)[1:3], cn)
 
   tf <- as.trackframe(
@@ -202,7 +185,8 @@ test_colnames <- function() {
   )
   set.seed(2025L)
   cpt_tf <- change_point_test_pvalue(tf, n = 100)
-  cpt_tf  # FIXME: test
+  expect_inherits(cpt_tf, "change_point_test_pvalue")
+  expect_equal(colnames(cpt_tf), c("q=1", "q=2", "q=3", "q=4"))
 }
 
 test_multiple_paths <- function() {
@@ -246,6 +230,5 @@ test_multiple_paths <- function() {
 test_xytdata()
 test_basic_functionality()
 test_input_formats()
-test_cp_no_consistency()
 test_colnames()
 test_multiple_paths()

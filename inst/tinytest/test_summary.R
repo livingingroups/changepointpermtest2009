@@ -17,7 +17,7 @@ summary_df <- summary(cpt)
 
 # trackframe
 data("path_trackframe", package = "trackframe")
-path_trackframe$time <- path_data_frame$time #FIXME: in package trackframe
+path_trackframe$time <- path_data_frame$time #FIXME: remove when fixed in package trackframe
 expect_inherits(path_trackframe, "trackframe")
 set.seed(2025L)
 cpt <- change_point_test(path_trackframe, alpha = 0.05, q = 3, n = 100)
@@ -27,7 +27,7 @@ expect_equal(summary_df, summary_tf)
 
 # move2
 data("path_move2", package = "trackframe")
-path_move2$time <- path_data_frame$time #FIXME: in package trackframe
+path_move2$time <- path_data_frame$time #FIXME: remove when fixed in package trackframe
 expect_inherits(path_move2, "move2")
 set.seed(2025L)
 cpt <- change_point_test(path_move2, alpha = 0.05, q = 3, n = 100)
@@ -44,7 +44,7 @@ expect_equal(utm_coords[idx, 3], summary_tf$north)
 
 # sftrack
 data("path_sftrack", package = "trackframe")
-path_sftrack$time <- path_move2$time #FIXME: in package trackframe
+path_sftrack$time <- path_move2$time #FIXME: remove when fixed in package trackframe
 expect_inherits(path_sftrack, "sftrack")
 set.seed(2025L)
 cpt <- change_point_test(path_sftrack, alpha = 0.05, q = 3, n = 100)
@@ -63,7 +63,7 @@ summary_tf <- summary(cpt)
 
 # move2
 data("paths_move2", package = "trackframe")
-paths_move2$time <- paths_trackframe$time #FIXME: in package trackframe
+paths_move2$time <- paths_trackframe$time #FIXME: remove when fixed in package trackframe
 expect_inherits(paths_move2, "move2")
 set.seed(2025L)
 cpt <- change_point_test(paths_move2, alpha = 0.05, q = 3, n = 100)
@@ -85,7 +85,7 @@ expect_equal(utm_coords[idx, 4], summary_tf$north)
 
 # sftrack
 data("paths_sftrack", package = "trackframe")
-paths_sftrack$time <- paths_trackframe$time #FIXME: in package trackframe
+paths_sftrack$time <- paths_trackframe$time #FIXME: remove when fixed in package trackframe
 expect_inherits(paths_sftrack, "sftrack")
 set.seed(2025L)
 cpt <- change_point_test(paths_sftrack, alpha = 0.05, q = 3, n = 100)

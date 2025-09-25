@@ -2,7 +2,7 @@ get_arrow_points <- function(tf, sort = TRUE) {
   x <- attr(tf, "easting")
   y <- attr(tf, "northing")
   id <- attr(tf, "id")
-  # FIXME: can we ensure that tf is already sorted?
+  # can we ensure that tf is already sorted?
   if (isTRUE(sort)) {
     tf <- tf[order(id(tf), time(tf)), ]
   }
@@ -50,7 +50,7 @@ eval_list <- function(x) {
 
 plot_add <- function(call, ...) {
   args <- list(...)
-  if("data" %in% names(args)) {
+  if ("data" %in% names(args)) {
     call$data <- args$data
   }
   new_call <- modifyList(call, args)
@@ -102,15 +102,15 @@ plot_add <- function(call, ...) {
 #'
 #' @export
 plot.trackframe <- function(
-    x,
-    direction = FALSE,
-    arrow_length = 0.1,
-    arrow_code = 2,
-    arrow_col = "black",
-    arrow_lty = 3,
-    arrow_lwd = 1,
-    nfacet_col = NULL,
-    ...
+  x,
+  direction = FALSE,
+  arrow_length = 0.1,
+  arrow_code = 2,
+  arrow_col = "black",
+  arrow_lty = 3,
+  arrow_lwd = 1,
+  nfacet_col = NULL,
+  ...
 ) {
   x_col <- attr(x, "easting")
   y_col <- attr(x, "northing")
@@ -222,16 +222,16 @@ plot.trackframe <- function(
 #' # with path direction
 #' plot(cpt4a, direction = TRUE)
 plot.change_point_test <- function(
-    x,
-    direction = FALSE,
-    cp_col = "black",
-    arrow_length = 0.1,
-    arrow_code = 2,
-    arrow_col = "black",
-    arrow_lty = 3,
-    arrow_lwd = 1,
-    nfacet_col = NULL,
-    ...
+  x,
+  direction = FALSE,
+  cp_col = "black",
+  arrow_length = 0.1,
+  arrow_code = 2,
+  arrow_col = "black",
+  arrow_lty = 3,
+  arrow_lwd = 1,
+  nfacet_col = NULL,
+  ...
 ) {
   # method dispatch for trackframe, sftrack, move2 +? data.frame
   plotcpt(
@@ -250,14 +250,14 @@ plot.change_point_test <- function(
 
 #' @keywords internal
 plotcpt <- function(
-    data,
-    alpha = 0.05,
-    q = 4,
-    n = 10000,
-    tol = 0,
-    clu = NULL,
-    seed = NULL,
-    ...
+  data,
+  alpha = 0.05,
+  q = 4,
+  n = 10000,
+  tol = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
 ) {
   UseMethod("plotcpt")
 }
@@ -265,16 +265,16 @@ plotcpt <- function(
 
 #' @keywords internal
 plotcpt.trackframe <- function(
-    cpt,
-    direction = FALSE,
-    cp_col = "red",
-    arrow_length = 0.1,
-    arrow_code = 2,
-    arrow_col = "black",
-    arrow_lty = 3,
-    arrow_lwd = 1,
-    nfacet_col = NULL,
-    ...
+  cpt,
+  direction = FALSE,
+  cp_col = "red",
+  arrow_length = 0.1,
+  arrow_code = 2,
+  arrow_col = "black",
+  arrow_lty = 3,
+  arrow_lwd = 1,
+  nfacet_col = NULL,
+  ...
 ) {
   x <- attr(cpt, "easting")
   y <- attr(cpt, "northing")
@@ -318,14 +318,14 @@ plotcpt.trackframe <- function(
   plt_call <- c(list(tinyplot, form, data = cpt), control)
   eval_list(plt_call)
   # add change points
-  plot_add(plt_call, add =TRUE, data = cpt[cpt[["sig"]] == 1, ], type = "p", cex = 3, pch = "*",
-           col = cp_col) # NOTE: do we want to add cp numbers?
+  plot_add(plt_call, add = TRUE, data = cpt[cpt[["sig"]] == 1, ], type = "p", cex = 3, pch = "*",
+    col = cp_col) # NOTE: do we want to add cp numbers?
   # add starting point
-  plot_add(plt_call, add =TRUE, data = cpt[!duplicated(cpt[[id]]), ], type = "p", cex = 1,
-           pch = "|", col = "green")
+  plot_add(plt_call, add = TRUE, data = cpt[!duplicated(cpt[[id]]), ], type = "p", cex = 1,
+    pch = "|", col = "green")
   # add end point
-  plot_add(plt_call, add =TRUE, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p",
-           cex = 1, pch = 4, col = "red")
+  plot_add(plt_call, add = TRUE, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p",
+    cex = 1, pch = 4, col = "red")
   
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
@@ -353,14 +353,14 @@ plotcpt.trackframe <- function(
 
 #' @keywords internal
 plotcpt.sftrack <- function(
-    cpt,
-    direction = FALSE,
-    arrow_length = 0.1,
-    arrow_code = 2,
-    arrow_col = "black",
-    arrow_lty = 3,
-    arrow_lwd = 1,
-    ...
+  cpt,
+  direction = FALSE,
+  arrow_length = 0.1,
+  arrow_code = 2,
+  arrow_col = "black",
+  arrow_lty = 3,
+  arrow_lwd = 1,
+  ...
 ) {
   cpt_tf <- as.trackframe(cpt)
   plotcpt(
@@ -511,16 +511,16 @@ plot_n_cp_by_q <- function(data, id_col, ...) {
 #'
 #' @export
 type_arrows <- function(
-    x0,
-    y0,
-    x1,
-    y1,
-    length = 0.25,
-    angle = 30,
-    code = 2,
-    arrow_col = "black",
-    arrow_lty = par("lty"),
-    arrow_lwd = par("lwd")
+  x0,
+  y0,
+  x1,
+  y1,
+  length = 0.25,
+  angle = 30,
+  code = 2,
+  arrow_col = "black",
+  arrow_lty = par("lty"),
+  arrow_lwd = par("lwd")
 ) {
   # assert_numeric(x0)
   data_arrows <- function(datapoints, lwd, lty, col, ...) {
@@ -535,34 +535,27 @@ type_arrows <- function(
       type_info = list(ul_lty = ul_lty, ul_lwd = ul_lwd, ul_col = ul_col)
     ))
   }
+  
   draw_arrows <- function() {
     fun <- function(
-    ifacet,
-    iby,
-    data_facet,
-    icol,
-    ilty,
-    ilwd,
-    ngrps,
-    nfacets,
-    by_continuous,
-    facet_by,
-    type_info,
-    ...
+      ifacet,
+      iby,
+      data_facet,
+      icol,
+      ilty,
+      ilwd,
+      ngrps,
+      nfacets,
+      by_continuous,
+      facet_by,
+      type_info,
+      ...
     ) {
       grp_aes <- type_info[["ul_col"]] == 1 ||
         type_info[["ul_lty"]] == ngrps ||
         type_info[["ul_lwd"]] == ngrps
       if (length(x0) != 1) {
-        if (
-          !length(x0) %in%
-          c(
-            ngrps,
-            nfacets,
-            ngrps *
-            nfacets
-          )
-        ) {
+        if (!length(x0) %in% c(ngrps, nfacets, ngrps * nfacets)) {
           msg <- "Length of 'x0' must be 1, or equal to the number of facets or number of groups 
           (or product thereof)."
           stop(msg, call. = FALSE)
@@ -577,12 +570,7 @@ type_arrows <- function(
           } else if (by_continuous) {
             icol <- 1
           }
-        } else if (
-          !by_continuous &&
-          length(x0) ==
-          ngrps *
-          nfacets
-        ) {
+        } else if (!by_continuous && length(x0) == ngrps * nfacets) {
           x0 <- x0[ifacet * ngrps - c(ngrps - iby)]
           y0 <- y0[ifacet * ngrps - c(ngrps - iby)]
           x1 <- x1[ifacet * ngrps - c(ngrps - iby)]

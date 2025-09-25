@@ -11,17 +11,11 @@ change_point_fit_pvalue(bx, by, q_max, n)
 
 \item{by}{a numeric vector of y-coordinates of the trajectory backwards in time.}
 
-\item{q_max}{FIXME}
+\item{q_max}{q_max maximum number of q to be tested}
 
 \item{n}{an integer specifying the number of random permutations for the permutation test.}
-}
-\value{
-FIXME
 }
 \description{
 Detects change points in animal movement trajectory data using a permutation-based approach.
 This function identifies locations where the movement pattern significantly changes.
-}
-\details{
-FIXME
 }
