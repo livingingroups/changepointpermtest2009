@@ -121,5 +121,3 @@ test_no_change_points()
 test_alpha_parameter()
 test_input_validation()
 test_constant_coordinates()
-
-cat("All tests for change_point_fit completed successfully!\n")
