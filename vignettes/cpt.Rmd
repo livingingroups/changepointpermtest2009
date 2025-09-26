@@ -1,0 +1,76 @@
+---
+author: "MPI"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette cpt package}
+  %\VignetteEngine{knitr::knitr}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dpi=300)
+```
+
+
+# Introduction
+
+## Install cpt package
+
+```{r eval=FALSE, include=TRUE}
+library("remotes")
+install_github('livingingroups/travelpaths-devel/pkgs/trackframe')
+install_github('livingingroups/travelpaths-devel/pkgs/cpt')
+```
+
+
+## Load packages
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+library("cpt")
+library("trackframe")
+# library(ggplot2)
+```
+
+
+**cpt** package currently supports xyt matrices (a matrix or data frame with columns for x-coordinates, y-coordinates, and timestamps) and trackframes (see pkg trackframe) as input formats.
+
+## Run cpt with xyt
+
+Detect change points
+```{r}
+data("path_trackframe", package = "trackframe")
+class(path_trackframe)
+set.seed(2025L)
+cpt <- change_point_test_xyt(easting = path_trackframe[, "easting"],
+                             northing = path_trackframe[, "northing"],
+                             time = path_matrix[, "time"],
+                             alpha = 0.05,
+                             q = 3,
+                             N = 500)
+class(cpt)
+```
+
+Extract the change points into a summarized format
+```{r}
+summary(cpt)
+```
+
+
+### Plot the change points
+
+TODO
+
+
+
+
+
+## Extract pvalues from Permutation Test
+
+Get probability values instead of binary indicators
+```{r}
+data("cpttestdata")
+pvalues <- change_point_test_pvalue(cpttestdata, q_max = 5, N = 500)
+tail(pvalues)
+```

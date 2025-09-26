@@ -61,8 +61,16 @@ change_point_test_xyt <- function(
   # calcuate diff of coordinates
   bxdiff <- diff(bx)
   bydiff <- diff(by)
+
   # remove points at which animal stays still
-  is_moving <- c(TRUE, sqrt(bxdiff^2 + bydiff^2) > tol)
+  is_moving <- if(isTRUE(list(...)[["legacy_movement_criteria"]])) c(
+    TRUE,
+    abs(bxdiff) > tol & abs(bydiff) > tol
+  ) else c(
+    TRUE,
+    sqrt(bxdiff^2 + bydiff^2) > tol
+  )
+
   bxm <- bx[is_moving]
   bym <- by[is_moving]
   # btm <- bt[is_moving]
@@ -131,26 +139,25 @@ change_point_test_trackframe_single_id <- function(
 }
 
 
-# #' Change Point Test Fitting
-# #'
-# #' Detects change points in animal movement trajectory data using a permutation-based approach.
-# #' This function identifies locations where the movement pattern significantly changes.
-# #'
-# #' @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
-# #' @param by a numeric vector of y-coordinates of the trajectory backwards in time.
-# #' @param q an integer specifying the minimum segment length between potential change points.
-# #' @param n an integer specifying the number of random permutations for the permutation test.
-# #' @param alpha a numeric value specifying the significance level for detecting change points.
-# #'
-# #' @return A numeric vector of the same length as the input coordinates, where 1 indicates
-# #'         a change point at that position and 0 indicates no change point.
-# #'
-# #' @details This function implements a sequential change point detection algorithm that uses
-# #'          a permutation test to identify significant changes in movement patterns. It compares
-# #'          the sum of distances between consecutive points against randomly permuted sequences
-# #'          to determine if a change point exists.
-# #'
-# #' @export
+# Change Point Test Fitting
+#
+# Detects change points in animal movement trajectory data using a permutation-based approach.
+# This function identifies locations where the movement pattern significantly changes.
+#
+# @param bx a numeric vector of x-coordinates of the trajectory backwards in time.
+# @param by a numeric vector of y-coordinates of the trajectory backwards in time.
+# @param q an integer specifying the minimum segment length between potential change points.
+# @param n an integer specifying the number of random permutations for the permutation test.
+# @param alpha a numeric value specifying the significance level for detecting change points.
+#
+# @return A numeric vector of the same length as the input coordinates, where 1 indicates
+#         a change point at that position and 0 indicates no change point.
+#
+# @details This function implements a sequential change point detection algorithm that uses
+#          a permutation test to identify significant changes in movement patterns. It compares
+#          the sum of distances between consecutive points against randomly permuted sequences
+#          to determine if a change point exists.
+#
 change_point_fit <- function(bx, by, q, n, alpha) {
   checkmate::assert_numeric(bx, any.missing = FALSE)
   checkmate::assert_numeric(by, len = length(bx), any.missing = FALSE)
@@ -289,10 +296,11 @@ change_point_test.trackframe <- function(
       data,
       alpha = alpha,
       q = q,
-      n = n,
+      N = N,
       tol = tol,
       seed = seed,
-      verify = verify
+      verify = verify,
+      ...
     )
   } else {
     cpt <- split(data, data[[attr(data, "id")]])
@@ -305,7 +313,8 @@ change_point_test.trackframe <- function(
         n = n,
         tol = tol,
         seed = seed,
-        verify = verify
+        verify = verify,
+        ...
       )
     } else {
       if (is.numeric(clu)) {
@@ -326,8 +335,10 @@ change_point_test.trackframe <- function(
         n = n,
         tol = tol,
         seed = seed,
-        verify = verify
+        verify = verify,
+        ...
       )
+
     }
     cpt <- do_rbind(cpt)
   }
