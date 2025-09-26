@@ -63,7 +63,7 @@ change_point_test_xyt <- function(
   bydiff <- diff(by)
 
   # remove points at which animal stays still
-  is_moving <- if(isTRUE(list(...)[["legacy_movement_criteria"]])) c(
+  is_moving <- if (isTRUE(list(...)[["legacy_movement_criteria"]])) c(
     TRUE,
     abs(bxdiff) > tol & abs(bydiff) > tol
   ) else c(
@@ -296,7 +296,7 @@ change_point_test.trackframe <- function(
       data,
       alpha = alpha,
       q = q,
-      N = N,
+      n = n,
       tol = tol,
       seed = seed,
       verify = verify,

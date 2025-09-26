@@ -19,14 +19,16 @@ check as.trackframe method for data.frame
 
 Transform data to a trackframe. Trackframe always use x/y coordinates as cartesian coordinates with easting and northing. 
 ```{r}
+library(trackframe)
 tf <- as.trackframe(path_matrix, crs_input = 4326) 
 class(tf)
 ```
 
 
 ```{r}
+library(cpt)
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
 class(cpt_tf)
 ```
 
