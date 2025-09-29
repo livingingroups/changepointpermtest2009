@@ -1,4 +1,3 @@
-
 # Read in data file
 # (e.g. "7_6august11.txt" in CPT2012 on Desktop)
 # inp<-scan("~/Desktop/CPT2012/7_6august11.txt",list(x1=0,x2=0))
@@ -36,7 +35,6 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   # # the average GPS error in research area
   # tol <- 0
 
-
   # PRELIMINARIES
 
   # Reverse the time-ordering,
@@ -46,24 +44,22 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   bx1 <- 0 * x1
   bx2 <- 0 * x2
 
-  n <- length(x1)
-  for (j in 1:n){
-    bx1[j] <- x1[n - j + 1]
-    bx2[j] <- x2[n - j + 1]
+  x1_len <- length(x1)
+  for (j in 1:x1_len) {
+    bx1[j] <- x1[x1_len - j + 1]
+    bx2[j] <- x2[x1_len - j + 1]
   }
-
 
   # Calculate the steps (bxdiff1, bxdiff2)
   bx1diff <- diff(bx1)
   bx2diff <- diff(bx2)
 
-
   # REMOVE POINTS AT WHICH ANIMAL STAYS STILL
   # ind is (reverse) time ordering of points
   # newp  > 0 if point differs from previous point
-  ind <- c(1:n)
-  newp <- c(1:n)
-  for (j in 2:n){
+  ind <- c(1:x1_len)
+  newp <- c(1:x1_len)
+  for (j in 2:x1_len) {
     newp[j] <- ind[j] * (abs(bx1diff[j - 1]) > tol && abs(bx2diff[j - 1]) > tol)
   }
   # bz1, bz2 are coordinates of points(in reverse time order) at which there is movement
@@ -76,7 +72,6 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   bz1diff <- diff(bz1)
   bz2diff <- diff(bz2)
 
-
   # SOME DECLARATIONS
 
   # goal_no = number (from end) of current putative goal (with goal_no = 1 for end position
@@ -86,15 +81,15 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   # start with goal_no = 1
   goal_no <- 1
 
-  # goal_no = number (backwards in time) of last position of interest
-  # goal_no = length(bz1) is a convenient default
+  # last_no = number (backwards in time) of last position of interest
+  # last_no = length(bz1) is a convenient default
   # (and includes all the positions)
-  goal_no <- length(bz1)
+  last_no <- length(bz1)
 
   no_of_nos <- length(bz1)
 
-  r_sum_rand  <- rep(0, len = n)
-  # r_sum_rand_r <- rep(0, len = n)
+  r_sum_rand <- rep(0, len = n)
+  r_sum_rand_r <- rep(0, len = n) #nolint
 
   # pr will store observed p-values in a run of r
   pr <- rep(1, len = no_of_nos)
@@ -113,11 +108,10 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   ## Set rmin to control outer loop on goal_no
   ## rmin <- 1
 
-  ## while((rmin > 0) && (goal_no < goal_no – q)){
+  ## while((rmin > 0) && (goal_no < last_no – q)){
   ## A
   set.seed(seed)
-  while (goal_no < goal_no - q) {
-
+  while (goal_no < last_no - q) {
     k <- 0
 
     # INCREASE k UNTIL NEXT POSSIBLE CHANGE POINT IS FOUND
@@ -127,100 +121,112 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
 
     p <- 1
 
-    while ((p > alpha) && (goal_no + q + k < goal_no)) {
+    while ((p > alpha) && (goal_no + q + k < last_no)) {
       # B
 
       k <- k + 1
 
-      r1 <- sqrt((bz1[goal_no + k] - bz1[goal_no])^2 + (bz2[goal_no + k] - bz2[goal_no])^2)
-      r2 <- sqrt((bz1[goal_no + k + q] - bz1[goal_no + k])^2 +
-          (bz2[goal_no + k + q] - bz2[goal_no + k])^2)
+      r1 <- sqrt(
+        (bz1[goal_no + k] - bz1[goal_no])^2 +
+          (bz2[goal_no + k] - bz2[goal_no])^2
+      )
+      r2 <- sqrt(
+        (bz1[goal_no + k + q] - bz1[goal_no + k])^2 +
+          (bz2[goal_no + k + q] - bz2[goal_no + k])^2
+      )
 
       r_sum <- r1 + r2
 
       # r_sum_rand[1] = observed value of statistic r1 + r2
       r_sum_rand[1] <- r_sum
 
-      # Now calculate statistic r1 + r2 for a further N-1 random permutations
+      # Now calculate statistic r1 + r2 for a further n-1 random permutations
       # and store in r_sum_rand
-      for (it in 2:n){
+      for (it in 2:n) {
         # start of it loop C
         u <- runif(k + q, 0, 1)
         perm <- order(u)
         bz1r <- bz1[goal_no]
         bz2r <- bz2[goal_no]
-        for (j in 1:k){ # start of j loop D
+        for (j in 1:k) {
+          # start of j loop D
           bz1r <- bz1r + bz1diff[goal_no - 1 + perm[j]]
           bz2r <- bz2r + bz2diff[goal_no - 1 + perm[j]]
         } # end of j loop D
 
-        r1_rand <- sqrt((bz1r - bz1[goal_no])^2 + (bz2r  - bz2[goal_no])^2)
-        r2_rand <- sqrt((bz1[goal_no + k + q] - bz1r)^2 + (bz2[goal_no + k + q] - bz2r)^2)
+        r1_rand <- sqrt((bz1r - bz1[goal_no])^2 + (bz2r - bz2[goal_no])^2)
+        r2_rand <- sqrt(
+          (bz1[goal_no + k + q] - bz1r)^2 + (bz2[goal_no + k + q] - bz2r)^2
+        )
         r_sum_rand[it] <- r1_rand + r2_rand
       } # end of it loop C
 
       p <- sum(r_sum_rand >= r_sum) / n
 
       pr[k] <- p
-
-    }  # end of ‘while’ on
-    #  ((p > alpha) && (goal_no + q + k < goal_no)) B
+    } # end of ‘while’ on
+    #  ((p > alpha) && (goal_no + q + k < last_no)) B
 
     # f is the first value of k in the current run that is significant
     f <- k
 
-    while ((p <= alpha) && (goal_no + q + k < goal_no)) {
+    while ((p <= alpha) && (goal_no + q + k < last_no)) {
       # E
 
       k <- k + 1
-      r1 <- sqrt((bz1[goal_no + k] - bz1[goal_no])^2 + (bz2[goal_no + k] - bz2[goal_no])^2)
-      r2 <- sqrt((bz1[goal_no + k + q] - bz1[goal_no + k])^2 +
-          (bz2[goal_no + k + q] - bz2[goal_no + k])^2)
-
+      r1 <- sqrt(
+        (bz1[goal_no + k] - bz1[goal_no])^2 +
+          (bz2[goal_no + k] - bz2[goal_no])^2
+      )
+      r2 <- sqrt(
+        (bz1[goal_no + k + q] - bz1[goal_no + k])^2 +
+          (bz2[goal_no + k + q] - bz2[goal_no + k])^2
+      )
 
       r_sum <- r1 + r2
 
       # r_sum_rand[1] = observed value of statistic r1 + r2
       r_sum_rand[1] <- r_sum
 
-      # Now calculate statistic r1 + r2 for a further N-1 random permutations
+      # Now calculate statistic r1 + r2 for a further n-1 random permutations
       # and store in r_sum_rand
-      for (it in 2:n){ # start of it loop F
+      for (it in 2:n) {
+        # start of it loop F
         u <- runif(k + q, 0, 1)
         perm <- order(u)
         bz1r <- bz1[goal_no]
         bz2r <- bz2[goal_no]
-        for (j in 1:k){ # start of j loop G
+        for (j in 1:k) {
+          # start of j loop G
           bz1r <- bz1r + bz1diff[goal_no - 1 + perm[j]]
           bz2r <- bz2r + bz2diff[goal_no - 1 + perm[j]]
         } # end of j loop G
 
-        r1_rand <- sqrt((bz1r - bz1[goal_no])^2 + (bz2r  - bz2[goal_no])^2)
-        r2_rand <- sqrt((bz1[goal_no + k + q] - bz1r)^2 + (bz2[goal_no + k + q] - bz2r)^2)
+        r1_rand <- sqrt((bz1r - bz1[goal_no])^2 + (bz2r - bz2[goal_no])^2)
+        r2_rand <- sqrt(
+          (bz1[goal_no + k + q] - bz1r)^2 + (bz2[goal_no + k + q] - bz2r)^2
+        )
         r_sum_rand[it] <- r1_rand + r2_rand
       } # end of it loop F
 
       p <- sum(r_sum_rand >= r_sum) / n
 
       pr[k] <- p
-
-    }  # end of ‘while’ on
-    #  ((p < alpha) && (goal_no + q + k < goal_no)) E
+    } # end of ‘while’ on
+    #  ((p < alpha) && (goal_no + q + k < last_no)) E
 
     # l is the last value of k in the current run that is significant
     l <- k - 1
-
 
     # apply “peak rule”
     pr[f:l]
     rmin <- min(which(pr[f:l] == min(pr[f:l])))
     rmin <- if (l >= f) rmin else 0
 
-    goal_no <- ifelse(rmin > 0, goal_no + f + rmin - 1, goal_no)
+    goal_no <- ifelse(rmin > 0, goal_no + f + rmin - 1, last_no)
 
-    sig[goal_no] <- ifelse(goal_no == goal_no, 0, 1)
-
-  }  # end of ‘while’ on (goal_no < goal_no - q) # A
+    sig[goal_no] <- ifelse(goal_no == last_no, 0, 1)
+  } # end of ‘while’ on (goal_no < last_no - q) # A
 
   #  Remove putative goal from list of CP’s
   sig[1] <- 0
@@ -235,7 +241,7 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
 
   # bsig is sig in reverse time-order
   bsig <- rep(0, nz)
-  for (j in 1:nz){
+  for (j in 1:nz) {
     bsig[j] <- sig[nz - j + 1]
   }
 
@@ -244,11 +250,11 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   cp_time <- newpp[sig == 1]
   cp_bx1 <- bz1[sig == 1] #nolint
   cp_bx2 <- bz2[sig == 1] #nolint
-  cp_no <- n + 1 - cp_time
+  cp_no <- x1_len + 1 - cp_time
   # last is cp_no in reverse order
   last <- 0 * cp_no
   cp_leng <- length(cp_no)
-  for (j in 1:cp_leng){
+  for (j in 1:cp_leng) {
     last[j] <- cp_no[cp_leng - j + 1]
   }
   # last contains row nos. of (last times at) change points
@@ -258,8 +264,8 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
 
   # first contains row nos. of first times at change points
   first <- 0 * last
-  for (j in seq_along(last)) {
-    first[j] <- n + 2 - min(which(newp > (n + 1 - last[j])))
+  for (j in seq_len(length(last))) {
+    first[j] <- x1_len + 2 - min(which(newp > (x1_len + 1 - last[j])))
   }
 
   # PLOT WAYPOINTS AND MARK CHANGE POINTS
@@ -290,7 +296,7 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   # cxlim <- c(min(bz2),max(bz2))
   # cylim <- c(min(bz1) - sd(bz1diff),max(bz1))
   # plot(bz2,bz1, pch=18, xlim=cxlim, ylim=cylim, xlab="East", ylab="North")
-  # title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "n = ", n , ", ", "tol = ", tol,
+  # title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "n = ", n , ", ", "tol = ", tol ,
   #   sep=""), sub ="Blue triangle = putative goal, red star = change pt.,
   #   red no. = row of data file")
   # segments(bz2[s], bz1[s], bz2[s+1], bz1[s+1])
@@ -319,5 +325,4 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   # “cps” contains “first, “last”, “north” and “east”.
   cps <- cbind(first, last, north, east)
   list(sig = sig, cps = cps, bz1 = bz1, bz2 = bz2)
-
 }

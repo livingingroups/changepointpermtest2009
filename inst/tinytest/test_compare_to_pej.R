@@ -43,9 +43,7 @@ compare_to_pej <- function(tf, alpha, q, n, tol) {
     tf, q = q, n = n, alpha = alpha, seed = 2025, legacy_movement_criteria = TRUE
   )
 
-  if (sum(cp_tf$sig) == 0) expect_warning(
-    pej <- pej_implementation(easting(tf), northing(tf), alpha, q, n, tol) #nolint
-  ) else pej <- pej_implementation(easting(tf), northing(tf), alpha, q, n, tol) #nolint
+  pej <- pej_implementation(easting(tf), northing(tf), alpha, q, n = n, tol)
 
   # convert cps into format pej outputs
   cps_rcpp <- pej_style_cps(cp_tf)# FIXME: #nolint
@@ -55,8 +53,8 @@ compare_to_pej <- function(tf, alpha, q, n, tol) {
 
   expect_equal(pej$bz1, easting(bztf))
   expect_equal(pej$bz2, northing(bztf))
-  # expect_equal(pej$sig, bztf$sig) # FIXME: not equal
-  # expect_equal(pej$cps, cps_rcpp) # FIXME: not equal
+  expect_equal(pej$sig, bztf$sig)
+  expect_equal(pej$cps, cps_rcpp)
 }
 
 data("cpttestdata", package = "cpt")
