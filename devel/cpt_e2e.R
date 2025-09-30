@@ -16,7 +16,7 @@ x2 <- inp[[2]]
 
 tf <- as.trackframe(data.frame(t=as.POSIXct(seq_along(x1)), y = x1, x=x2), 't', 'y', 'x')
 
-profvis::profvis(actual <- as.numeric(change_point_test(tf, alpha = 0.01, q = 4, N = 10000, tol = 0)$cp_no))
+profvis::profvis(actual <- as.numeric(change_point_test(tf, alpha = 0.01, q = 4, N = 10000, min_move_dist = 0)$cp_no))
 
 expected <- c(
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -34,7 +34,7 @@ expected <- c(
 
 stopifnot(all.equal(actual,expected))
 
-actual <- as.numeric(change_point_test(tf, alpha = 0.1, q = 8, N = 10000, tol = 0)$cp_no)
+actual <- as.numeric(change_point_test(tf, alpha = 0.1, q = 8, N = 10000, min_move_dist = 0)$cp_no)
 
 # original output
 v0 <-

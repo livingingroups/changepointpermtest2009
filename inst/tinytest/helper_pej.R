@@ -6,7 +6,7 @@
 # file <- "data/8_7august11.txt"
 # inp <- scan(file, list(x1 = 0, x2 = 0))
 
-pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
+pej_implementation <- function(x1, x2, alpha, q, n, min_move_dist, seed = 2025) {
   # INPUTS
 
   # # input alpha
@@ -27,13 +27,13 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   # # n = 10000 is a convenient number
   # n <- 1000
 
-  # # input tol
-  # # tol = tolerance
+  # # input min_move_dist
+  # # min_move_dist = tolerance
   # # = maximum distance between indistinguishable positions
-  # # tol = 0 is a convenient default
+  # # min_move_dist = 0 is a convenient default
   # # The user may like to replace this by
   # # the average GPS error in research area
-  # tol <- 0
+  # min_move_dist <- 0
 
   # PRELIMINARIES
 
@@ -60,7 +60,7 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   ind <- c(1:x1_len)
   newp <- c(1:x1_len)
   for (j in 2:x1_len) {
-    newp[j] <- ind[j] * (abs(bx1diff[j - 1]) > tol && abs(bx2diff[j - 1]) > tol)
+    newp[j] <- ind[j] * (abs(bx1diff[j - 1]) > min_move_dist && abs(bx2diff[j - 1]) > min_move_dist)
   }
   # bz1, bz2 are coordinates of points(in reverse time order) at which there is movement
   bz1 <- bx1[newp > 0]
@@ -246,7 +246,7 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   }
 
   # “times” (row nos.) and coordinates of change points
-  newpp <- newp[newp > tol]
+  newpp <- newp[newp > min_move_dist]
   cp_time <- newpp[sig == 1]
   cp_bx1 <- bz1[sig == 1] #nolint
   cp_bx2 <- bz2[sig == 1] #nolint
@@ -296,7 +296,7 @@ pej_implementation <- function(x1, x2, alpha, q, n, tol, seed = 2025) {
   # cxlim <- c(min(bz2),max(bz2))
   # cylim <- c(min(bz1) - sd(bz1diff),max(bz1))
   # plot(bz2,bz1, pch=18, xlim=cxlim, ylim=cylim, xlab="East", ylab="North")
-  # title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "n = ", n , ", ", "tol = ", tol ,
+  # title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "n = ", n , ", ", "min_move_dist = ", min_move_dist ,
   #   sep=""), sub ="Blue triangle = putative goal, red star = change pt.,
   #   red no. = row of data file")
   # segments(bz2[s], bz1[s], bz2[s+1], bz1[s+1])

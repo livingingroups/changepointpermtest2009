@@ -8,17 +8,17 @@
 #' @param alpha nominal significance level
 #' @param q q value
 #' @param N total number of permutations
-#' @param tol maximum distance between indistinguishable positions
+#' @param min_move_dist maximum distance between indistinguishable positions
 #'
 #' @return TODO
 #' @export
-change_point_test_vectorized <- function(tf, alpha = 0.05, q = 4, N = 1000, tol = 0) {
+change_point_test_vectorized <- function(tf, alpha = 0.05, q = 4, N = 1000, min_move_dist = 0) {
   # tf
   # alpha = 0.05
   # q = 4
   # N = 1000
-  # tol = 0
-  # tol = 0.0001
+  # min_move_dist = 0
+  # min_move_dist = 0.0001
   
   # # Ugly implementation of multiple tracks in the frame
   # tf_ids <- unique_ids(tf)
@@ -31,7 +31,7 @@ change_point_test_vectorized <- function(tf, alpha = 0.05, q = 4, N = 1000, tol 
   #         # calling itself, unnecessary, but it works
   #         cp <- change_point_test(
   #           select_id(tf, id),
-  #           alpha = alpha, q = q, N = N, tol = tol
+  #           alpha = alpha, q = q, N = N, min_move_dist = min_move_dist
   #         )
   #         cp[, names(tf_ids)] <- id
   #         cp
@@ -62,7 +62,7 @@ change_point_test_vectorized <- function(tf, alpha = 0.05, q = 4, N = 1000, tol 
   # REMOVE POINTS AT WHICH ANIMAL STAYS STILL
   # ind is (reverse) time ordering of points
   # newp  > 0 if point differs from previous point
-  ind_new <- c(TRUE, sqrt(bx1diff^2 + bx2diff^2) > tol)
+  ind_new <- c(TRUE, sqrt(bx1diff^2 + bx2diff^2) > min_move_dist)
   bz1 <- bx1[ind_new]
   bz2 <- bx2[ind_new]
   #backwards index

@@ -20,7 +20,7 @@ df <- data.frame(x = cpttestdata[, 1],
                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
 tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, tol = 0)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500, min_move_dist = 0)
 summary(cpt_tf)
 
 # Get probability values instead of binary indicators

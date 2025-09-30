@@ -12,7 +12,7 @@
 #' @param q_max maximum number of q to be tested
 #' @param n an integer specifying the number of random permutations for thepermutation test.
 #'        Higher values provide more accurate p-values but increase computation time.
-#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
+#' @param min_move_dist a numeric value specifying the maximum distance between indistinguishable positions.
 #'        Points with movements smaller than this threshold will be considered stationary.
 #' @param ... additional arguments passed to methods.
 #'
@@ -34,7 +34,7 @@ change_point_test_pvalue_xyt <- function(
   time,
   q_max = 6,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   ...
 ) {
   checkmate::assert_numeric(x, min.len = 3L, any.missing = FALSE)
@@ -42,7 +42,7 @@ change_point_test_pvalue_xyt <- function(
   checkmate::assert_numeric(time, len = length(x), any.missing = FALSE)
   checkmate::assert_integerish(q_max, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_integerish(n, len = 1, any.missing = FALSE, lower = 1)
-  checkmate::assert_numeric(tol, len = 1, any.missing = FALSE, lower = 0)
+  checkmate::assert_numeric(min_move_dist, len = 1, any.missing = FALSE, lower = 0)
 
   # Reverse the time-ordering so that (bx[1], by[1]) refers to (final)
   idx <- order(time, decreasing = TRUE)
@@ -56,12 +56,12 @@ change_point_test_pvalue_xyt <- function(
   is_moving <- if (isTRUE(list(...)[["legacy_movement_criteria"]])) {
     c(
       TRUE,
-      abs(bxdiff) > tol & abs(bydiff) > tol
+      abs(bxdiff) > min_move_dist & abs(bydiff) > min_move_dist
     )
   } else {
     c(
       TRUE,
-      sqrt(bxdiff^2 + bydiff^2) > tol
+      sqrt(bxdiff^2 + bydiff^2) > min_move_dist
     )
   }
   bxm <- bx[is_moving]
@@ -83,7 +83,7 @@ change_point_test_pvalue_internal <- function(
   data,
   q_max = 6,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   seed = NULL,
   verify = FALSE,
   ...
@@ -97,7 +97,7 @@ change_point_test_pvalue_internal <- function(
     time = data[[attr(data, "time")]],
     q_max = q_max,
     n = n,
-    tol = tol
+    min_move_dist = min_move_dist
   )
 }
 
@@ -196,7 +196,7 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 #' @param q_max an integer specifying the maximum value of q.
 #' @param n an integer specifying the number of random permutations for the permutation test
 #'   Higher values provide more accurate p-values but increase computation time.
-#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
+#' @param min_move_dist a numeric value specifying the maximum distance between indistinguishable positions.
 #'   Points with movements smaller than this threshold will be considered stationary.
 #' @param clu optional parameter determining whether parallelization with the parallel package is
 #'  used.
@@ -237,7 +237,7 @@ change_point_test_pvalue <- function(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -251,7 +251,7 @@ change_point_test_pvalue <- function(
 #' tf <- as.trackframe(cpttestdata)
 #' class(tf)
 #' set.seed(2025L)
-#' cpt_tf <- change_point_test_pvalue(tf, q_max = 3, n = 100, tol = 0)
+#' cpt_tf <- change_point_test_pvalue(tf, q_max = 3, n = 100, min_move_dist = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue
@@ -259,7 +259,7 @@ change_point_test_pvalue.trackframe <- function(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -278,7 +278,7 @@ change_point_test_pvalue.trackframe <- function(
       time = data[[attr(data, "time")]],
       q_max = q_max,
       n = n,
-      tol = tol
+      min_move_dist = min_move_dist
     )
   } else {
     cpt <- split(data, data[[attr(data, "id")]])
@@ -288,7 +288,7 @@ change_point_test_pvalue.trackframe <- function(
         change_point_test_pvalue_internal,
         q_max = q_max,
         n = n,
-        tol = tol,
+        min_move_dist = min_move_dist,
         seed = seed,
         verify = verify
       )
@@ -308,7 +308,7 @@ change_point_test_pvalue.trackframe <- function(
         change_point_test_pvalue_internal,
         q_max = q_max,
         n = n,
-        tol = tol,
+        min_move_dist = min_move_dist,
         seed = seed,
         verify = verify
       )
@@ -325,7 +325,7 @@ change_point_test_pvalue.trackframe <- function(
 #' df <- cpttestdata
 #' class(df)
 #' set.seed(2025L)
-#' cpt_df <- change_point_test_pvalue(df, q_max = 3, n = 100, tol = 0)
+#' cpt_df <- change_point_test_pvalue(df, q_max = 3, n = 100, min_move_dist = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue
@@ -333,7 +333,7 @@ change_point_test_pvalue.data.frame <- function(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -342,7 +342,7 @@ change_point_test_pvalue.data.frame <- function(
     data = as.trackframe(data),
     q_max = q_max,
     n = n,
-    tol = tol,
+    min_move_dist = min_move_dist,
     clu = clu,
     ...
   )
@@ -354,7 +354,7 @@ change_point_test_pvalue.data.frame <- function(
 #' data("path_move2", package = "trackframe")
 #' class(path_move2)
 #' set.seed(2025L)
-#' cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, n = 100, tol = 0)
+#' cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, n = 100, min_move_dist = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue
@@ -366,7 +366,7 @@ change_point_test_pvalue.move2 <- change_point_test_pvalue.data.frame
 #' data("path_sftrack", package = "trackframe")
 #' class(path_sftrack)
 #' set.seed(2025L)
-#' cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, tol = 0)
+#' cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, min_move_dist = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue

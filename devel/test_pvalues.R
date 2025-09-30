@@ -14,7 +14,7 @@ b_xyt <- head(data[NROW(data):1,], 20)
 # # calcuate diff of coordinates
 # b_xy_diff <- structure(apply(b_xyt[, c(x_col, y_col)], 2, FUN = diff), dimnames = list(NULL,c("x_diff", "y_diff")))
 # # remove points at which animal stays still #FIXME do we need it here?
-# ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > tol)
+# ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > min_move_dist)
 # b_xyt2 <- b_xyt[ind_new,]
 b_xyt2 <- b_xyt
 
@@ -24,7 +24,7 @@ change_point_fit_pvalue_cpp <- cpt:::rcpparma_change_point_test_pvalue
 
 q_max = 3
 N = 200
-tol = 0
+min_move_dist = 0
 
 set.seed(0)
 # sink("out_R.txt")

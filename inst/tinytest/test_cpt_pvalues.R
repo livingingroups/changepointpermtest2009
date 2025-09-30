@@ -27,12 +27,12 @@ test_xytdata <- function() {
     time = xyt[, "time"],
     q_max = 3,
     n = 100,
-    tol = 0
+    min_move_dist = 0
   )
   expect_inherits(cpt_xyt, "matrix")
   expect_inherits(cpt_xyt, "change_point_test_pvalue")
   set.seed(2025L)
-  cpt_tf <- change_point_test_pvalue(xyt, q_max = 3, n = 100, tol = 0)
+  cpt_tf <- change_point_test_pvalue(xyt, q_max = 3, n = 100, min_move_dist = 0)
   expect_inherits(cpt_tf, "change_point_test_pvalue")
   expect_equal(cpt_xyt, cpt_tf)
   # cat(deparse(cpt_xyt))
@@ -76,7 +76,7 @@ test_basic_functionality <- function() {
 
   # Run change point detection
   set.seed(2025L)
-  result <- change_point_test_pvalue(data, q_max = 3, n = 100, tol = 0)
+  result <- change_point_test_pvalue(data, q_max = 3, n = 100, min_move_dist = 0)
 
   # Check that the result is a data frame
   expect_true(is.matrix(result))
@@ -102,12 +102,12 @@ test_input_formats <- function() {
 
   # Test with data frame
   data_df <- data.frame(x = x, y = y, t = t)
-  result_df <- change_point_test_pvalue(data_df, q_max = 3, n = 100, tol = 0)
+  result_df <- change_point_test_pvalue(data_df, q_max = 3, n = 100, min_move_dist = 0)
   expect_equal(NCOL(result_df), 3)
   t <- as.POSIXct(1:10)
   data_df <- data.frame(x = x, y = y, t = t)
   set.seed(2025L)
-  result_df <- change_point_test_pvalue(data_df, q_max = 2, n = 50, tol = 0)
+  result_df <- change_point_test_pvalue(data_df, q_max = 2, n = 50, min_move_dist = 0)
   expect_equal(NCOL(result_df), 2)
 
   # Test with trackframe
@@ -118,7 +118,7 @@ test_input_formats <- function() {
     "y"
   )
   set.seed(2025L)
-  result_tf <- change_point_test_pvalue(data_tf, q_max = 2, n = 50, tol = 0)
+  result_tf <- change_point_test_pvalue(data_tf, q_max = 2, n = 50, min_move_dist = 0)
   expect_inherits(result_tf, "change_point_test_pvalue")
   expect_equal(result_df, result_tf)
 
@@ -136,7 +136,7 @@ test_input_formats <- function() {
     data_move2,
     q_max = 2,
     n = 50,
-    tol = 0
+    min_move_dist = 0
   )
   expect_inherits(result_move2, "change_point_test_pvalue")
 
@@ -153,7 +153,7 @@ test_input_formats <- function() {
     data_sftrack,
     q_max = 2,
     n = 50,
-    tol = 0
+    min_move_dist = 0
   )
   expect_inherits(result_sftrack, "change_point_test_pvalue")
   expect_equal(result_move2, result_sftrack)
@@ -197,7 +197,7 @@ test_multiple_paths <- function() {
     data = paths_trackframe,
     q_max = 3,
     n = 10,
-    tol = 0
+    min_move_dist = 0
   )
 
   expect_equal(dim(paths_trackframe)[1], sum(sapply(cpt_mpaths, NROW)))
@@ -207,7 +207,7 @@ test_multiple_paths <- function() {
     data = track1,
     q_max = 3,
     n = 10,
-    tol = 0
+    min_move_dist = 0
   )
 
   expect_equal(cpt_path1, cpt_mpaths[[1]])
@@ -219,7 +219,7 @@ test_multiple_paths <- function() {
     data = paths_sftrack,
     q_max = 3,
     n = 10,
-    tol = 0
+    min_move_dist = 0
   )
 
   expect_equal(cpt_mpaths_sftrack, cpt_mpaths)

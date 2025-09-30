@@ -4,7 +4,15 @@
 \alias{change_point_test_pvalue_xyt}
 \title{Change Point Test}
 \usage{
-change_point_test_pvalue_xyt(x, y, time, q_max = 6, n = 1000, tol = 0, ...)
+change_point_test_pvalue_xyt(
+  x,
+  y,
+  time,
+  q_max = 6,
+  n = 1000,
+  min_move_dist = 0,
+  ...
+)
 }
 \arguments{
 \item{x}{a numeric vector of x-coordinates (easting) of the trajectory backwards in time.}
@@ -19,7 +27,7 @@ containing the timestamps corresponding to the easting and northing coordinates.
 \item{n}{an integer specifying the number of random permutations for thepermutation test.
 Higher values provide more accurate p-values but increase computation time.}
 
-\item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
+\item{min_move_dist}{a numeric value specifying the maximum distance between indistinguishable positions.
 Points with movements smaller than this threshold will be considered stationary.}
 
 \item{...}{additional arguments passed to methods.}

@@ -38,13 +38,13 @@ q <- 4
 # N = 10000 is a convenient number
 N <- 1000
 
-# input tol 
-# tol = tolerance 
+# input min_move_dist 
+# min_move_dist = tolerance 
 # = maximum distance between indistinguishable positions
-# tol = 0 is a convenient default
+# min_move_dist = 0 is a convenient default
 # The user may like to replace this by 
 # the average GPS error in research area
-tol <- 0
+min_move_dist <- 0
 
 
 # PRELIMINARIES
@@ -74,7 +74,7 @@ bx2diff <- diff(bx2)
 ind <- c(1:n)
 newp <- c(1:n)
 for (j in 2:n){
-  newp[j] <- ind[j]*(abs(bx1diff[j-1]) > tol && abs(bx2diff[j-1]) > tol)
+  newp[j] <- ind[j]*(abs(bx1diff[j-1]) > min_move_dist && abs(bx2diff[j-1]) > min_move_dist)
 }
 # bz1, bz2 are coordinates of points(in reverse time order) at which there is movement 
 bz1 <- bx1[newp >0]
@@ -240,7 +240,7 @@ b_xyt <- xyt[NROW(xyt):1,]
 # calcuate diff of coordinates
 b_xy_diff <- structure(apply(b_xyt[, 1:2], 2, FUN = diff), dimnames = list(NULL,c("x_diff", "y_diff")))
 # remove points at which animal stays still
-ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > tol)
+ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > min_move_dist)
 b_xyt2 <- b_xyt[ind_new,]
 
 set.seed(2025)
@@ -273,7 +273,7 @@ for (j in 1:nz){
 }
 
 # “times” (row nos.) and coordinates of change points
-newpp <- newp[newp > tol]
+newpp <- newp[newp > min_move_dist]
 cp.time <- newpp[sig==1]
 cp.bx1 <- bz1[sig==1]
 cp.bx2 <- bz2[sig==1]
@@ -323,7 +323,7 @@ s <- c(1:nz)
 # cxlim <- c(min(bz2),max(bz2))
 # cylim <- c(min(bz1) - sd(bz1diff),max(bz1))
 # plot(bz2,bz1, pch=18, xlim=cxlim, ylim=cylim, xlab="East", ylab="North")
-# title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "N = ", N , ", ", "tol = ", tol , sep=""), 
+# title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "N = ", N , ", ", "min_move_dist = ", min_move_dist , sep=""), 
 #       sub ="Blue triangle = putative goal, red star = change pt., red no. = row of data file")
 # segments(bz2[s], bz1[s], bz2[s+1], bz1[s+1])
 # par(new ="T")

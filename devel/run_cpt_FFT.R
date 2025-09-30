@@ -23,9 +23,9 @@ tf <- FFT_tf_abby
 # tf <- tf[seq(1, NROW(tf), by = 10),] # for faster run
 
 # ? better return trackframe instead of xts?
-# sig_cpt <- change_point_test(tf, alpha = 0.05, q = 4, N = 10000, tol = 0) #authors recommend N=10000
-sig_cpt <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, tol = 0)
-# sig_cpt <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, tol = 0.00005)
+# sig_cpt <- change_point_test(tf, alpha = 0.05, q = 4, N = 10000, min_move_dist = 0) #authors recommend N=10000
+sig_cpt <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, min_move_dist = 0)
+# sig_cpt <- change_point_test(tf, alpha = 0.05, q = 4, N = 1000, min_move_dist = 0.00005)
 
 
 head(sig_cpt)

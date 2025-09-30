@@ -254,7 +254,7 @@ plotcpt <- function(
   alpha = 0.05,
   q = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...

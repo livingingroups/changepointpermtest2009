@@ -19,7 +19,7 @@ if (file.exists(file)) {
   # data("cpttestdata", package = "cpt")
   xyt <- cpttestdata
   set.seed(2025L)
-  cpt <- change_point_test(xyt, alpha = 0.05, q = 4, n = 1000, tol = 0)
+  cpt <- change_point_test(xyt, alpha = 0.05, q = 4, n = 1000, min_move_dist = 0)
   # cat(deparse(cpt$sig))
   results_orig <- c(
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -45,7 +45,7 @@ if (file.exists(file)) {
     "y"
   )
   set.seed(2025L)
-  cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, n = 1000, tol = 0)
+  cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, n = 1000, min_move_dist = 0)
   expect_equal(cpt_tf$sig, results_orig)
   expect_equal(
     summary(cpt_tf)[, "east"],

@@ -12,7 +12,7 @@
 #' @param q an integer specifying the minimum segment length between potential change points.
 #' @param n an integer specifying the number of random permutations for thepermutation test.
 #'        Higher values provide more accurate p-values but increase computation time.
-#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
+#' @param min_move_dist a numeric value specifying the maximum distance between indistinguishable positions.
 #'        Points with movements smaller than this threshold will be considered stationary.
 #' @param ... additional arguments passed to methods.
 #'
@@ -38,7 +38,7 @@ change_point_test_xyt <- function(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   ...
 ) {
   checkmate::assert_numeric(easting, min.len = 3L, any.missing = FALSE)
@@ -51,7 +51,7 @@ change_point_test_xyt <- function(
   checkmate::assert_integerish(q, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_integerish(n, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_numeric(alpha, len = 1, any.missing = FALSE, lower = 0)
-  checkmate::assert_numeric(tol, len = 1, any.missing = FALSE, lower = 0)
+  checkmate::assert_numeric(min_move_dist, len = 1, any.missing = FALSE, lower = 0)
 
   # Reverse the time-ordering so that (bx[1], by[1]) refers to (final)
   idx <- order(time, decreasing = TRUE)
@@ -65,10 +65,10 @@ change_point_test_xyt <- function(
   # remove points at which animal stays still
   is_moving <- if (isTRUE(list(...)[["legacy_movement_criteria"]])) c(
     TRUE,
-    abs(bxdiff) > tol & abs(bydiff) > tol
+    abs(bxdiff) > min_move_dist & abs(bydiff) > min_move_dist
   ) else c(
     TRUE,
-    sqrt(bxdiff^2 + bydiff^2) > tol
+    sqrt(bxdiff^2 + bydiff^2) > min_move_dist
   )
 
   bxm <- bx[is_moving]
@@ -110,7 +110,7 @@ change_point_test_trackframe_single_id <- function(
   alpha,
   q,
   n,
-  tol,
+  min_move_dist,
   seed = NULL,
   verify = FALSE,
   ...
@@ -125,7 +125,7 @@ change_point_test_trackframe_single_id <- function(
     alpha = alpha,
     q = q,
     n = n,
-    tol = tol
+    min_move_dist = min_move_dist
   )
   if (isTRUE(verify)) {
     # just for testing
@@ -199,7 +199,7 @@ refine_cluster_input <- function(clu) {
 #' @param q an integer specifying the minimum segment length between potential change points.
 #' @param n an integer specifying the number of random permutations for thepermutation test.
 #'   Higher values provide more accurate p-values but increase computation time.
-#' @param tol a numeric value specifying the maximum distance between indistinguishable positions.
+#' @param min_move_dist a numeric value specifying the maximum distance between indistinguishable positions.
 #'   Points with movements smaller than this threshold will be considered stationary.
 #' @param clu optional parameter determining whether parallelization with the parallel package is
 #'  used.
@@ -246,7 +246,7 @@ refine_cluster_input <- function(clu) {
 #'                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
 #' tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
 #' set.seed(2025L)
-#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
+#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_tf)
 #'
 #' # Get probability values instead of binary indicators
@@ -259,7 +259,7 @@ change_point_test <- function(
   alpha = 0.05,
   q = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -272,7 +272,7 @@ change_point_test <- function(
 #' tf <- as.trackframe(cpttestdata)
 #' class(tf)
 #' set.seed(2025L)
-#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
+#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_tf)
 #'
 #' @export
@@ -282,7 +282,7 @@ change_point_test.trackframe <- function(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -297,7 +297,7 @@ change_point_test.trackframe <- function(
       alpha = alpha,
       q = q,
       n = n,
-      tol = tol,
+      min_move_dist = min_move_dist,
       seed = seed,
       verify = verify,
       ...
@@ -311,7 +311,7 @@ change_point_test.trackframe <- function(
         alpha = alpha,
         q = q,
         n = n,
-        tol = tol,
+        min_move_dist = min_move_dist,
         seed = seed,
         verify = verify,
         ...
@@ -333,7 +333,7 @@ change_point_test.trackframe <- function(
         alpha = alpha,
         q = q,
         n = n,
-        tol = tol,
+        min_move_dist = min_move_dist,
         seed = seed,
         verify = verify,
         ...
@@ -352,7 +352,7 @@ change_point_test.trackframe <- function(
 #' df <- cpttestdata
 #' class(df)
 #' set.seed(2025L)
-#' cpt_df <- change_point_test(df, alpha = 0.05, q = 3, n = 500, tol = 0)
+#' cpt_df <- change_point_test(df, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_df)
 #'
 #' @export
@@ -362,7 +362,7 @@ change_point_test.data.frame <- function(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   ...
 ) {
@@ -371,7 +371,7 @@ change_point_test.data.frame <- function(
     alpha = alpha,
     q = q,
     n = n,
-    tol = tol,
+    min_move_dist = min_move_dist,
     clu = clu,
     ...
   )
@@ -383,7 +383,7 @@ change_point_test.data.frame <- function(
 #' data("path_move2", package = "trackframe")
 #' class(path_move2)
 #' set.seed(2025L)
-#' cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, n = 500, tol = 0)
+#' cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_move2)
 #'
 #' @export
@@ -393,7 +393,7 @@ change_point_test.move2 <- function(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   ...
 ) {
@@ -402,7 +402,7 @@ change_point_test.move2 <- function(
     alpha = alpha,
     q = q,
     n = n,
-    tol = tol,
+    min_move_dist = min_move_dist,
     clu = clu,
     ...
   )
@@ -417,7 +417,7 @@ change_point_test.move2 <- function(
 #' data("path_sftrack", package = "trackframe")
 #' class(path_sftrack)
 #' set.seed(2025L)
-#' cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, n = 500, tol = 0)
+#' cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_sftrack)
 #'
 #' @export

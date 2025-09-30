@@ -12,7 +12,7 @@ change_point_test_pvalue(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -22,7 +22,7 @@ change_point_test_pvalue(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -32,7 +32,7 @@ change_point_test_pvalue(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -42,7 +42,7 @@ change_point_test_pvalue(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -52,7 +52,7 @@ change_point_test_pvalue(
   data,
   q_max = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -67,7 +67,7 @@ For the default method, this should be a matrix or data frame with at least 3 co
 \item{n}{an integer specifying the number of random permutations for the permutation test
 Higher values provide more accurate p-values but increase computation time.}
 
-\item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
+\item{min_move_dist}{a numeric value specifying the maximum distance between indistinguishable positions.
 Points with movements smaller than this threshold will be considered stationary.}
 
 \item{clu}{optional parameter determining whether parallelization with the parallel package is
@@ -115,23 +115,23 @@ library(trackframe)
 tf <- as.trackframe(cpttestdata)
 class(tf)
 set.seed(2025L)
-cpt_tf <- change_point_test_pvalue(tf, q_max = 3, n = 100, tol = 0)
+cpt_tf <- change_point_test_pvalue(tf, q_max = 3, n = 100, min_move_dist = 0)
 
 df <- cpttestdata
 class(df)
 set.seed(2025L)
-cpt_df <- change_point_test_pvalue(df, q_max = 3, n = 100, tol = 0)
+cpt_df <- change_point_test_pvalue(df, q_max = 3, n = 100, min_move_dist = 0)
 
 library(move2)
 data("path_move2", package = "trackframe")
 class(path_move2)
 set.seed(2025L)
-cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, n = 100, tol = 0)
+cpt_move2 <- change_point_test_pvalue(path_move2[1:200,], q_max = 3, n = 100, min_move_dist = 0)
 
 library(sftrack)
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
 set.seed(2025L)
-cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, tol = 0)
+cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, min_move_dist = 0)
 
 }

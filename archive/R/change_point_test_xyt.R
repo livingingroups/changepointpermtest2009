@@ -9,24 +9,24 @@
 #' @param alpha nominal significance level
 #' @param q q value
 #' @param N total number of permutations
-#' @param tol maximum distance between indistinguishable positions
+#' @param min_move_dist maximum distance between indistinguishable positions
 #'
 #' @return TODO
 #' @export
-change_point_test_new <- function(xyt, alpha = 0.05, q = 4, N = 1000, tol = 0, nbatches = 10) {
+change_point_test_new <- function(xyt, alpha = 0.05, q = 4, N = 1000, min_move_dist = 0, nbatches = 10) {
   # # xyt
   # alpha = 0.05
   # q = 4
   # N = 1000
-  # tol = 0
-  # tol = 0.0001
+  # min_move_dist = 0
+  # min_move_dist = 0.0001
   
   # reverse order
   b_xyt <- xyt[NROW(xyt):1,]
   # calcuate diff of coordinates
   b_xy_diff <- structure(apply(b_xyt[, 1:2], 2, FUN = diff), dimnames = list(NULL,c("x_diff", "y_diff")))
   # remove points at which animal stays still
-  ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > tol)
+  ind_new <- c(TRUE, sqrt(b_xy_diff[, "x_diff"]^2 + b_xy_diff[, "y_diff"]^2) > min_move_dist)
   b_xyt2 <- b_xyt[ind_new,]
   
   sig <- change_point_test_fit_new(bx = b_xyt2[, "x"], by = b_xyt2[, "y"], q = q, N = N, alpha = alpha, nbatches = nbatches) #FIXME bz1 and bz2

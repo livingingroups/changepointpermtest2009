@@ -50,7 +50,7 @@ prob_values <- change_point_test_pvalue(cpttestdata, q_max = 3, n = 500)
 - `alpha`: Significance level for detecting change points (default: 0.05)
 - `q`: Minimum segment length between potential change points (default: 4)
 - `n`: Number of random permutations for the Monte Carlo test (default: 1000)
-- `tol`: Maximum distance between indistinguishable positions (default: 0)
+- `min_move_dist`: Maximum distance between indistinguishable positions (default: 0)
 
 ## Documentation
 

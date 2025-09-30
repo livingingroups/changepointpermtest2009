@@ -11,7 +11,7 @@ change_point_test_xyt(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   ...
 )
 }
@@ -30,7 +30,7 @@ containing the timestamps corresponding to the easting and northing coordinates.
 \item{n}{an integer specifying the number of random permutations for thepermutation test.
 Higher values provide more accurate p-values but increase computation time.}
 
-\item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
+\item{min_move_dist}{a numeric value specifying the maximum distance between indistinguishable positions.
 Points with movements smaller than this threshold will be considered stationary.}
 
 \item{...}{additional arguments passed to methods.}

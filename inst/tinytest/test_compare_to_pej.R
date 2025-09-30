@@ -3,10 +3,10 @@ library(tinytest)
 library(trackframe)
 library(cpt)
 
-pej_tf_filter <- \(tf, tol) {
+pej_tf_filter <- \(tf, min_move_dist) {
   tf <- tf[c(
-    abs(diff(easting(tf))) > tol &
-      abs(diff(northing(tf))) > tol,
+    abs(diff(easting(tf))) > min_move_dist &
+      abs(diff(northing(tf))) > min_move_dist,
     TRUE
   ), ]
   tf <- tf[rev(seq_len(nrow(tf))), ]
@@ -19,7 +19,7 @@ pej_style_cps <- \(tf) {
   cps_rcpp <- do.call("rbind", lapply(xyt_cp_split, function(x) {
     setNames(
       # pej returns indices, not times.
-      # because of tol and how it's used, there may be more than one easting, northing
+      # because of min_move_dist and how it's used, there may be more than one easting, northing
       # pej takes the last one
       as.numeric(c(min(rownames(x)), max(rownames(x)), tail(easting(x), 1), tail(northing(x), 1))),
       c("first", "last", "north", "east")
@@ -36,20 +36,20 @@ pej_style_cps <- \(tf) {
   cps_rcpp
 }
 
-compare_to_pej <- function(tf, alpha, q, n, tol) {
+compare_to_pej <- function(tf, alpha, q, n, min_move_dist) {
   tf <- as.trackframe(tf)
 
   cp_tf <- change_point_test(
     tf, q = q, n = n, alpha = alpha, seed = 2025, legacy_movement_criteria = TRUE
   )
 
-  pej <- pej_implementation(easting(tf), northing(tf), alpha, q, n = n, tol)
+  pej <- pej_implementation(easting(tf), northing(tf), alpha, q, n = n, min_move_dist)
 
   # convert cps into format pej outputs
   cps_rcpp <- pej_style_cps(cp_tf)# FIXME: #nolint
 
   # filter only when there is movement and reverse
-  bztf <- pej_tf_filter(cp_tf, tol)
+  bztf <- pej_tf_filter(cp_tf, min_move_dist)
 
   expect_equal(pej$bz1, easting(bztf))
   expect_equal(pej$bz2, northing(bztf))
@@ -63,7 +63,7 @@ compare_to_pej(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0
+  min_move_dist = 0
 )
 
 data("cptfiguredata_tf")
@@ -75,7 +75,7 @@ data("cptfiguredata_tf")
 #   alpha = 0.05,
 #   q = 4,
 #   n = 1000,
-#   tol = 0
+#   min_move_dist = 0
 # )
 
 
@@ -84,4 +84,4 @@ data("cptfiguredata_tf")
 # alpha = 0.05
 # q = 4
 # n = 1000
-# tol = 0
+# min_move_dist = 0

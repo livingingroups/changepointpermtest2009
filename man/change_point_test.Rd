@@ -13,7 +13,7 @@ change_point_test(
   alpha = 0.05,
   q = 4,
   n = 10000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -24,7 +24,7 @@ change_point_test(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   seed = NULL,
   ...
@@ -35,7 +35,7 @@ change_point_test(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   ...
 )
@@ -45,7 +45,7 @@ change_point_test(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   ...
 )
@@ -55,7 +55,7 @@ change_point_test(
   alpha = 0.05,
   q = 4,
   n = 1000,
-  tol = 0,
+  min_move_dist = 0,
   clu = NULL,
   ...
 )
@@ -70,7 +70,7 @@ change_point_test(
 \item{n}{an integer specifying the number of random permutations for thepermutation test.
 Higher values provide more accurate p-values but increase computation time.}
 
-\item{tol}{a numeric value specifying the maximum distance between indistinguishable positions.
+\item{min_move_dist}{a numeric value specifying the maximum distance between indistinguishable positions.
 Points with movements smaller than this threshold will be considered stationary.}
 
 \item{clu}{optional parameter determining whether parallelization with the parallel package is
@@ -124,7 +124,7 @@ df <- data.frame(x = cpttestdata[, 1],
                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
 tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 summary(cpt_tf)
 
 # Get probability values instead of binary indicators
@@ -134,27 +134,27 @@ pvalues
 tf <- as.trackframe(cpttestdata)
 class(tf)
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, tol = 0)
+cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 summary(cpt_tf)
 
 df <- cpttestdata
 class(df)
 set.seed(2025L)
-cpt_df <- change_point_test(df, alpha = 0.05, q = 3, n = 500, tol = 0)
+cpt_df <- change_point_test(df, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 summary(cpt_df)
 
 library(move2)
 data("path_move2", package = "trackframe")
 class(path_move2)
 set.seed(2025L)
-cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, n = 500, tol = 0)
+cpt_move2 <- change_point_test(path_move2, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 summary(cpt_move2)
 
 library(sftrack)
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
 set.seed(2025L)
-cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, n = 500, tol = 0)
+cpt_sftrack <- change_point_test(path_sftrack, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 summary(cpt_sftrack)
 
 }
