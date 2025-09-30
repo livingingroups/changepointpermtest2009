@@ -12,8 +12,9 @@
 #' @param q_max maximum number of q to be tested
 #' @param n an integer specifying the number of random permutations for thepermutation test.
 #'        Higher values provide more accurate p-values but increase computation time.
-#' @param min_move_dist a numeric value specifying the maximum distance between indistinguishable positions.
-#'        Points with movements smaller than this threshold will be considered stationary.
+#' @param min_move_dist a numeric value specifying the minimum distance between two positions to be
+#'   distinguishable. Points with movements smaller than this threshold will be considered
+#'   stationary.(tol parameter in original code)
 #' @param ... additional arguments passed to methods.
 #'
 #' @return a matrix of pvalues with dimension n x q_max, where n is the number of observation
@@ -196,8 +197,9 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 #' @param q_max an integer specifying the maximum value of q.
 #' @param n an integer specifying the number of random permutations for the permutation test
 #'   Higher values provide more accurate p-values but increase computation time.
-#' @param min_move_dist a numeric value specifying the maximum distance between indistinguishable positions.
-#'   Points with movements smaller than this threshold will be considered stationary.
+#' @param min_move_dist a numeric value specifying the minimum distance between two positions to be
+#'   distinguishable. Points with movements smaller than this threshold will be considered
+#'   stationary.(tol parameter in original code)
 #' @param clu optional parameter determining whether parallelization with the parallel package is
 #'  used.
 #'   Either of class \code{"NULL"}, \code{"numeric"}, or \code{"cluster"}:
@@ -366,7 +368,8 @@ change_point_test_pvalue.move2 <- change_point_test_pvalue.data.frame
 #' data("path_sftrack", package = "trackframe")
 #' class(path_sftrack)
 #' set.seed(2025L)
-#' cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, min_move_dist = 0)
+#' cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100,
+#'   min_move_dist = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue

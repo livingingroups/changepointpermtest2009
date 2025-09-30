@@ -296,7 +296,8 @@ pej_implementation <- function(x1, x2, alpha, q, n, min_move_dist, seed = 2025) 
   # cxlim <- c(min(bz2),max(bz2))
   # cylim <- c(min(bz1) - sd(bz1diff),max(bz1))
   # plot(bz2,bz1, pch=18, xlim=cxlim, ylim=cylim, xlab="East", ylab="North")
-  # title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "n = ", n , ", ", "min_move_dist = ", min_move_dist ,
+  # title(main=paste("q = ", q, ", " , "alpha = ", alpha, ", ", "n = ", n , ", ",
+  #  "min_move_dist = ", min_move_dist ,
   #   sep=""), sub ="Blue triangle = putative goal, red star = change pt.,
   #   red no. = row of data file")
   # segments(bz2[s], bz1[s], bz2[s+1], bz1[s+1])
