@@ -70,8 +70,9 @@ change_point_test(
 \item{n}{an integer specifying the number of random permutations for thepermutation test.
 Higher values provide more accurate p-values but increase computation time.}
 
-\item{min_move_dist}{a numeric value specifying the maximum distance between indistinguishable positions.
-Points with movements smaller than this threshold will be considered stationary.}
+\item{min_move_dist}{a numeric value specifying the minimum distance between two positions to be
+distinguishable. Points with movements smaller than this threshold will be considered
+stationary.(tol parameter in original code)}
 
 \item{clu}{optional parameter determining whether parallelization with the parallel package is
 used.

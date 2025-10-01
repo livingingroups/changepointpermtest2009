@@ -67,8 +67,9 @@ For the default method, this should be a matrix or data frame with at least 3 co
 \item{n}{an integer specifying the number of random permutations for the permutation test
 Higher values provide more accurate p-values but increase computation time.}
 
-\item{min_move_dist}{a numeric value specifying the maximum distance between indistinguishable positions.
-Points with movements smaller than this threshold will be considered stationary.}
+\item{min_move_dist}{a numeric value specifying the minimum distance between two positions to be
+distinguishable. Points with movements smaller than this threshold will be considered
+stationary.(tol parameter in original code)}
 
 \item{clu}{optional parameter determining whether parallelization with the parallel package is
 used.
@@ -132,6 +133,7 @@ library(sftrack)
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
 set.seed(2025L)
-cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100, min_move_dist = 0)
+cpt_sftrack <- change_point_test_pvalue(path_sftrack[1:200,], q_max = 3, n = 100,
+  min_move_dist = 0)
 
 }
