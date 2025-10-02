@@ -17,7 +17,7 @@ pej_tf_filter <- function(tf, min_move_dist) {
 }
 
 
-pej_style_cps <- \(tf) {
+pej_style_cps <- function(tf) {
   xyt_cp <- tf[tf$cp_no != 0, ]
   xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
   cps_rcpp <- do.call(

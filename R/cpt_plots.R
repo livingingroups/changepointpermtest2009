@@ -144,10 +144,8 @@ plot.trackframe <- function(
     ))
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  # do.call(tinyplot::tinyplot, c(list(form, data = x), control))
   plt_call <- c(list(tinyplot, form, data = x), control)
   eval_list(plt_call)
-  # TODO: do we also want to plot starting and endpoints here?
 
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
@@ -314,7 +312,6 @@ plotcpt.trackframe <- function(
     arrows_facet <- id
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  # do.call(tinyplot::tinyplot, c(list(form, data = cpt), control))
   plt_call <- c(list(tinyplot, form, data = cpt), control)
   eval_list(plt_call)
   # add change points
@@ -427,15 +424,11 @@ plot.change_point_test_pvalue <- function(x, ...) {
     ))
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  # do.call(tinyplot::tinyplot, c(list(form, data = p_long), control))
   plt_call <- c(list(tinyplot, form, data = p_long), control)
   eval_list(plt_call)
-  # tinyplot::tinyplot_add(type = tinyplot::type_hline(h = -log(0.10)), col = "blue")
   plot_add(plt_call, type = type_hline(h = -log(0.10)), col = "blue")
   plot_add(plt_call, type = type_hline(h = -log(0.05)), col = "red")
   plot_add(plt_call, type = type_hline(h = -log(0.01)), col = "green")
-  # tinyplot::tinyplot_add(type = tinyplot::type_hline(h = -log(0.05)), col = "red")
-  # tinyplot::tinyplot_add(type = tinyplot::type_hline(h = -log(0.01)), col = "green")
 }
 
 
@@ -595,7 +588,6 @@ type_arrows <- function(
         col = arrow_col,
         lty = arrow_lty,
         lwd = arrow_lwd
-        # col = icol, lty = ilty, lwd = ilwd
       )
     }
     return(fun)

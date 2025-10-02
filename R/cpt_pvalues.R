@@ -1,6 +1,3 @@
-# TODO:
-#- rcpp
-
 #' Change Point Test
 #'
 #' Detecting change points in animal ranging data
@@ -67,7 +64,6 @@ change_point_test_pvalue_xyt <- function(
   }
   bxm <- bx[is_moving]
   bym <- by[is_moving]
-  # btm <- bt[is_moving]
   pvalues <- change_point_fit_pvalue(bx = bxm, by = bym, q_max = q_max, n = n)
 
   pvalues_all <- matrix(NA, nrow = length(x), ncol = q_max)
@@ -114,7 +110,6 @@ change_point_test_pvalue_internal <- function(
 #' @param n an integer specifying the number of random permutations for the permutation test.
 #'
 #' @export
-# FIXME: implement in c++
 change_point_fit_pvalue <- function(bx, by, q_max, n) {
   bxdiff <- diff(bx)
   bydiff <- diff(by)
@@ -124,9 +119,6 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
   # last_t = "time" (backwards in time) of last position of interest
   # (and includes all the positions)
   n_obs <- length(bx)
-  # last_t <- length(bx) - q_max - 1
-
-  # no_of_t <- last_t + 1
 
   # Set up matrix pmat in which to store pmat-values
   # pmat <- matrix(rep(exp(2), q_max * no_of_t), nrow = no_of_t, ncol = q_max)
@@ -153,7 +145,6 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
       )
 
       r_sum <- r1 + r2
-      # writeLines(paste(q, k, r1, r2, sep = ";"))
 
       # r_sumrand[1] = observed value of statistic r1 + r2
       r_sumrand[1] <- r_sum
@@ -174,7 +165,6 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 
         r1_rand <- sqrt((bxr - bx[1])^2 + (byr - by[1])^2)
         r2_rand <- sqrt((bx[k + q + 1] - bxr)^2 + (by[k + q + 1] - byr)^2)
-        # writeLines(paste(r1_rand, r2_rand, sep = ";"))
         r_sumrand[it] <- r1_rand + r2_rand
       } # end of it loop
 
@@ -318,7 +308,6 @@ change_point_test_pvalue.trackframe <- function(
     # cpt <- do_rbind(cpt)
   }
   rownames(cpt) <- NULL
-  # class(cpt) <- c("change_point_test_pvalue", class(cpt))
   return(cpt)
 }
 
