@@ -248,13 +248,15 @@ plot.change_point_test <- function(
 
 #' @keywords internal
 plotcpt <- function(
-  data,
-  alpha = 0.05,
-  q = 4,
-  n = 10000,
-  min_move_dist = 0,
-  clu = NULL,
-  seed = NULL,
+  cpt,
+  direction = FALSE,
+  cp_col = "red",
+  arrow_length = 0.1,
+  arrow_code = 2,
+  arrow_col = "black",
+  arrow_lty = 3,
+  arrow_lwd = 1,
+  nfacet_col = NULL,
   ...
 ) {
   UseMethod("plotcpt")

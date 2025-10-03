@@ -24,7 +24,7 @@
 #' @examples
 #'
 #' library("cpt")
-#'
+#' cpttestdata <- cpt::cpttestdata
 #' cpt <- change_point_test_xyt(cpttestdata[, "x"],
 #'                              cpttestdata[, "y"],
 #'                              cpttestdata[, "t"],
@@ -181,7 +181,7 @@ refine_cluster_input <- function(clu) {
     return(clu)
   }
   if (is.numeric(clu)) {
-    checkmate::assert_integerish(clu, len = 1L, any.missing = FALSE)
+    checkmate::assert_integerish(clu, len = 1L, any.missing = FALSE, lower = 1L)
     return(as.integer(clu))
   }
   checkmate::assert_class(clu, "cluster")
