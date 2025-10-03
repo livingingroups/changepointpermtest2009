@@ -40,7 +40,8 @@ test_xytdata <- function() {
   expect_equal(cpt_xyt[, "sig"], results_orig)
   expect_true(inherits(cpt_xyt, c("matrix", "data.frame")))
   expect_equal(summary(cpt_xyt)[, "last"], c(9, 17, 34))
-  expect_equal(summary(cpt_tf)[, "east"], c(601722.2, 601808.2, 601853.0), tolerance = 1e-03)
+  expect_equal(summary(cpt_tf)[, "east"],
+    c(601722.2, 601808.2, 601853.0), tolerance = 1e-03)
 }
 
 
