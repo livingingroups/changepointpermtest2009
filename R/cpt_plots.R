@@ -6,6 +6,7 @@ get_arrow_points <- function(tf, sort = TRUE) {
   if (isTRUE(sort)) {
     tf <- tf[order(id(tf), time(tf)), ]
   }
+  tf <- tf[!duplicated(tf[, c(x, y)]), ]
   starting_points <- tf[!duplicated(tf[[id]]), ]
   tf2 <- tf[duplicated(tf[[id]]), ]
   direction_points <- tf2[!duplicated(tf2[[id]]), ]
