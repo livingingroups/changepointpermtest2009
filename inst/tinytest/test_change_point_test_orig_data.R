@@ -14,7 +14,7 @@ if (file.exists(file)) {
   df$t <- seq_len(NROW(df))
   colnames(df)[1:2] <- c("x", "y")
   cpttestdata <- df
-  cpttestdata_tf <- as.trackframe(cpttestdata)
+  cpttestdata_tf <- as.trackframe(cpttestdata, crs = NA)
   attributes(cpttestdata_tf)
   # data("cpttestdata", package = "cpt")
   xyt <- cpttestdata

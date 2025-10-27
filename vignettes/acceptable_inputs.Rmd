@@ -2,12 +2,15 @@
 author: "MPI"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+title: Acceptable Inputs
 vignette: >
   %\VignetteIndexEntry{Acceptable Inputs}
   %\VignetteEngine{knitr::knitr}
 editor_options: 
   chunk_output_type: console
 ---
+
+# Acceptable Inputs
 
 ## Run cpt with a trackframe
 
@@ -20,7 +23,8 @@ check as.trackframe method for data.frame
 Transform data to a trackframe. Trackframe always use x/y coordinates as cartesian coordinates with easting and northing. 
 ```{r}
 library(trackframe)
-tf <- as.trackframe(path_matrix, crs_input = 4326) 
+projected_crs <- "EPSG:32632"
+tf <- as.trackframe(path_matrix, crs = projected_crs) 
 class(tf)
 ```
 
@@ -77,7 +81,8 @@ class(cpt)
 Alternatively, in order to remove the warning coerce to trackframe first by setting crs.
 
 ```{r}
-tf <- as.trackframe(path_data_frame, crs_input = 4326)
+projected_crs <- "EPSG:32632"
+tf <- as.trackframe(path_matrix, crs = projected_crs) 
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500)
 all.equal(cpt$sig, cpt_tf$sig)
@@ -95,6 +100,7 @@ Detect change points
 data("path_move2", package = "trackframe")
 class(path_move2)
 set.seed(2025L)
+path_move2 <- sf::st_transform(path_move2, projected_crs)
 cpt <- change_point_test(path_move2, alpha = 0.05, q = 3, N = 100)
 class(cpt)
 ```
@@ -110,6 +116,7 @@ Detect change points
 ```{r}
 data("path_sftrack", package = "trackframe")
 class(path_sftrack)
+path_sftrack <- sf::st_transform(path_sftrack, projected_crs)
 set.seed(2025L)
 cpt <- change_point_test(path_sftrack, alpha = 0.05, q = 3, N = 500)
 class(cpt)

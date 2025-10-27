@@ -37,6 +37,8 @@ change_point_test(
   n = 1000,
   min_move_dist = 0,
   clu = NULL,
+  seed = NULL,
+  tf_args = list(crs = NA),
   ...
 )
 
@@ -47,6 +49,7 @@ change_point_test(
   n = 1000,
   min_move_dist = 0,
   clu = NULL,
+  seed = NULL,
   ...
 )
 
@@ -57,6 +60,7 @@ change_point_test(
   n = 1000,
   min_move_dist = 0,
   clu = NULL,
+  seed = NULL,
   ...
 )
 }
@@ -89,6 +93,9 @@ used.
 \item{seed}{seed to be passed to random number generator}
 
 \item{...}{additional arguments passed to methods.}
+
+\item{tf_args}{args passed to as.trackframe in the case \code{"data"} is not
+already a trackframe}
 }
 \value{
 An augmented data frame containing the original data with additional columns:
@@ -123,7 +130,7 @@ library("trackframe")
 df <- data.frame(x = cpttestdata[, 1],
                  y = cpttestdata[, 2],
                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
-tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y', crs = NA)
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 summary(cpt_tf)
@@ -132,10 +139,8 @@ summary(cpt_tf)
 pvalues <- change_point_test_pvalue(
   cpttestdata[, c("x", "y", "t")], q_max = 3, n = 500)
 pvalues
-tf <- as.trackframe(cpttestdata)
-class(tf)
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
+cpt_tf <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 summary(cpt_tf)
 
 df <- cpttestdata

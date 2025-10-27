@@ -52,3 +52,5 @@ src/*.so
 src/*.o
 
 /temp/
+/doc/
+/Meta/

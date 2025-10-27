@@ -8,7 +8,9 @@ Taskfile.yml
 ^\.Rproj\.user$
 ^archive$
 ^temp$
+^doc$
 ^docs$
 ^air.toml$
 ^run_lintr.R$
+^Meta$
 .vscode

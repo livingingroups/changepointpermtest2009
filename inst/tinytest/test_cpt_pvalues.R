@@ -9,6 +9,7 @@ data("path_trackframe", package = "trackframe")
 data("paths_trackframe", package = "trackframe")
 data("paths_sftrack", package = "trackframe")
 data("cpttestdata", package = "cpt")
+projected_crs <- "EPSG:32632"
 
 # To please the lintr.
 path_trackframe <- path_trackframe  # nolint: object_usage_linter
@@ -38,18 +39,21 @@ test_xytdata <- function() {
   # cat(deparse(cpt_xyt))
   results_orig <- structure(
     c(
-      1, 0.67, NA, NA, 0.51, 0.41, 0.2, NA, 0.64, 0.94, 0.68, 0.91, 0.59, NA, 0.92, 0.17, 0.16,
-      0.12, NA, 0.25, 0.93,  0.44, 0.04, NA, 0.42, 0.07, 0.89, 0.33, NA, 0.19, 0.29, 0.77,
-      0.46, 0.54, 0.89, 0.2, NA, NA, 0.94, 0.33, NA, 0.26, 0.59, 0.42,  1, 0.61, 0.45, 0.94,
-      NA, NA, 1, 0.34, NA, NA, 0.07, 0.08, 0.21,  NA, 0.86, 0.41, 0.56, 0.69, 0.59, NA, 0.17,
-      0.03, 0.04, 0.07, NA, 0.29, 0.94, 0.15, 0.05, NA, 0.09, 0.2, 0.67, 0.08, NA, 0.09,
-      0.28, 0.97, 0.25, 0.43, 0.53, 0.67, NA, NA, 0.58, 0.23, NA, 0.16,  0.37, 0.51, 0.85,
-      0.92, 0.57, NA, NA, NA, 1, 0.12, NA, NA, 0.09,  0.13, 0.4, NA, 0.9, 0.43, 0.27, 0.6,
-      0.17, NA, 0.05, 0.02, 0.01,  0.27, NA, 0.29, 0.38, 0.07, 0.02, NA, 0.18, 0.13, 0.24, 0.05,
-      NA, 0.04, 0.65, 0.77, 0.39, 0.64, 0.84, 0.7, NA, NA, 0.52, 0.22,  NA, 0.17, 0.5, 0.49,
-      0.93, 0.89, NA, NA, NA, NA
+      0.54, 0.67, NA, NA, 0.51, 0.41, 0.2, NA, 0.79, 0.94, 
+      0.68, 0.91, 0.59, NA, 0.92, 0.17, 0.16, 0.1, NA, 0.25, 0.93, 
+      0.41, 0.03, NA, 0.54, 0.06, 0.89, 0.36, NA, 0.1, 0.33, 0.76, 
+      0.49, 0.5, 0.88, 0.25, NA, NA, 0.94, 0.18, NA, 0.16, 0.59, 0.38, 
+      1, 0.64, 0.44, 0.94, NA, NA, 1, 0.34, NA, NA, 0.07, 0.13, 0.14, 
+      NA, 0.86, 0.41, 0.56, 0.68, 0.64, NA, 0.18, 0.06, 0.04, 0.11, 
+      NA, 0.4, 0.94, 0.15, 0.09, NA, 0.14, 0.23, 0.69, 0.09, NA, 0.12, 
+      0.29, 0.97, 0.29, 0.44, 0.62, 0.73, NA, NA, 0.6, 0.12, NA, 0.12, 
+      0.31, 0.42, 0.83, 0.92, 0.67, NA, NA, NA, 1, 0.12, NA, NA, 0.19, 
+      0.22, 0.4, NA, 0.9, 0.43, 0.26, 0.59, 0.2, NA, 0.08, 0.04, 0.02, 
+      0.31, NA, 0.32, 0.45, 0.11, 0.02, NA, 0.3, 0.21, 0.28, 0.09, 
+      NA, 0.07, 0.66, 0.79, 0.41, 0.56, 0.85, 0.63, NA, NA, 0.45, 0.08, 
+      NA, 0.07, 0.42, 0.42, 0.93, 0.89, NA, NA, NA, NA
     ),
-    dim = c(50L,  3L),
+    dim = c(50L, 3L),
     class = c("change_point_test_pvalue", "matrix", "array"),
     dimnames = list(NULL, c("q=1", "q=2", "q=3"))
   )
@@ -115,7 +119,8 @@ test_input_formats <- function() {
     data.frame(t = as.POSIXct(t), x = x, y = y),
     "t",
     "x",
-    "y"
+    "y",
+    crs = NA
   )
   set.seed(2025L)
   result_tf <- change_point_test_pvalue(data_tf, q_max = 2, n = 50, min_move_dist = 0)
@@ -129,7 +134,7 @@ test_input_formats <- function() {
     coords = c("x", "y"),
     time_column = "t",
     track_id_column = "id",
-    crs = 32631
+    crs = projected_crs
   )
   set.seed(2025L)
   result_move2 <- change_point_test_pvalue(
@@ -146,7 +151,7 @@ test_input_formats <- function() {
     cbind(data_tf, id = 1),
     coords = c("x", "y"),
     time = "t",
-    crs = 32631
+    crs = projected_crs
   )
   set.seed(2025L)
   result_sftrack <- change_point_test_pvalue(
@@ -181,7 +186,8 @@ test_colnames <- function() {
     ),
     "tnew",
     "x2",
-    "y2"
+    "y2",
+    crs = NA
   )
   set.seed(2025L)
   cpt_tf <- change_point_test_pvalue(tf, n = 100)
@@ -216,7 +222,7 @@ test_multiple_paths <- function() {
   expect_inherits(paths_sftrack, "sftrack")
   set.seed(2025L)
   cpt_mpaths_sftrack <- change_point_test_pvalue(
-    data = paths_sftrack,
+    data = sf::st_transform(paths_sftrack, projected_crs),
     q_max = 3,
     n = 10,
     min_move_dist = 0

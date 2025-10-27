@@ -9,8 +9,7 @@ Authors@R: c(
     person("Katrina", "Brock", email = "kbrock@ab.mpg.de", role = c("aut", "cre"), comment = c(ORCID="0009-0003-4678-9545")),
     person("Max Planck Institute of Animal Behavior", role = c("fnd", "cph"))
     )
-Description:
-    Implements a permutation-based approach for detecting directional changes in animal movement trajectory data.
+Description: Implements a permutation-based approach for detecting directional changes in animal movement trajectory data.
     Methodology published in "How did they get here from there? Detecting changes of direction in terrestrial ranging"
     by R.W. Byrne, R. Noser, L.A. Bates, P.E. Jupp (2009, <doi:10.1016/j.anbehav.2008.11.014>).
 License: GPL (>= 2)

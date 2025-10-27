@@ -32,7 +32,8 @@ data_tf <- as.trackframe(
   data.frame(t = as.POSIXct(t), x = x, y = y),
   "t",
   "x",
-  "y"
+  "y",
+  crs = NA
 )
 set.seed(2025L)
 result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)

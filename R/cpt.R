@@ -246,7 +246,7 @@ refine_cluster_input <- function(clu) {
 #' df <- data.frame(x = cpttestdata[, 1],
 #'                  y = cpttestdata[, 2],
 #'                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
-#' tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y')
+#' tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y', crs = NA)
 #' set.seed(2025L)
 #' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_tf)
@@ -271,10 +271,8 @@ change_point_test <- function(
 
 
 #' @examples
-#' tf <- as.trackframe(cpttestdata)
-#' class(tf)
 #' set.seed(2025L)
-#' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
+#' cpt_tf <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_tf)
 #'
 #' @export
@@ -357,6 +355,9 @@ change_point_test.trackframe <- function(
 #' cpt_df <- change_point_test(df, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 #' summary(cpt_df)
 #'
+#' @param tf_args args passed to as.trackframe in the case \code{"data"} is not
+#'  already a trackframe
+#'
 #' @export
 #' @rdname change_point_test
 change_point_test.data.frame <- function(
@@ -366,15 +367,18 @@ change_point_test.data.frame <- function(
   n = 1000,
   min_move_dist = 0,
   clu = NULL,
+  seed = NULL,
+  tf_args = list(crs = NA),
   ...
 ) {
   change_point_test.trackframe(
-    data = as.trackframe(data),
+    data = do.call(as.trackframe, c(list(data), tf_args)),
     alpha = alpha,
     q = q,
     n = n,
     min_move_dist = min_move_dist,
     clu = clu,
+    seed = seed,
     ...
   )
 }
@@ -397,15 +401,17 @@ change_point_test.move2 <- function(
   n = 1000,
   min_move_dist = 0,
   clu = NULL,
+  seed = NULL,
   ...
 ) {
-  cpt <- change_point_test.data.frame(
-    data = data,
+  cpt <- change_point_test.trackframe(
+    data = as.trackframe(data),
     alpha = alpha,
     q = q,
     n = n,
     min_move_dist = min_move_dist,
     clu = clu,
+    seed = seed,
     ...
   )
   cpt <- tf_backtransform(cpt)

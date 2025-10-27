@@ -355,22 +355,26 @@ plotcpt.trackframe <- function(
 plotcpt.sftrack <- function(
   cpt,
   direction = FALSE,
+  cp_col = "red",
   arrow_length = 0.1,
   arrow_code = 2,
   arrow_col = "black",
   arrow_lty = 3,
   arrow_lwd = 1,
+  nfacet_col = NULL,
   ...
 ) {
   cpt_tf <- as.trackframe(cpt)
   plotcpt(
     cpt = cpt_tf,
     direction = direction,
+    cp_col = cp_col,
     arrow_length = arrow_length,
     arrow_code = arrow_code,
     arrow_col = arrow_col,
     arrow_lty = arrow_lty,
-    arrow_lwd = arrow_lwd
+    arrow_lwd = arrow_lwd,
+    nfacet_col = nfacet_col
   )
 }
 

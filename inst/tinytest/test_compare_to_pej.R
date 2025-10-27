@@ -81,7 +81,7 @@ compare_to_pej <- function(tf, alpha, q, n, min_move_dist) {
 
 data("cpttestdata", package = "cpt")
 compare_to_pej(
-  tf = as.trackframe(cpttestdata, easting_col = "x", northing_col = "y"),
+  tf = as.trackframe(cpttestdata, easting_col = "x", northing_col = "y", crs = NA),
   alpha = 0.05,
   q = 4,
   n = 1000,

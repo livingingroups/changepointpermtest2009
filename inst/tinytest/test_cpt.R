@@ -9,6 +9,7 @@ data("cpttestdata", package = "cpt")
 # To please the lintr.
 path_trackframe <- path_trackframe  # nolint: object_usage_linter
 cpttestdata <- cpttestdata  # nolint: object_usage_linter
+projected_crs <- "EPSG:32632"
 
 
 # cpttestdata
@@ -40,8 +41,11 @@ test_xytdata <- function() {
   expect_equal(cpt_xyt[, "sig"], results_orig)
   expect_true(inherits(cpt_xyt, c("matrix", "data.frame")))
   expect_equal(summary(cpt_xyt)[, "last"], c(9, 17, 34))
-  expect_equal(summary(cpt_tf)[, "east"],
-    c(601722.2, 601808.2, 601853.0), tolerance = 1e-03)
+  expect_equal(
+    summary(cpt_tf)[, "east"],
+    c(-0.00328936898894608, -0.00207882302487269, -0.00162844973383471),
+    tolerance = 1e-03
+  )
 }
 
 
@@ -97,7 +101,7 @@ test_input_formats <- function() {
   expect_true(is.data.frame(result_df))
 
   # Test with trackframe
-  data_tf <- as.trackframe(data.frame(t = as.POSIXct(t), x = x, y = y), "t", "x", "y")
+  data_tf <- as.trackframe(data.frame(t = as.POSIXct(t), x = x, y = y), "t", "x", "y", crs = NA)
   set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
   expect_inherits(result_tf, class(data_tf))
@@ -110,7 +114,7 @@ test_input_formats <- function() {
     coords = c("x", "y"),
     time_column = "t",
     track_id_column = "id",
-    crs = 32631
+    crs = projected_crs
   )
   set.seed(2025L)
   result_move2 <- change_point_test(data_move2, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
@@ -124,7 +128,7 @@ test_input_formats <- function() {
     data.frame(t = as.POSIXct(t), x = x, y = y, id = 1),
     coords = c("x", "y"),
     time = "t",
-    crs = 32632
+    crs = projected_crs
   )
   set.seed(2025L)
   result_sftrack <- change_point_test(data_sftrack, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
@@ -186,7 +190,8 @@ test_colnames <- function() {
     ),
     "tnew",
     "x2",
-    "y2"
+    "y2",
+    crs = NA
   )
   set.seed(2025L)
   cpt_tf <- change_point_test(tf, n = 100)

@@ -239,11 +239,8 @@ change_point_test_pvalue <- function(
 
 
 #' @examples
-#' library(trackframe)
-#' tf <- as.trackframe(cpttestdata)
-#' class(tf)
 #' set.seed(2025L)
-#' cpt_tf <- change_point_test_pvalue(tf, q_max = 3, n = 100, min_move_dist = 0)
+#' cpt_tf <- change_point_test_pvalue(cpttestdata, q_max = 3, n = 100, min_move_dist = 0)
 #'
 #' @export
 #' @rdname change_point_test_pvalue
@@ -318,6 +315,8 @@ change_point_test_pvalue.trackframe <- function(
 #' set.seed(2025L)
 #' cpt_df <- change_point_test_pvalue(df, q_max = 3, n = 100, min_move_dist = 0)
 #'
+#' @param tf_args args passed to as.trackframe in the case \code{"data"} is not 
+#'
 #' @export
 #' @rdname change_point_test_pvalue
 change_point_test_pvalue.data.frame <- function(
@@ -327,14 +326,16 @@ change_point_test_pvalue.data.frame <- function(
   min_move_dist = 0,
   clu = NULL,
   seed = NULL,
+  tf_args = list(crs = NA),
   ...
 ) {
   change_point_test_pvalue.trackframe(
-    data = as.trackframe(data),
+    data = do.call(as.trackframe, c(list(data), tf_args)),
     q_max = q_max,
     n = n,
     min_move_dist = min_move_dist,
     clu = clu,
+    seed = seed,
     ...
   )
 }
@@ -349,7 +350,23 @@ change_point_test_pvalue.data.frame <- function(
 #'
 #' @export
 #' @rdname change_point_test_pvalue
-change_point_test_pvalue.move2 <- change_point_test_pvalue.data.frame
+change_point_test_pvalue.move2 <- function(
+  data,
+  q_max = q_max,
+  n = n,
+  min_move_dist = 0,
+  clu = NULL,
+  seed = NULL,
+  ...
+) change_point_test_pvalue.trackframe(
+  data = as.trackframe(data),
+  q_max = q_max,
+  n = n,
+  min_move_dist = min_move_dist,
+  clu = clu,
+  seed = seed,
+  ...
+)
 
 
 #' @examples
@@ -362,4 +379,4 @@ change_point_test_pvalue.move2 <- change_point_test_pvalue.data.frame
 #'
 #' @export
 #' @rdname change_point_test_pvalue
-change_point_test_pvalue.sftrack <- change_point_test_pvalue.data.frame
+change_point_test_pvalue.sftrack <- change_point_test_pvalue.move2
