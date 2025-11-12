@@ -9,13 +9,11 @@ file <- "~/travelpaths-devel/data/8_7august11.txt"
 if (file.exists(file)) {
   inp <- scan(file, list(x1 = 0, x2 = 0))
   df <- as.data.frame(inp)
-  head(df)
   #seq.POSIXt(from = as.POSIXct("2025-01-01"), by = "min", length.out = nrow(df))
   df$t <- seq_len(NROW(df))
   colnames(df)[1:2] <- c("x", "y")
   cpttestdata <- df
   cpttestdata_tf <- as.trackframe(cpttestdata, crs = NA)
-  attributes(cpttestdata_tf)
   # data("cpttestdata", package = "cpt")
   xyt <- cpttestdata
   set.seed(2025L)
@@ -42,7 +40,8 @@ if (file.exists(file)) {
     ),
     "t",
     "x",
-    "y"
+    "y",
+    crs = NA
   )
   set.seed(2025L)
   cpt_tf <- change_point_test(tf, alpha = 0.05, q = 4, n = 1000, min_move_dist = 0)

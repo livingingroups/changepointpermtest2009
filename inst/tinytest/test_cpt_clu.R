@@ -6,7 +6,9 @@ library(parallel)
 
 ncores <- if (tolower(Sys.getenv("_R_CHECK_LIMIT_CORES_")) %in% c("", "false")) {
   parallel::detectCores()
-} else min(parallel::detectCores(), 2)
+} else {
+  min(parallel::detectCores(), 2)
+}
 
 tf <- as.trackframe(cpttestdata, crs = NA)
 

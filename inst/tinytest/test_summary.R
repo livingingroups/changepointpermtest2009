@@ -27,7 +27,7 @@ expect_inherits(cpt, class(path_data_frame))
 summary_df <- summary(cpt)
 # FIXME: these are unequal because df is in latlong, therefore
 # incompatible with trackframe.
-if(FALSE) expect_equal(summary_df, summary_tf)
+if (FALSE) expect_equal(summary_df, summary_tf)
 
 # move2
 data("path_move2", package = "trackframe")
@@ -51,7 +51,8 @@ data("path_sftrack", package = "trackframe")
 expect_equal(path_sftrack$time, path_move2$time)
 expect_inherits(path_sftrack, "sftrack")
 set.seed(2025L)
-cpt <- change_point_test(sf::st_transform(path_sftrack, projected_crs), alpha = 0.05, q = 3, n = 100)
+cpt <- change_point_test(sf::st_transform(path_sftrack, projected_crs), alpha = 0.05, q = 3,
+  n = 100)
 expect_inherits(cpt, class(path_sftrack))
 summary_sftrack <- summary(cpt)
 expect_equal(summary_move2, summary_sftrack)
@@ -101,4 +102,3 @@ cpt <- change_point_test(
 expect_inherits(cpt, class(paths_sftrack))
 summary_sftrack <- summary(cpt)
 expect_equal(summary_sftrack, summary_move2)
-
