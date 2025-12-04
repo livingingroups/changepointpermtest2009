@@ -172,8 +172,8 @@ plotcpt.trackframe <- function(
 
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
-    starting_points <- get_starting_points(x)
-    direction_points <- get_direction_points(x)
+    starting_points <- get_starting_points(cpt)
+    direction_points <- get_direction_points(cpt)
     if (NROW(starting_points) != NROW(direction_points)) {
       stop("direction points do not exist for all IDs. Set direction = FALSE.")
     }
