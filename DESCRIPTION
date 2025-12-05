@@ -13,11 +13,12 @@ Description: Implements a permutation-based approach for detecting directional c
     Methodology published in "How did they get here from there? Detecting changes of direction in terrestrial ranging"
     by R.W. Byrne, R. Noser, L.A. Bates, P.E. Jupp (2009, <doi:10.1016/j.anbehav.2008.11.014>).
 License: GPL (>= 2)
-Imports: checkmate, Rcpp (>= 1.0.14), trackframe, tinyplot, reshape2
+Imports: checkmate, Rcpp (>= 1.0.14), trackframe, tinyplot (>= 0.6.0), reshape2
 Depends: R (>= 4.0.0), zoo
 LinkingTo: Rcpp, RcppArmadillo
-Suggests: tinytest, knitr, markdown, ggplot2, sf, move2, sftrack, travelpaths, withr
+Suggests: tinytest, knitr, markdown, ggplot2, sf, move2, sftrack, travelpaths, withr, tinysnapshot,
+  rsvg, svglite, fontquiver
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
-VignetteBuilder: knitr 
+VignetteBuilder: knitr

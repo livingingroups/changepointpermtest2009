@@ -1,13 +1,3 @@
-
-if (getRversion() <= "4.4.0") {
-  `%||%` <- function(x, y) {
-    if (is.null(x)) y else x
-  }
-}
-
-
-
-
 #' Plot Change point test output
 #'
 #' Plots change points of objects of class \code{\link[cpt]{change_point_test}}
@@ -158,16 +148,15 @@ plotcpt.trackframe <- function(
     arrows_facet <- id
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  plt_call <- c(list(tinyplot, form, data = cpt), control)
-  eval_list(plt_call)
+  do.call(tinyplot, c(list(form, data = cpt), control))
   # add change points
-  plot_add(plt_call, add = TRUE, data = cpt[cpt[["sig"]] == 1, ], type = "p", cex = 3, pch = "*",
+  tinyplot_add(data = cpt[cpt[["sig"]] == 1, ], type = "p", cex = 3, pch = "*",
     col = cp_col) # NOTE: do we want to add cp numbers?
   # add starting point
-  plot_add(plt_call, add = TRUE, data = cpt[!duplicated(cpt[[id]]), ], type = "p", cex = 1,
+  tinyplot_add(data = cpt[!duplicated(cpt[[id]]), ], type = "p", cex = 1,
     pch = "|", col = "green")
   # add end point
-  plot_add(plt_call, add = TRUE, data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p",
+  tinyplot_add(data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p",
     cex = 1, pch = 4, col = "red")
 
   if (isTRUE(direction)) {
@@ -178,8 +167,7 @@ plotcpt.trackframe <- function(
       stop("direction points do not exist for all IDs. Set direction = FALSE.")
     }
     arrow_points <- c(starting_points, direction_points)
-    plot_add(
-      plt_call,
+    tinyplot_add(
       data = cpt,
       add = TRUE,
       type = type_arrows(
@@ -305,11 +293,10 @@ plot.change_point_test_pvalue <- function(x, ...) {
     ))
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  plt_call <- c(list(tinyplot, form, data = p_long), control)
-  eval_list(plt_call)
-  plot_add(plt_call, type = type_hline(h = -log(0.10)), col = "blue")
-  plot_add(plt_call, type = type_hline(h = -log(0.05)), col = "red")
-  plot_add(plt_call, type = type_hline(h = -log(0.01)), col = "green")
+  do.call(tinyplot, c(list(form, data = p_long), control))
+  tinyplot_add(type = type_hline(h = -log(0.10)), col = "blue")
+  tinyplot_add(type = type_hline(h = -log(0.05)), col = "red")
+  tinyplot_add(type = type_hline(h = -log(0.01)), col = "green")
 }
 
 
@@ -362,7 +349,5 @@ plot_n_cp_by_q <- function(data, id_col, ...) {
     ))
   }
   control <- modifyList(default_options, args[!names(args) %in% restricted])
-  # do.call(tinyplot::tinyplot, c(list(form, data = data), control))
-  plt_call <- c(list(tinyplot, form, data = data), control)
-  eval_list(plt_call)
+  do.call(tinyplot, c(list(form, data = data), control))
 }
