@@ -7,12 +7,8 @@
 \method{plot}{change_point_test}(
   x,
   direction = FALSE,
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "black",
-  arrow_length = 0.1,
-  arrow_code = 2,
-  arrow_col = "black",
-  arrow_lty = 3,
-  arrow_lwd = 1,
   nfacet_col = NULL,
   ...
 )
@@ -22,22 +18,10 @@
 
 \item{direction}{logical indicator if the path direction should be added to the plot}
 
+\item{direction_style}{a list of length, code, col, lty, lwd of the arrow of the direction (argument
+passed to \code{\link[graphics]{arrows}}) specifying the style of the arrows}
+
 \item{cp_col}{color of the change points}
-
-\item{arrow_length}{length of the arrow of the direction (argument passed to
-\code{\link[graphics]{arrows}})}
-
-\item{arrow_code}{code of the arrow of the direction (argument passed to
-\code{\link[graphics]{arrows}})}
-
-\item{arrow_col}{color of the arrow of the direction (argument passed to
-\code{\link[graphics]{arrows}})}
-
-\item{arrow_lty}{line type of the arrow of the direction (argument passed to
-\code{\link[graphics]{arrows}})}
-
-\item{arrow_lwd}{line width of the arrow of the direction (argument passed to
-\code{\link[graphics]{arrows}})}
 
 \item{nfacet_col}{number of columns used in facet.args argument ncol}
 

@@ -5,17 +5,9 @@
 #'
 #' @param x an object of class \code{change_point_test}
 #' @param direction logical indicator if the path direction should be added to the plot
+#' @param direction_style a list of length, code, col, lty, lwd of the arrow of the direction
+#' (argument passed to \code{\link[graphics]{arrows}}) specifying the style of the arrows
 #' @param cp_col color of the change points
-#' @param arrow_length length of the arrow of the direction (argument passed to
-#'  \code{\link[graphics]{arrows}})
-#' @param arrow_code code of the arrow of the direction (argument passed to
-#'  \code{\link[graphics]{arrows}})
-#' @param arrow_col color of the arrow of the direction (argument passed to
-#'  \code{\link[graphics]{arrows}})
-#' @param arrow_lty line type of the arrow of the direction (argument passed to
-#'  \code{\link[graphics]{arrows}})
-#' @param arrow_lwd line width of the arrow of the direction (argument passed to
-#'  \code{\link[graphics]{arrows}})
 #' @param nfacet_col number of columns used in facet.args argument ncol
 #' @param ... other arguments used in \code{\link[tinyplot]{tinyplot}}
 #'
@@ -50,12 +42,8 @@
 plot.change_point_test <- function(
   x,
   direction = FALSE,
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "black",
-  arrow_length = 0.1,
-  arrow_code = 2,
-  arrow_col = "black",
-  arrow_lty = 3,
-  arrow_lwd = 1,
   nfacet_col = NULL,
   ...
 ) {
@@ -63,12 +51,8 @@ plot.change_point_test <- function(
   plotcpt(
     cpt = x,
     direction = direction,
+    direction_style = direction_style,
     cp_col = cp_col,
-    arrow_length = arrow_length,
-    arrow_code = arrow_code,
-    arrow_col = arrow_col,
-    arrow_lty = arrow_lty,
-    arrow_lwd = arrow_lwd,
     nfacet_col = nfacet_col
   )
 }
@@ -78,12 +62,8 @@ plot.change_point_test <- function(
 plotcpt <- function(
   cpt,
   direction = FALSE,
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
-  arrow_length = 0.1,
-  arrow_code = 2,
-  arrow_col = "black",
-  arrow_lty = 3,
-  arrow_lwd = 1,
   nfacet_col = NULL,
   ...
 ) {
@@ -95,15 +75,16 @@ plotcpt <- function(
 plotcpt.trackframe <- function(
   cpt,
   direction = FALSE,
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
-  arrow_length = 0.1,
-  arrow_code = 2,
-  arrow_col = "black",
-  arrow_lty = 3,
-  arrow_lwd = 1,
   nfacet_col = NULL,
   ...
 ) {
+  assert_class(cpt, "change_point_test")
+  assert_logical(direction)
+  assert_list(direction_style)
+  assert_character(cp_col)
+  assert_integerish(nfacet_col, null.ok = TRUE)
   x <- attr(cpt, "easting")
   y <- attr(cpt, "northing")
   id <- attr(cpt, "id")
@@ -166,21 +147,24 @@ plotcpt.trackframe <- function(
     if (NROW(starting_points) != NROW(direction_points)) {
       stop("direction points do not exist for all IDs. Set direction = FALSE.")
     }
-    arrow_points <- c(starting_points, direction_points)
+    # needed to match ids to ensure correct ordering in id's
+    uids <- unique(id(cpt))
+    direction_style_defaults <- list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1)
+    direction_style <- modifyList(direction_style_defaults, direction_style)
     tinyplot_add(
       data = cpt,
       add = TRUE,
       type = type_arrows(
-        x0 = arrow_points[["x0"]],
-        y0 = arrow_points[["y0"]],
-        x1 = arrow_points[["x1"]],
-        y1 = arrow_points[["y1"]],
-        length = arrow_length,
-        code = arrow_code,
-        arrow_col = arrow_col,
-        arrow_lty = arrow_lty,
-        arrow_lwd = arrow_lwd
+        x0 = easting(starting_points)[match(uids, id(starting_points))],
+        y0 = northing(starting_points)[match(uids, id(starting_points))],
+        x1 = easting(direction_points)[match(uids, id(direction_points))],
+        y1 = northing(direction_points)[match(uids, id(direction_points))],
+        length = direction_style[["length"]],
+        code = direction_style[["code"]]
       ),
+      col = direction_style[["col"]],
+      lty = direction_style[["lty"]],
+      lwd = direction_style[["lwd"]],
       facet = arrows_facet
     )
   }
@@ -191,12 +175,8 @@ plotcpt.trackframe <- function(
 plotcpt.sftrack <- function(
   cpt,
   direction = FALSE,
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
-  arrow_length = 0.1,
-  arrow_code = 2,
-  arrow_col = "black",
-  arrow_lty = 3,
-  arrow_lwd = 1,
   nfacet_col = NULL,
   ...
 ) {
@@ -204,12 +184,8 @@ plotcpt.sftrack <- function(
   plotcpt(
     cpt = cpt_tf,
     direction = direction,
+    direction_style = direction_style,
     cp_col = cp_col,
-    arrow_length = arrow_length,
-    arrow_code = arrow_code,
-    arrow_col = arrow_col,
-    arrow_lty = arrow_lty,
-    arrow_lwd = arrow_lwd,
     nfacet_col = nfacet_col
   )
 }
@@ -222,12 +198,8 @@ plotcpt.move2 <- plotcpt.sftrack
 plotcpt.data.frame <- function(
   cpt,
   direction = FALSE,
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
-  arrow_length = 0.1,
-  arrow_code = 2,
-  arrow_col = "black",
-  arrow_lty = 3,
-  arrow_lwd = 1,
   nfacet_col = NULL,
   ...
 ) {
@@ -235,12 +207,8 @@ plotcpt.data.frame <- function(
   plotcpt(
     cpt = cpt_tf,
     direction = direction,
+    direction_style = direction_style,
     cp_col = cp_col,
-    arrow_length = arrow_length,
-    arrow_code = arrow_code,
-    arrow_col = arrow_col,
-    arrow_lty = arrow_lty,
-    arrow_lwd = arrow_lwd,
     nfacet_col = nfacet_col
   )
 }
