@@ -18,8 +18,8 @@
 
 \item{direction}{logical indicator if the path direction should be added to the plot}
 
-\item{direction_style}{a list of length, code, col, lty, lwd of the arrow of the direction (argument
-passed to \code{\link[graphics]{arrows}}) specifying the style of the arrows}
+\item{direction_style}{a list of length, code, col, lty, lwd of the arrow of the direction
+(argument passed to \code{\link[graphics]{arrows}}) specifying the style of the arrows}
 
 \item{cp_col}{color of the change points}
 

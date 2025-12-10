@@ -80,7 +80,7 @@ plotcpt.trackframe <- function(
   nfacet_col = NULL,
   ...
 ) {
-  assert_class(cpt, "change_point_test")
+  assert_class(cpt, "trackframe")
   assert_logical(direction)
   assert_list(direction_style)
   assert_character(cp_col)
@@ -180,6 +180,7 @@ plotcpt.sftrack <- function(
   nfacet_col = NULL,
   ...
 ) {
+  assert_class(cpt, "change_point_test")
   cpt_tf <- as.trackframe(cpt)
   plotcpt(
     cpt = cpt_tf,
@@ -203,6 +204,7 @@ plotcpt.data.frame <- function(
   nfacet_col = NULL,
   ...
 ) {
+  assert_class(cpt, "change_point_test")
   cpt_tf <- as.trackframe(cpt, crs = NA)
   plotcpt(
     cpt = cpt_tf,
@@ -237,6 +239,7 @@ plotcpt.data.frame <- function(
 #'
 #' plot(P)
 plot.change_point_test_pvalue <- function(x, ...) {
+  assert_class(x, "change_point_test_pvalue")
   p_long <- reshape2::melt(x)
   colnames(p_long) <- c("n", "q", "value")
   p_long$value <- -log(p_long$value)
@@ -304,6 +307,7 @@ plot.change_point_test_pvalue <- function(x, ...) {
 #' tinytheme("clean2")
 #' plot_n_cp_by_q(data = n_cp_by_q, id_col = "track_id")
 plot_n_cp_by_q <- function(data, id_col, ...) {
+  assert_character(id_col)
   form <- as.formula(paste("n_cp ~ q |", id_col))
   default_options <- list(type = tinyplot::type_spline(n = 100), grid = TRUE)
 
