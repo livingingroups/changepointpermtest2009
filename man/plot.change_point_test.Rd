@@ -24,6 +24,9 @@
 
 \item{cp_col}{color of the change points}
 
+\item{facet}{logical if facets should be used (TRUE is default). If FALSE all lines are plotted
+in a single plot.}
+
 \item{nfacet_col}{number of columns used in facet.args argument ncol}
 
 \item{...}{other arguments used in \code{\link[tinyplot]{tinyplot}}}
