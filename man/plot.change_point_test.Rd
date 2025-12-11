@@ -9,6 +9,7 @@
   direction = FALSE,
   direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "black",
+  facet = TRUE,
   nfacet_col = NULL,
   ...
 )

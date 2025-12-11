@@ -44,6 +44,7 @@ plot.change_point_test <- function(
   direction = FALSE,
   direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "black",
+  facet = TRUE,
   nfacet_col = NULL,
   ...
 ) {
@@ -53,6 +54,7 @@ plot.change_point_test <- function(
     direction = direction,
     direction_style = direction_style,
     cp_col = cp_col,
+    facet = facet,
     nfacet_col = nfacet_col
   )
 }
@@ -64,6 +66,7 @@ plotcpt <- function(
   direction = FALSE,
   direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
+  facet = TRUE,
   nfacet_col = NULL,
   ...
 ) {
@@ -77,6 +80,7 @@ plotcpt.trackframe <- function(
   direction = FALSE,
   direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
+  facet = TRUE,
   nfacet_col = NULL,
   ...
 ) {
@@ -84,6 +88,7 @@ plotcpt.trackframe <- function(
   assert_logical(direction)
   assert_list(direction_style)
   assert_character(cp_col)
+  assert_logical(facet)
   assert_integerish(nfacet_col, null.ok = TRUE)
   x <- attr(cpt, "easting")
   y <- attr(cpt, "northing")
@@ -111,13 +116,19 @@ plotcpt.trackframe <- function(
   if (length(unique(id(cpt))) > 1) {
     form <- as.formula(paste(y, "~", x, "|", id))
     default_options <- list(
-      facet = "by",
       type = "l",
-      facet.args = list("free" = FALSE, ncol = nfacet_col),
       grid = TRUE,
       main = "Change Points"
     )
-    arrows_facet <- "by"
+    if (facet) {
+      default_options <- c(default_options,
+        facet = "by",
+        facet.args = list("free" = FALSE, ncol = nfacet_col)
+      )
+      arrows_facet <- "by"
+    } else {
+      arrows_facet <- id
+    }
   } else {
     # single id
     form <- as.formula(paste(y, "~", x))
@@ -177,6 +188,7 @@ plotcpt.sftrack <- function(
   direction = FALSE,
   direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
+  facet = TRUE,
   nfacet_col = NULL,
   ...
 ) {
@@ -187,6 +199,7 @@ plotcpt.sftrack <- function(
     direction = direction,
     direction_style = direction_style,
     cp_col = cp_col,
+    facet = facet,
     nfacet_col = nfacet_col
   )
 }
@@ -201,6 +214,7 @@ plotcpt.data.frame <- function(
   direction = FALSE,
   direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
+  facet = TRUE,
   nfacet_col = NULL,
   ...
 ) {
@@ -211,6 +225,7 @@ plotcpt.data.frame <- function(
     direction = direction,
     direction_style = direction_style,
     cp_col = cp_col,
+    facet = facet,
     nfacet_col = nfacet_col
   )
 }
