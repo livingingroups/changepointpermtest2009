@@ -113,7 +113,7 @@ plotcpt.trackframe <- function(
     default_options <- list(
       facet = "by",
       type = "l",
-      facet.args = list("free" = TRUE, ncol = nfacet_col),
+      facet.args = list("free" = FALSE, ncol = nfacet_col),
       grid = TRUE,
       main = "Change Points"
     )
