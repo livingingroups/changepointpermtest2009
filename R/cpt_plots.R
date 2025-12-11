@@ -8,6 +8,8 @@
 #' @param direction_style a list of length, code, col, lty, lwd of the arrow of the direction
 #' (argument passed to \code{\link[graphics]{arrows}}) specifying the style of the arrows
 #' @param cp_col color of the change points
+#' @param facet logical if facets should be used (TRUE is default). If FALSE all lines are plotted
+#' in a single plot.
 #' @param nfacet_col number of columns used in facet.args argument ncol
 #' @param ... other arguments used in \code{\link[tinyplot]{tinyplot}}
 #'
