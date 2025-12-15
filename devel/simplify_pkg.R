@@ -16,14 +16,14 @@ set.seed(2025L)
 z1 <- change_point_test(cpttestdata, alpha = alpha, q = q, N = N, min_move_dist = min_move_dist)
 str(z1)
 
-easting <- data[[attr(data, "easting")]]
-northing <- data[[attr(data, "northing")]]
-time <- data[[attr(data, "time")]]
+easting <- data[[easting_col(data)]]
+northing <- data[[northing_col(data)]]
+time <- data[[time_col(data)]]
 
 set.seed(2025L)
-z2 <- change_point_test_xyt(data[[attr(data, "easting")]],
-                      data[[attr(data, "northing")]],
-                      data[[attr(data, "time")]],
+z2 <- change_point_test_xyt(data[[easting_col(data)]],
+                      data[[northing_col(data)]],
+                      data[[time_col(data)]],
                       alpha = alpha, q = q, N = N, min_move_dist = min_move_dist)
 
 rownames(z2) <- NULL
@@ -49,7 +49,7 @@ change_point_test_trackframe_single_id <- cpt:::change_point_test_trackframe_sin
 
 data <- rbind(cbind(cpttestdata, id = 1L), cbind(cpttestdata, id = 2L), cbind(cpttestdata, id = 3L))
 data <- as.trackframe(data, id = "id")
-cpt <- split(data, data[[attr(data, "id")]])
+cpt <- split(data, data[[id_col(data)]])
 str(cpt[[1]])
 x <- lapply(cpt, change_point_test_trackframe_single_id, alpha = alpha, q = q, N = N, min_move_dist = min_move_dist, verify = TRUE)
 
@@ -109,16 +109,16 @@ tf_change_point_test <- function(data, alpha, q, N, min_move_dist) {
   # - [ ] If correctly ordered at the correct time we can avoid using merge.
   cpt <- change_point_test_internal(xyt, alpha = alpha, q = q, N = N, min_move_dist = min_move_dist)
   data_out <- merge(data, cpt,
-                    by = c(attr(data, "easting"), attr(data, "northing"), attr(data, "time")),
+                    by = c(easting_col(data), northing_col(data), time_col(data)),
                     all.x = TRUE, sort = FALSE)
   if (is.matrix(data)) {
     # FIXME: What should this do?
     data_out <- as.matrix(data_out)
   }
   data_out <- as.trackframe(data_out,
-                             easting_col = attr(data, "easting"),
-                             northing_col = attr(data, "northing"),
-                             time_col = attr(data, "time"))
+                             easting_col = easting_col(data),
+                             northing_col = northing_col(data),
+                             time_col = time_col(data))
   return(data_out)
 }
 

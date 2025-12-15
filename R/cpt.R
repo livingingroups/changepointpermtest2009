@@ -106,6 +106,7 @@ change_point_test_xyt <- function(
 
 
 # Wrapper function for change_point_test_xyt to calculate for a single id.
+#' @importFrom trackframe time_col easting_col northing_col id_col
 change_point_test_trackframe_single_id <- function(
   data,
   alpha,
@@ -120,9 +121,9 @@ change_point_test_trackframe_single_id <- function(
     set.seed(seed)
   }
   cpt <- change_point_test_xyt(
-    easting = data[[attr(data, "easting")]],
-    northing = data[[attr(data, "northing")]],
-    time = data[[attr(data, "time")]],
+    easting = data[[easting_col(data)]],
+    northing = data[[northing_col(data)]],
+    time = data[[time_col(data)]],
     alpha = alpha,
     q = q,
     n = n,
@@ -130,9 +131,9 @@ change_point_test_trackframe_single_id <- function(
   )
   if (isTRUE(verify)) {
     # just for testing
-    stopifnot(all(data[[attr(data, "easting")]] == cpt[["easting"]]))
-    stopifnot(all(data[[attr(data, "northing")]] == cpt[["northing"]]))
-    stopifnot(all(data[[attr(data, "time")]] == cpt[["time"]]))
+    stopifnot(all(data[[easting_col(data)]] == cpt[["easting"]]))
+    stopifnot(all(data[[northing_col(data)]] == cpt[["northing"]]))
+    stopifnot(all(data[[time_col(data)]] == cpt[["time"]]))
   }
   data[["sig"]] <- cpt[["sig"]]
   data[["cp_no"]] <- cpt[["cp_no"]]
@@ -303,7 +304,7 @@ change_point_test.trackframe <- function(
       ...
     )
   } else {
-    cpt <- split(data, data[[attr(data, "id")]])
+    cpt <- split(data, data[[id_col(data)]])
     if (is.null(clu)) {
       cpt <- lapply(
         cpt,
@@ -451,6 +452,7 @@ change_point_test.sftrack <- change_point_test.move2
 #'   \item{north}{X-coordinate (northing) of the change point location}
 #'   \item{east}{Y-coordinate (easting) of the change point location}
 #'
+#' @importFrom trackframe time_col easting_col northing_col id_col
 #' @export
 #'
 #' @examples
@@ -471,15 +473,15 @@ summary.change_point_test <- function(object, ...) {
         "rbind",
         lapply(xyt_cp_split, function(x) {
           cbind.data.frame(
-            "first" = min(x[, attr(object, "time")]),
-            "last" = max(x[, attr(object, "time")]),
-            "east" = x[, attr(object, "easting")][1],
-            "north" = x[, attr(object, "northing")][1]
+            "first" = min(x[, time_col(object)]),
+            "last" = max(x[, time_col(object)]),
+            "east" = x[, easting_col(object)][1],
+            "north" = x[, northing_col(object)][1]
           )
         })
       )
     } else {
-      tf_split <- split(object, f = object[, attr(object, "id")])
+      tf_split <- split(object, f = object[, id_col(object)])
       summary <- do.call(
         "rbind",
         lapply(tf_split, function(xyt) {
@@ -491,11 +493,11 @@ summary.change_point_test <- function(object, ...) {
             lapply(xyt_cp_split, function(x) {
               # x <- xyt_cp_split[[1]]
               cbind.data.frame(
-                "first" = min(x[, attr(xyt, "time")]),
-                "last" = max(x[, attr(xyt, "time")]),
-                "east" = x[, attr(xyt, "easting")][1],
-                "north" = x[, attr(xyt, "northing")][1],
-                "id" = x[, attr(xyt, "id")][1]
+                "first" = min(x[, time_col(xyt)]),
+                "last" = max(x[, time_col(xyt)]),
+                "east" = x[, easting_col(xyt)][1],
+                "north" = x[, northing_col(xyt)][1],
+                "id" = x[, id_col(xyt)][1]
               )
             })
           )

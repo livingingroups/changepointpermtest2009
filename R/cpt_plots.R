@@ -77,6 +77,7 @@ plotcpt <- function(
 
 
 #' @keywords internal
+#' @importFrom trackframe easting_col northing_col id_col
 plotcpt.trackframe <- function(
   cpt,
   direction = FALSE,
@@ -92,9 +93,9 @@ plotcpt.trackframe <- function(
   assert_character(cp_col)
   assert_logical(facet)
   assert_integerish(nfacet_col, null.ok = TRUE)
-  x <- attr(cpt, "easting")
-  y <- attr(cpt, "northing")
-  id <- attr(cpt, "id")
+  x <- easting_col(cpt)
+  y <- northing_col(cpt)
+  id <- id_col(cpt)
 
   if (is.null(id)) {
     id <- "id_int"

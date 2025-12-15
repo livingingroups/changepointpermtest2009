@@ -89,9 +89,9 @@ change_point_test_pvalue_internal <- function(
     set.seed(seed)
   }
   change_point_test_pvalue_xyt(
-    x = data[[attr(data, "easting")]],
-    y = data[[attr(data, "northing")]],
-    time = data[[attr(data, "time")]],
+    x = data[[easting_col(data)]],
+    y = data[[northing_col(data)]],
+    time = data[[time_col(data)]],
     q_max = q_max,
     n = n,
     min_move_dist = min_move_dist
@@ -262,15 +262,15 @@ change_point_test_pvalue.trackframe <- function(
       set.seed(seed)
     }
     cpt <- change_point_test_pvalue_xyt(
-      x = data[[attr(data, "easting")]],
-      y = data[[attr(data, "northing")]],
-      time = data[[attr(data, "time")]],
+      x = data[[easting_col(data)]],
+      y = data[[northing_col(data)]],
+      time = data[[time_col(data)]],
       q_max = q_max,
       n = n,
       min_move_dist = min_move_dist
     )
   } else {
-    cpt <- split(data, data[[attr(data, "id")]])
+    cpt <- split(data, data[[id_col(data)]])
     if (is.null(clu)) {
       cpt <- lapply(
         cpt,
