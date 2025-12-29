@@ -52,7 +52,12 @@ change_point_test_xyt <- function(
   checkmate::assert_integerish(q, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_integerish(n, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_numeric(alpha, len = 1, any.missing = FALSE, lower = 0)
-  checkmate::assert_numeric(min_move_dist, len = 1, any.missing = FALSE, lower = 0)
+  checkmate::assert_numeric(
+    min_move_dist,
+    len = 1,
+    any.missing = FALSE,
+    lower = 0
+  )
 
   # Reverse the time-ordering so that (bx[1], by[1]) refers to (final)
   idx <- order(time, decreasing = TRUE)
@@ -64,13 +69,17 @@ change_point_test_xyt <- function(
   bydiff <- diff(by)
 
   # remove points at which animal stays still
-  is_moving <- if (isTRUE(list(...)[["legacy_movement_criteria"]])) c(
-    TRUE,
-    abs(bxdiff) > min_move_dist & abs(bydiff) > min_move_dist
-  ) else c(
-    TRUE,
-    sqrt(bxdiff^2 + bydiff^2) > min_move_dist
-  )
+  is_moving <- if (isTRUE(list(...)[["legacy_movement_criteria"]])) {
+    c(
+      TRUE,
+      abs(bxdiff) > min_move_dist & abs(bydiff) > min_move_dist
+    )
+  } else {
+    c(
+      TRUE,
+      sqrt(bxdiff^2 + bydiff^2) > min_move_dist
+    )
+  }
 
   bxm <- bx[is_moving]
   bym <- by[is_moving]
@@ -339,7 +348,6 @@ change_point_test.trackframe <- function(
         verify = verify,
         ...
       )
-
     }
     cpt <- do_rbind(cpt)
   }

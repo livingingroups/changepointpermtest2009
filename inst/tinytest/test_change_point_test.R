@@ -29,9 +29,58 @@ test_xytdata <- function() {
   expect_inherits(cpt_tf, "change_point_test")
   expect_equal(cpt_xyt$sig, cpt_tf$sig)
   # cat(deparse(cpt_xyt$sig))
-  results_orig <- c(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-    0,  0, 0, 0, 0, 0, 0, 0, 0, 0)
+  results_orig <- c(
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  )
   expect_equal(cpt_xyt[, "sig"], results_orig)
   expect_equal(summary(cpt_xyt)[, "last"], c(9, 17, 34))
   expect_equal(
@@ -75,7 +124,6 @@ test_basic_functionality <- function() {
 }
 
 
-
 # Test with different input formats
 test_input_formats <- function() {
   # Create a simple dataset
@@ -94,7 +142,13 @@ test_input_formats <- function() {
   expect_true(is.data.frame(result_df))
 
   # Test with trackframe
-  data_tf <- as.trackframe(data.frame(t = as.POSIXct(t), x = x, y = y), 't', 'x', 'y', crs = NA)
+  data_tf <- as.trackframe(
+    data.frame(t = as.POSIXct(t), x = x, y = y),
+    't',
+    'x',
+    'y',
+    crs = NA
+  )
   set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_tf))
@@ -147,10 +201,17 @@ test_colnames <- function() {
   colnames(cpt)
   expect_equal(colnames(cpt)[1:3], cn)
 
-  tf <- as.trackframe(data.frame(tnew = as.POSIXct(seq_along(cpttestdata[, 3])), #nolint
+  tf <- as.trackframe(
+    data.frame(
+      tnew = as.POSIXct(seq_along(cpttestdata[, 3])), #nolint
       x2 = cpttestdata[, 1],
-      y2 = cpttestdata[, 2]),
-    'tnew', 'x2', 'y2', crs = NA)
+      y2 = cpttestdata[, 2]
+    ),
+    'tnew',
+    'x2',
+    'y2',
+    crs = NA
+  )
   set.seed(2025L)
   cpt_tf <- change_point_test(tf, N = 100)
   expect_equal(colnames(cpt_tf[1:3]), c('tnew', 'x2', 'y2'))

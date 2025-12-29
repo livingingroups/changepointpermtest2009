@@ -27,14 +27,21 @@ expect_inherits(cpt, class(path_data_frame))
 summary_df <- summary(cpt)
 # FIXME: these are unequal because df is in latlong, therefore
 # incompatible with trackframe.
-if (FALSE) expect_equal(summary_df, summary_tf)
+if (FALSE) {
+  expect_equal(summary_df, summary_tf)
+}
 
 # move2
 data("path_move2", package = "trackframe")
 expect_equal(path_move2$time, path_data_frame$time)
 expect_inherits(path_move2, "move2")
 set.seed(2025L)
-cpt <- change_point_test(sf::st_transform(path_move2, projected_crs), alpha = 0.05, q = 3, n = 100)
+cpt <- change_point_test(
+  sf::st_transform(path_move2, projected_crs),
+  alpha = 0.05,
+  q = 3,
+  n = 100
+)
 expect_inherits(cpt, class(path_move2))
 summary_move2 <- summary(cpt)
 # compare with tf by coordinates transformation
@@ -42,7 +49,10 @@ utm_coords <- cbind.data.frame(
   cpt$time,
   sf::st_coordinates(cpt)
 )
-idx <- match(as.character(summary_tf$first), as.character(utm_coords$`cpt$time`))
+idx <- match(
+  as.character(summary_tf$first),
+  as.character(utm_coords$`cpt$time`)
+)
 expect_equal(utm_coords[idx, 2], summary_tf$east)
 expect_equal(utm_coords[idx, 3], summary_tf$north)
 
@@ -51,8 +61,12 @@ data("path_sftrack", package = "trackframe")
 expect_equal(path_sftrack$time, path_move2$time)
 expect_inherits(path_sftrack, "sftrack")
 set.seed(2025L)
-cpt <- change_point_test(sf::st_transform(path_sftrack, projected_crs), alpha = 0.05, q = 3,
-  n = 100)
+cpt <- change_point_test(
+  sf::st_transform(path_sftrack, projected_crs),
+  alpha = 0.05,
+  q = 3,
+  n = 100
+)
 expect_inherits(cpt, class(path_sftrack))
 summary_sftrack <- summary(cpt)
 expect_equal(summary_move2, summary_sftrack)
@@ -71,7 +85,12 @@ data("paths_move2", package = "trackframe")
 expect_equal(paths_move2$time, paths_trackframe$time)
 expect_inherits(paths_move2, "move2")
 set.seed(2025L)
-cpt <- change_point_test(sf::st_transform(paths_move2, projected_crs), alpha = 0.05, q = 3, n = 100)
+cpt <- change_point_test(
+  sf::st_transform(paths_move2, projected_crs),
+  alpha = 0.05,
+  q = 3,
+  n = 100
+)
 expect_inherits(cpt, class(paths_move2))
 summary_move2 <- summary(cpt)
 

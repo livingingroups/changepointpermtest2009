@@ -15,7 +15,14 @@ tf <- as.trackframe(cpttestdata, crs = NA)
 data("paths_trackframe", package = "trackframe")
 tf <- paths_trackframe
 set.seed(2025L)
-cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0, seed = 2025)
+cpt_tf <- change_point_test(
+  tf,
+  alpha = 0.05,
+  q = 3,
+  n = 500,
+  min_move_dist = 0,
+  seed = 2025
+)
 set.seed(2025L)
 if (ncores >= 4) {
   cpt_tf_4 <- change_point_test(

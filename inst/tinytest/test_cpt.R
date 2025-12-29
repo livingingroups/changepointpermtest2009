@@ -7,15 +7,15 @@ data("path_trackframe", package = "trackframe")
 data("cpttestdata", package = "cpt")
 
 # To please the lintr.
-path_trackframe <- path_trackframe  # nolint: object_usage_linter
-cpttestdata <- cpttestdata  # nolint: object_usage_linter
+path_trackframe <- path_trackframe # nolint: object_usage_linter
+cpttestdata <- cpttestdata # nolint: object_usage_linter
 projected_crs <- "EPSG:32632"
 
 
 # cpttestdata
 
 test_xytdata <- function() {
-  xyt <- path_trackframe[1:50, ]  #nolint
+  xyt <- path_trackframe[1:50, ] #nolint
   xyt$time <- 1:50
   set.seed(2025L)
   cpt_xyt <- change_point_test_xyt(
@@ -29,14 +29,67 @@ test_xytdata <- function() {
   )
   expect_inherits(cpt_xyt, "change_point_test")
   set.seed(2025L)
-  cpt_tf <- change_point_test(xyt, alpha = 0.05, q = 4, n = 1000, min_move_dist = 0)
+  cpt_tf <- change_point_test(
+    xyt,
+    alpha = 0.05,
+    q = 4,
+    n = 1000,
+    min_move_dist = 0
+  )
   expect_inherits(cpt_tf, "change_point_test")
   expect_equal(cpt_xyt$sig, cpt_tf$sig)
   # cat(deparse(cpt_xyt$sig))
   results_orig <- c(
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-    0,  0, 0, 0, 0, 0, 0, 0, 0, 0
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
   )
   expect_equal(cpt_xyt[, "sig"], results_orig)
   expect_true(inherits(cpt_xyt, c("matrix", "data.frame")))
@@ -67,7 +120,13 @@ test_basic_functionality <- function() {
 
   # Run change point detection
   set.seed(2025L)
-  result <- change_point_test(data, alpha = 0.05, q = 3, n = 100, min_move_dist = 0)
+  result <- change_point_test(
+    data,
+    alpha = 0.05,
+    q = 3,
+    n = 100,
+    min_move_dist = 0
+  )
 
   # Check that the result is a data frame
   expect_true(is.data.frame(result))
@@ -93,17 +152,41 @@ test_input_formats <- function() {
 
   # Test with data frame
   data_df <- data.frame(x = x, y = y, t = t)
-  result_df <- change_point_test(data_df, alpha = 0.05, q = 3, n = 100, min_move_dist = 0)
+  result_df <- change_point_test(
+    data_df,
+    alpha = 0.05,
+    q = 3,
+    n = 100,
+    min_move_dist = 0
+  )
   t <- as.POSIXct(1:10)
   data_df <- data.frame(x = x, y = y, t = t)
   set.seed(2025L)
-  result_df <- change_point_test(data_df, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+  result_df <- change_point_test(
+    data_df,
+    alpha = 0.05,
+    q = 2,
+    n = 50,
+    min_move_dist = 0
+  )
   expect_true(is.data.frame(result_df))
 
   # Test with trackframe
-  data_tf <- as.trackframe(data.frame(t = as.POSIXct(t), x = x, y = y), "t", "x", "y", crs = NA)
+  data_tf <- as.trackframe(
+    data.frame(t = as.POSIXct(t), x = x, y = y),
+    "t",
+    "x",
+    "y",
+    crs = NA
+  )
   set.seed(2025L)
-  result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+  result_tf <- change_point_test(
+    data_tf,
+    alpha = 0.05,
+    q = 2,
+    n = 50,
+    min_move_dist = 0
+  )
   expect_inherits(result_tf, class(data_tf))
   expect_equal(result_df[, c("sig", "cp_no")], result_tf[, c("sig", "cp_no")])
 
@@ -117,7 +200,13 @@ test_input_formats <- function() {
     crs = projected_crs
   )
   set.seed(2025L)
-  result_move2 <- change_point_test(data_move2, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+  result_move2 <- change_point_test(
+    data_move2,
+    alpha = 0.05,
+    q = 2,
+    n = 50,
+    min_move_dist = 0
+  )
   expect_inherits(result_move2, class(data_move2))
   expect_equal(result_move2[["sig"]], result_tf[["sig"]])
   expect_equal(result_move2[["cp_no"]], result_tf[["cp_no"]])
@@ -131,7 +220,13 @@ test_input_formats <- function() {
     crs = projected_crs
   )
   set.seed(2025L)
-  result_sftrack <- change_point_test(data_sftrack, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+  result_sftrack <- change_point_test(
+    data_sftrack,
+    alpha = 0.05,
+    q = 2,
+    n = 50,
+    min_move_dist = 0
+  )
   expect_inherits(result_sftrack, class(data_sftrack))
   expect_equal(result_sftrack[["sig"]], result_tf[["sig"]])
   expect_equal(result_sftrack[["cp_no"]], result_tf[["cp_no"]])
@@ -149,7 +244,13 @@ test_cp_no_consistency <- function() {
 
   # Run change point detection
   set.seed(2025L)
-  result <- change_point_test(data, alpha = 0.05, q = 3, n = 100, min_move_dist = 0)
+  result <- change_point_test(
+    data,
+    alpha = 0.05,
+    q = 3,
+    n = 100,
+    min_move_dist = 0
+  )
 
   # Check that cp_no is sequential and matches sig column
   if (sum(result$sig) > 0) {

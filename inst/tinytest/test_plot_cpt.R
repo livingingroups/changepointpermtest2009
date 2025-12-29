@@ -37,18 +37,42 @@ t <- 1:10
 
 # Test with data frame
 data_df <- data.frame(x = x, y = y, t = t)
-result_df <- change_point_test(data_df, alpha = 0.05, q = 3, n = 100, min_move_dist = 0)
+result_df <- change_point_test(
+  data_df,
+  alpha = 0.05,
+  q = 3,
+  n = 100,
+  min_move_dist = 0
+)
 t <- as.POSIXct(1:10)
 data_df <- data.frame(x = x, y = y, t = t)
 set.seed(2025L)
-result_df <- change_point_test(data_df, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+result_df <- change_point_test(
+  data_df,
+  alpha = 0.05,
+  q = 2,
+  n = 50,
+  min_move_dist = 0
+)
 f <- function() plot(result_df)
 expect_snapshot_plot(f, label = "plot_df")
 
 # Test with trackframe
-data_tf <- as.trackframe(data.frame(t = as.POSIXct(t), x = x, y = y), "t", "x", "y", crs = NA)
+data_tf <- as.trackframe(
+  data.frame(t = as.POSIXct(t), x = x, y = y),
+  "t",
+  "x",
+  "y",
+  crs = NA
+)
 set.seed(2025L)
-result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+result_tf <- change_point_test(
+  data_tf,
+  alpha = 0.05,
+  q = 2,
+  n = 50,
+  min_move_dist = 0
+)
 f <- function() plot(result_tf)
 expect_snapshot_plot(f, label = "plot_tf")
 
@@ -62,7 +86,13 @@ data_move2 <- mt_as_move2(
   crs = "EPSG:32632"
 )
 set.seed(2025L)
-result_move2 <- change_point_test(data_move2, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+result_move2 <- change_point_test(
+  data_move2,
+  alpha = 0.05,
+  q = 2,
+  n = 50,
+  min_move_dist = 0
+)
 f <- function() plot(result_move2)
 expect_snapshot_plot(f, label = "plot_move2")
 
@@ -75,6 +105,12 @@ data_sftrack <- as_sftrack(
   crs = "EPSG:32632"
 )
 set.seed(2025L)
-result_sftrack <- change_point_test(data_sftrack, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+result_sftrack <- change_point_test(
+  data_sftrack,
+  alpha = 0.05,
+  q = 2,
+  n = 50,
+  min_move_dist = 0
+)
 f <- function() plot(result_sftrack)
 expect_snapshot_plot(f, label = "plot_sftrack")

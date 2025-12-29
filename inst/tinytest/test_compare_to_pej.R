@@ -63,7 +63,14 @@ compare_to_pej <- function(tf, alpha, q, n, min_move_dist) {
   )
 
   #nolint start
-  pej <- pej_implementation(easting(tf), northing(tf), alpha, q, n = n, min_move_dist)
+  pej <- pej_implementation(
+    easting(tf),
+    northing(tf),
+    alpha,
+    q,
+    n = n,
+    min_move_dist
+  )
 
   # convert cps into format pej outputs
   cps_rcpp <- pej_style_cps(cp_tf) # FIXME:
@@ -81,7 +88,12 @@ compare_to_pej <- function(tf, alpha, q, n, min_move_dist) {
 
 data("cpttestdata", package = "cpt")
 compare_to_pej(
-  tf = as.trackframe(cpttestdata, easting_col = "x", northing_col = "y", crs = NA),
+  tf = as.trackframe(
+    cpttestdata,
+    easting_col = "x",
+    northing_col = "y",
+    crs = NA
+  ),
   alpha = 0.05,
   q = 4,
   n = 1000,

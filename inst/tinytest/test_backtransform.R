@@ -13,11 +13,23 @@ t <- cpttestdata$t
 
 # Test with data frame
 data_df <- data.frame(x = x, y = y, t = t)
-result_df <- change_point_test(data_df, alpha = 0.05, q = 3, n = 100, min_move_dist = 0)
+result_df <- change_point_test(
+  data_df,
+  alpha = 0.05,
+  q = 3,
+  n = 100,
+  min_move_dist = 0
+)
 # t <- as.POSIXct(1:10)
 data_df <- data.frame(x = x, y = y, t = t)
 set.seed(2025L)
-result_df <- change_point_test(data_df, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+result_df <- change_point_test(
+  data_df,
+  alpha = 0.05,
+  q = 2,
+  n = 50,
+  min_move_dist = 0
+)
 expect_true(is.data.frame(result_df))
 expect_equal(
   data_df,
@@ -36,7 +48,13 @@ data_tf <- as.trackframe(
   crs = NA
 )
 set.seed(2025L)
-result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, n = 50, min_move_dist = 0)
+result_tf <- change_point_test(
+  data_tf,
+  alpha = 0.05,
+  q = 2,
+  n = 50,
+  min_move_dist = 0
+)
 expect_true(is.trackframe(result_tf))
 expect_equal(
   data_tf,

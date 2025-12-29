@@ -1,4 +1,8 @@
-cptfiguredata <- read.csv(system.file("extdata", "cptfigdata.csv", package = "cpt"))
+cptfiguredata <- read.csv(system.file(
+  "extdata",
+  "cptfigdata.csv",
+  package = "cpt"
+))
 cptfiguredata$time <- as.POSIXct(seq_len(nrow(cptfiguredata)))
 cptfiguredata_tf <- trackframe::as.trackframe(cptfiguredata)
 cpttestdata <- as.data.frame(scan(

@@ -6,7 +6,15 @@
 # file <- "data/8_7august11.txt"
 # inp <- scan(file, list(x1 = 0, x2 = 0))
 
-pej_implementation <- function(x1, x2, alpha, q, n, min_move_dist, seed = 2025) {
+pej_implementation <- function(
+  x1,
+  x2,
+  alpha,
+  q,
+  n,
+  min_move_dist,
+  seed = 2025
+) {
   # INPUTS
 
   # # input alpha
@@ -60,7 +68,9 @@ pej_implementation <- function(x1, x2, alpha, q, n, min_move_dist, seed = 2025) 
   ind <- c(1:x1_len)
   newp <- c(1:x1_len)
   for (j in 2:x1_len) {
-    newp[j] <- ind[j] * (abs(bx1diff[j - 1]) > min_move_dist && abs(bx2diff[j - 1]) > min_move_dist)
+    newp[j] <- ind[j] *
+      (abs(bx1diff[j - 1]) > min_move_dist &&
+        abs(bx2diff[j - 1]) > min_move_dist)
   }
   # bz1, bz2 are coordinates of points(in reverse time order) at which there is movement
   bz1 <- bx1[newp > 0]

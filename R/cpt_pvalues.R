@@ -40,7 +40,12 @@ change_point_test_pvalue_xyt <- function(
   checkmate::assert_numeric(time, len = length(x), any.missing = FALSE)
   checkmate::assert_integerish(q_max, len = 1, any.missing = FALSE, lower = 1)
   checkmate::assert_integerish(n, len = 1, any.missing = FALSE, lower = 1)
-  checkmate::assert_numeric(min_move_dist, len = 1, any.missing = FALSE, lower = 0)
+  checkmate::assert_numeric(
+    min_move_dist,
+    len = 1,
+    any.missing = FALSE,
+    lower = 0
+  )
 
   # Reverse the time-ordering so that (bx[1], by[1]) refers to (final)
   idx <- order(time, decreasing = TRUE)
