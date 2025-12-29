@@ -6,7 +6,7 @@ title: Acceptable Inputs
 vignette: >
   %\VignetteIndexEntry{Acceptable Inputs}
   %\VignetteEngine{knitr::knitr}
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -20,11 +20,11 @@ check as.trackframe method for data.frame
 ```
 
 
-Transform data to a trackframe. Trackframe always use x/y coordinates as cartesian coordinates with easting and northing. 
+Transform data to a trackframe. Trackframe always use x/y coordinates as cartesian coordinates with easting and northing.
 ```{r}
 library(trackframe)
 projected_crs <- "EPSG:32632"
-tf <- as.trackframe(path_matrix, crs = projected_crs) 
+tf <- as.trackframe(path_matrix, crs = projected_crs)
 class(tf)
 ```
 
@@ -82,7 +82,7 @@ Alternatively, in order to remove the warning coerce to trackframe first by sett
 
 ```{r}
 projected_crs <- "EPSG:32632"
-tf <- as.trackframe(path_matrix, crs = projected_crs) 
+tf <- as.trackframe(path_matrix, crs = projected_crs)
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500)
 all.equal(cpt$sig, cpt_tf$sig)
@@ -135,7 +135,7 @@ Create cocomo format data
 ```{r}
 padding <- 25
 n_times <- 20 + 3 * padding
-N <- 2
+n <- 2
 
 xs <- matrix(
   c(
@@ -146,16 +146,18 @@ xs <- matrix(
     rep(1, padding),
     rep(0, n_times)
   ),
-  N,n_times,byrow=TRUE
+  n, n_times, byrow = TRUE
 )
 ys <- matrix(
-  rep(0, N*n_times),
-  N,n_times,byrow=TRUE
+  rep(0, n * n_times),
+  n, n_times, byrow = TRUE
 )
 timestamps <- as.POSIXct(1:n_times)
 
-ids <- rbind.data.frame(list("id_code" = 'VCVM001', "age" = 10, "sex" = "m"),
-                        list("id_code" = 'WRTH', "age" = 5, "sex" = "f"))
+ids <- rbind.data.frame(
+  list("id_code" = 'VCVM001', "age" = 10, "sex" = "m"),
+  list("id_code" = 'WRTH', "age" = 5, "sex" = "f")
+)
 ```
 
 Transform to trackframe

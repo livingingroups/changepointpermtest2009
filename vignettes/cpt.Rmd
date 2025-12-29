@@ -10,7 +10,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(dpi=300)
+knitr::opts_chunk$set(dpi = 300)
 ```
 
 
@@ -43,12 +43,14 @@ Detect change points
 data("path_trackframe", package = "trackframe")
 class(path_trackframe)
 set.seed(2025L)
-cpt <- change_point_test_xyt(easting = path_trackframe[, "easting"],
-                             northing = path_trackframe[, "northing"],
-                             time = path_matrix[, "time"],
-                             alpha = 0.05,
-                             q = 3,
-                             N = 500)
+cpt <- change_point_test_xyt(
+  easting = path_trackframe[, "easting"],
+  northing = path_trackframe[, "northing"],
+  time = path_matrix[, "time"],
+  alpha = 0.05,
+  q = 3,
+  N = 500
+)
 class(cpt)
 ```
 

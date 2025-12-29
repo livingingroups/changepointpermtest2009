@@ -70,7 +70,7 @@ pej_implementation <- function(
   for (j in 2:x1_len) {
     newp[j] <- ind[j] *
       (abs(bx1diff[j - 1]) > min_move_dist &&
-        abs(bx2diff[j - 1]) > min_move_dist)
+        abs(bx2diff[j - 1]) > min_move_dist) # nolint https://github.com/r-lib/lintr/issues/2960
   }
   # bz1, bz2 are coordinates of points(in reverse time order) at which there is movement
   bz1 <- bx1[newp > 0]
@@ -274,7 +274,7 @@ pej_implementation <- function(
 
   # first contains row nos. of first times at change points
   first <- 0 * last
-  for (j in seq_len(length(last))) {
+  for (j in seq_along(last)) {
     first[j] <- x1_len + 2 - min(which(newp > (x1_len + 1 - last[j])))
   }
 
