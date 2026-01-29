@@ -44,13 +44,7 @@
 plot.change_point_test <- function(
   x,
   direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "black",
   facet = TRUE,
   nfacet_col = NULL,
@@ -72,13 +66,7 @@ plot.change_point_test <- function(
 plotcpt <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
@@ -89,17 +77,10 @@ plotcpt <- function(
 
 
 #' @keywords internal
-#' @importFrom trackframe easting_col northing_col id_col
 plotcpt.trackframe <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
@@ -111,9 +92,9 @@ plotcpt.trackframe <- function(
   assert_character(cp_col)
   assert_logical(facet)
   assert_integerish(nfacet_col, null.ok = TRUE)
-  x <- easting_col(cpt)
-  y <- northing_col(cpt)
-  id <- id_col(cpt)
+  x <- attr(cpt, "easting")
+  y <- attr(cpt, "northing")
+  id <- attr(cpt, "id")
 
   if (is.null(id)) {
     id <- "id_int"
@@ -142,8 +123,7 @@ plotcpt.trackframe <- function(
       main = "Change Points"
     )
     if (facet) {
-      default_options <- c(
-        default_options,
+      default_options <- c(default_options,
         facet = "by",
         facet.args = list("free" = FALSE, ncol = nfacet_col)
       )
@@ -164,29 +144,14 @@ plotcpt.trackframe <- function(
   control <- modifyList(default_options, args[!names(args) %in% restricted])
   do.call(tinyplot, c(list(form, data = cpt), control))
   # add change points
-  tinyplot_add(
-    data = cpt[cpt[["sig"]] == 1, ],
-    type = "p",
-    cex = 3,
-    pch = "*",
-    col = cp_col
-  ) # NOTE: do we want to add cp numbers?
+  tinyplot_add(data = cpt[cpt[["cp_id"]] != 0, ], type = "p", cex = 3, pch = "*",
+    col = cp_col) # NOTE: do we want to add cp numbers?
   # add starting point
-  tinyplot_add(
-    data = cpt[!duplicated(cpt[[id]]), ],
-    type = "p",
-    cex = 1,
-    pch = "|",
-    col = "green"
-  )
+  tinyplot_add(data = cpt[!duplicated(cpt[[id]]), ], type = "p", cex = 1,
+    pch = "|", col = "green")
   # add end point
-  tinyplot_add(
-    data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ],
-    type = "p",
-    cex = 1,
-    pch = 4,
-    col = "red"
-  )
+  tinyplot_add(data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p",
+    cex = 1, pch = 4, col = "red")
 
   if (isTRUE(direction)) {
     # add arrow in path direction from (x1, y1) to (x2, y2)
@@ -197,13 +162,7 @@ plotcpt.trackframe <- function(
     }
     # needed to match ids to ensure correct ordering in id's
     uids <- unique(id(cpt))
-    direction_style_defaults <- list(
-      length = 0.1,
-      code = 2,
-      col = "black",
-      lty = 3,
-      lwd = 1
-    )
+    direction_style_defaults <- list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1)
     direction_style <- modifyList(direction_style_defaults, direction_style)
     tinyplot_add(
       data = cpt,
@@ -229,13 +188,7 @@ plotcpt.trackframe <- function(
 plotcpt.sftrack <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
@@ -261,13 +214,7 @@ plotcpt.move2 <- plotcpt.sftrack
 plotcpt.data.frame <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
+  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
@@ -364,7 +311,7 @@ plot.change_point_test_pvalue <- function(x, ...) {
 #'        alpha = alpha,
 #'        q = q
 #'  )
-#'  df <- as.data.frame(rowsum(cp$sig, as.factor(cp[,attr(tf, 'id')])))
+#'  df <- as.data.frame(rowsum(as.integer(cp$cp_id != 0), as.factor(cp[,attr(tf, 'id')])))
 #'  names(df) <- 'n_cp'
 #'  df$track_id <- rownames(df)
 #'  rownames(df) <- NULL

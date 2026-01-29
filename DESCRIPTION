@@ -1,7 +1,7 @@
 Package: cpt
 Type: Package
 Title: Directional Change Point Test for Animal Tracking Data
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: c(
     person("Peter", "Jupp", email = "pej@st-andrews.ac.uk", role = "aut", comment=c(ORCID="0000-0003-0973-8434")),
     person("Rainer", "Hirk", email = "Rainer.Hirk@quintik.at", role = "aut"),

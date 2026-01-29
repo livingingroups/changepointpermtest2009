@@ -116,7 +116,7 @@ calculate_n_cp_by_q <- function(tf, q = seq_len(10), alpha = 0.01) {
         q = q
       )
       # cp <- do.call(rbind, lapply(seq_len(cp), function(i) cbind(cp, "track_id" = i)))
-      df <- as.data.frame(rowsum(cp$sig, as.factor(cp[, attr(tf, 'id')])))
+      df <- as.data.frame(rowsum(as.integer(cp$cp_id != 0), as.factor(cp[, attr(tf, 'id')])))
       names(df) <- 'n_cp'
       df$track_id <- rownames(df)
       rownames(df) <- NULL

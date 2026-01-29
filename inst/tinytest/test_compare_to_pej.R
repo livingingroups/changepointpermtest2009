@@ -18,8 +18,8 @@ pej_tf_filter <- function(tf, min_move_dist) {
 
 
 pej_style_cps <- function(tf) {
-  xyt_cp <- tf[tf$cp_no != 0, ]
-  xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
+  xyt_cp <- tf[tf$cp_id != 0, ]
+  xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
   cps_rcpp <- do.call(
     "rbind",
     lapply(xyt_cp_split, function(x) {
@@ -81,7 +81,6 @@ compare_to_pej <- function(tf, alpha, q, n, min_move_dist) {
 
   expect_equal(pej$bz1, easting(bztf))
   expect_equal(pej$bz2, northing(bztf))
-  expect_equal(pej$sig, bztf$sig)
   expect_equal(pej$cps, cps_rcpp)
 }
 

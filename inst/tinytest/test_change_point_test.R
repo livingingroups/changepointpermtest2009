@@ -27,8 +27,7 @@ test_xytdata <- function() {
   set.seed(2025L)
   cpt_tf <- change_point_test(xyt, alpha = 0.05, q = 4, N = 1000, tol = 0)
   expect_inherits(cpt_tf, "change_point_test")
-  expect_equal(cpt_xyt$sig, cpt_tf$sig)
-  # cat(deparse(cpt_xyt$sig))
+  expect_equal(cpt_xyt$cp_id, cpt_tf$cp_id)
   results_orig <- c(
     0,
     0,
@@ -81,7 +80,7 @@ test_xytdata <- function() {
     0,
     0
   )
-  expect_equal(cpt_xyt[, "sig"], results_orig)
+  expect_equal(as.integer(cpt_xyt[, "cp_id"] != 0), results_orig)
   expect_equal(summary(cpt_xyt)[, "last"], c(9, 17, 34))
   expect_equal(
     summary(cpt_tf)[, "east"],
@@ -117,10 +116,7 @@ test_basic_functionality <- function() {
   expect_equal(nrow(result), nrow(data))
 
   # Check that the output contains the required columns
-  expect_true(all(c("x", "y", "t", "sig", "cp_no") %in% colnames(result)))
-
-  # Check that sig column contains only 0s and 1s
-  expect_true(all(result$sig %in% c(0, 1)))
+  expect_true(all(c("x", "y", "t", "cp_id") %in% colnames(result)))
 }
 
 
@@ -152,39 +148,8 @@ test_input_formats <- function() {
   set.seed(2025L)
   result_tf <- change_point_test(data_tf, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_tf))
-  expect_equal(result_df[, c("sig", "cp_no")], result_tf[, c("sig", "cp_no")])
+  expect_equal(result_df[, c("cp_id")], result_tf[, c("cp_id")])
 }
-
-
-# Test consistency of cp_no column
-test_cp_no_consistency <- function() {
-  # Create data with multiple potential change points
-  set.seed(303)
-  x <- c(1:10, 20:30, 40:50)
-  y <- c(1:10, 20:30, 40:50)
-  t <- as.POSIXct(seq_along(x) * 5)
-  data <- data.frame(x = x, y = y, t = t)
-
-  # Run change point detection
-  set.seed(2025L)
-  result <- change_point_test(data, alpha = 0.05, q = 3, N = 100, tol = 0)
-
-  # Check that cp_no is sequential and matches sig column
-  if (sum(result$sig) > 0) {
-    # Get non-zero cp_no values
-    cp_nums <- unique(result$cp_no[result$cp_no > 0])
-
-    # Should be sequential integers
-    expect_equal(cp_nums, seq_along(cp_nums))
-
-    # Each cp_no should correspond to a change point (sig=1)
-    for (cp in cp_nums) {
-      # At least one row with this cp_no should have sig=1
-      expect_true(any(result$sig[result$cp_no == cp] == 1))
-    }
-  }
-}
-
 
 test_colnames <- function() {
   data("cpttestdata", package = "cpt")
@@ -221,5 +186,4 @@ test_colnames <- function() {
 test_xytdata()
 test_basic_functionality()
 test_input_formats()
-test_cp_no_consistency()
 test_colnames()

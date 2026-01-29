@@ -10,7 +10,7 @@
 \item{object}{an object of class \code{change_point_test} or
 \code{change_point_test_list} containing movement data with change point information,
 typically the output from \code{change_point_test()}. Must contain columns x and y coordinates,
-a timestamp, \code{'sig'}, and \code{'cp_no'}.}
+a timestamp, and \code{'cp_id'}.}
 
 \item{...}{other arguments passed to summary}
 }

@@ -210,8 +210,7 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 #' @param ... additional arguments passed to methods.
 #'
 #' @return An augmented data frame containing the original data with additional columns:
-#'   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
-#'   \item{cp_no}{Sequential numbering of detected change points}
+#'   \item{cp_id}{Sequential numbering of detected change points}
 #'
 #' @details This function implements a sequential change point detection algorithm that uses
 #'          a permutation test to identify significant changes in movement patterns. It compares

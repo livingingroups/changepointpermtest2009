@@ -18,7 +18,6 @@ tf_tibble <- as.trackframe(
 )
 set.seed(2025)
 cpt_tf_tibble <- change_point_test(data = tf_tibble, n = 100)
-expect_equal(cpt_tf[["sig"]], cpt_tf_tibble[["sig"]])
 expect_equal(cpt_tf[["cp_no"]], cpt_tf_tibble[["cp_no"]])
 
 tf_dt <- as.trackframe(
@@ -28,7 +27,6 @@ tf_dt <- as.trackframe(
 )
 set.seed(2025)
 cpt_tf_dt <- change_point_test(data = tf_dt, n = 100)
-expect_equal(cpt_tf[["sig"]], cpt_tf_dt[["sig"]])
 expect_equal(cpt_tf[["cp_no"]], cpt_tf_dt[["cp_no"]])
 
 
@@ -45,7 +43,6 @@ tf_tibble <- as.trackframe(
 )
 set.seed(2025)
 cpt_tf_tibble <- change_point_test(data = tf_tibble, n = 100)
-expect_equal(cpt_tf[["sig"]], cpt_tf_tibble[["sig"]])
 expect_equal(cpt_tf[["cp_no"]], cpt_tf_tibble[["cp_no"]])
 
 tf_dt <- as.trackframe(
@@ -55,7 +52,6 @@ tf_dt <- as.trackframe(
 )
 set.seed(2025)
 cpt_tf_dt <- change_point_test(data = tf_dt, n = 100)
-expect_equal(cpt_tf[["sig"]], cpt_tf_dt[["sig"]])
 expect_equal(cpt_tf[["cp_no"]], cpt_tf_dt[["cp_no"]])
 
 # cpt pvalue

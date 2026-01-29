@@ -58,7 +58,7 @@ ggplot() + geom_path(
   data = tf4[order(index(tf4)), ],
   mapping = aes(x = easting(tf4), y = northing(tf4), group = track_id)
 ) + coord_fixed() + geom_point(
-  data = cp[cp$sig == 1, ],
+  data = cp[cp$cp_id != 0, ],
   aes(x = x, y = y),
   shape = "\u2605",
   size = 8
@@ -120,7 +120,7 @@ calculate_n_cp_by_q <- function(tf, q = seq_len(10), alpha = 0.01) {
       q = q
     )
     # cp <- do.call(rbind, lapply(seq_len(cp), function(i) cbind(cp, "track_id" = i)))
-    df <- as.data.frame(rowsum(cp$sig, as.factor(cp[, attr(tf, 'id')])))
+    df <- as.data.frame(rowsum(as.integer(cp[, "cp_id"] != 0), as.factor(cp[, attr(tf, 'id')])))
     names(df) <- 'n_cp'
     df$track_id <- rownames(df)
     rownames(df) <- NULL
@@ -155,7 +155,7 @@ ggplot() + geom_path(
   data = tf7[order(index(tf7)), ],
   mapping = aes(x = easting(tf7), y = northing(tf7), group = track_id)
 ) + coord_fixed() + geom_point(
-  data = cp[cp$sig == 1, ],
+  data = cp[cp$cp_id != 0, ],
   aes(x = x, y = y),
   shape = "\u2605",
   size = 8

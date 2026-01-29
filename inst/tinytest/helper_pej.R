@@ -260,12 +260,12 @@ pej_implementation <- function(
   cp_time <- newpp[sig == 1]
   cp_bx1 <- bz1[sig == 1] #nolint
   cp_bx2 <- bz2[sig == 1] #nolint
-  cp_no <- x1_len + 1 - cp_time
-  # last is cp_no in reverse order
-  last <- 0 * cp_no
-  cp_leng <- length(cp_no)
+  cp_id <- x1_len + 1 - cp_time
+  # last is cp_id in reverse order
+  last <- 0 * cp_id
+  cp_leng <- length(cp_id)
   for (j in 1:cp_leng) {
-    last[j] <- cp_no[cp_leng - j + 1]
+    last[j] <- cp_id[cp_leng - j + 1]
   }
   # last contains row nos. of (last times at) change points
   # (east, north) are their coordinates

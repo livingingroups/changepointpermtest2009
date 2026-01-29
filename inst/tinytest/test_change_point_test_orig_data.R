@@ -24,7 +24,6 @@ if (file.exists(file)) {
     n = 1000,
     min_move_dist = 0
   )
-  # cat(deparse(cpt$sig))
   results_orig <- c(
     0,
     0,
@@ -181,7 +180,7 @@ if (file.exists(file)) {
     0,
     0
   )
-  expect_equal(cpt[, "sig"], results_orig)
+  expect_equal(as.integer(cpt[, "cp_id"] != 0), results_orig)
   expect_equal(summary(cpt)[, "last"], c(39, 65, 74, 88, 132))
 
   tf <- as.trackframe(
@@ -203,7 +202,7 @@ if (file.exists(file)) {
     n = 1000,
     min_move_dist = 0
   )
-  expect_equal(cpt_tf$sig, results_orig)
+  expect_equal(as.integer(cpt_tf[, "cp_id"] != 0), results_orig)
   expect_equal(
     summary(cpt_tf)[, "east"],
     c(688443.1545, 687898.0517, 687666.5149, 687345.6599, 687095.3092)

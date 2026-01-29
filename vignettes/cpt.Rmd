@@ -72,7 +72,7 @@ TODO
 
 Get probability values instead of binary indicators
 ```{r}
-data("cpttestdata")
-pvalues <- change_point_test_pvalue(cpttestdata, q_max = 5, N = 500)
+data("cpttestdata_tiny")
+pvalues <- change_point_test_pvalue(cpttestdata_tiny, q_max = 5, N = 500)
 tail(pvalues)
 ```

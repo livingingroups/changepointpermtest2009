@@ -34,3 +34,8 @@ NULL
 #'
 #' Small data set to test package.
 "cpttestdata"
+
+#' Test Data
+#'
+#' Tiny data set to test change_point_test_pvalue.
+"cpttestdata_tiny"

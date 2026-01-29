@@ -89,22 +89,19 @@ change_point_test_xyt <- function(
 
   #  Remove putative goal from list of CP's
   sig[1] <- 0L
-  cp_no <- (sig != 0) * cumsum(sig)
+  cp_id <- (sig != 0) * cumsum(sig)
   # re-index
   df <- data.frame(
     easting = bx,
     northing = by,
     time = bt,
-    sig = NA_integer_,
-    cp_no = NA_integer_
+    cp_id = NA_integer_
   )
-  df[["sig"]][is_moving] <- sig
-  df[["cp_no"]][is_moving] <- as.integer(
-    (cp_no > 0) * (max(cp_no) + 1L - cp_no)
+  df[["cp_id"]][is_moving] <- as.integer(
+    (cp_id > 0) * (max(cp_id) + 1L - cp_id)
   )
   df <- df[order(df[["time"]]), ]
-  df[["sig"]] <- na.locf(df[["sig"]], fromLast = TRUE, na.rm = FALSE)
-  df[["cp_no"]] <- na.locf(df[["cp_no"]], fromLast = TRUE, na.rm = FALSE)
+  df[["cp_id"]] <- na.locf(df[["cp_id"]], fromLast = TRUE, na.rm = FALSE)
   class(df) <- union("change_point_test", class(df))
   rownames(df) <- NULL
   attr(df, "time") <- "time"
@@ -144,8 +141,7 @@ change_point_test_trackframe_single_id <- function(
     stopifnot(all(data[[northing_col(data)]] == cpt[["northing"]]))
     stopifnot(all(data[[time_col(data)]] == cpt[["time"]]))
   }
-  data[["sig"]] <- cpt[["sig"]]
-  data[["cp_no"]] <- cpt[["cp_no"]]
+  data[["cp_id"]] <- cpt[["cp_id"]]
   return(data)
 }
 
@@ -228,8 +224,7 @@ refine_cluster_input <- function(clu) {
 #' @param ... additional arguments passed to methods.
 #'
 #' @return An augmented data frame containing the original data with additional columns:
-#'   \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
-#'   \item{cp_no}{Sequential numbering of detected change points}
+#'   \item{cp_id}{Sequential numbering of detected change points}
 #'
 #'
 #' @details This function implements a sequential change point detection algorithm that uses
@@ -451,7 +446,7 @@ change_point_test.sftrack <- change_point_test.move2
 #' @param object an object of class \code{change_point_test} or
 #'   \code{change_point_test_list} containing movement data with change point information,
 #'   typically the output from \code{change_point_test()}. Must contain columns x and y coordinates,
-#'   a timestamp, \code{'sig'}, and \code{'cp_no'}.
+#'   a timestamp, and \code{'cp_id'}.
 #' @param ... other arguments passed to summary
 #'
 #' @return A data frame with one row per change point and the following columns:
@@ -475,8 +470,8 @@ summary.change_point_test <- function(object, ...) {
   if (inherits(object, "trackframe")) {
     tf_ids <- unlist(unique_ids(object))
     if (length(tf_ids) <= 1) {
-      xyt_cp <- object[object$sig != 0, ]
-      xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
+      xyt_cp <- object[object$cp_id != 0, ]
+      xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
       summary <- do.call(
         "rbind",
         lapply(xyt_cp_split, function(x) {
@@ -493,8 +488,8 @@ summary.change_point_test <- function(object, ...) {
       summary <- do.call(
         "rbind",
         lapply(tf_split, function(xyt) {
-          xyt_cp <- xyt[xyt$sig != 0, ]
-          xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
+          xyt_cp <- xyt[xyt$cp_id != 0, ]
+          xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
 
           summary_i <- do.call(
             "rbind",
@@ -521,8 +516,8 @@ summary.change_point_test <- function(object, ...) {
     }
     # tf_ids <- unlist(unique_ids(object))
     if (length(ids) <= 1) {
-      xyt_cp <- object[object$sig != 0, ]
-      xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
+      xyt_cp <- object[object$cp_id != 0, ]
+      xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
       summary <- do.call(
         "rbind",
         lapply(xyt_cp_split, function(x) {
@@ -544,8 +539,8 @@ summary.change_point_test <- function(object, ...) {
       summary <- do.call(
         "rbind",
         lapply(tf_split, function(xyt) {
-          xyt_cp <- xyt[xyt$sig != 0, ]
-          xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_no)
+          xyt_cp <- xyt[xyt$cp_id != 0, ]
+          xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
 
           summary_i <- do.call(
             "rbind",
@@ -565,8 +560,8 @@ summary.change_point_test <- function(object, ...) {
       )
     }
   } else if (inherits(object, c("matrix", "data.frame"))) {
-    xyt_cp <- object[object[, "sig"] != 0, ]
-    xyt_cp_split <- split(as.data.frame(xyt_cp), f = xyt_cp[, "cp_no"])
+    xyt_cp <- object[object[, "cp_id"] != 0, ]
+    xyt_cp_split <- split(as.data.frame(xyt_cp), f = xyt_cp[, "cp_id"])
     summary <- do.call(
       "rbind",
       lapply(xyt_cp_split, function(x) {

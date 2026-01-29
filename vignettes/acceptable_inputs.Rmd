@@ -85,7 +85,7 @@ projected_crs <- "EPSG:32632"
 tf <- as.trackframe(path_matrix, crs = projected_crs)
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, N = 500)
-all.equal(cpt$sig, cpt_tf$sig)
+all.equal(cpt$cp_id, cpt_tf$cp_id)
 ```
 
 Extract the change points into a summarized format

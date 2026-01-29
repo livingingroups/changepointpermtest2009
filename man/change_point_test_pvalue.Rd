@@ -92,8 +92,7 @@ used.
 }
 \value{
 An augmented data frame containing the original data with additional columns:
-  \item{sig}{Binary indicator (1 or 0) of whether a point is a significant change point}
-  \item{cp_no}{Sequential numbering of detected change points}
+  \item{cp_id}{Sequential numbering of detected change points}
 }
 \description{
 Detects significant change points in animal movement trajectory data using a permutation-based

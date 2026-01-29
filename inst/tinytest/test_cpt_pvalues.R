@@ -233,7 +233,7 @@ test_basic_functionality <- function() {
   # Check that the output contains the required columns
   expect_true(all(c("q=1", "q=2", "q=3") %in% colnames(result)))
 
-  # Check that sig column contains only 0s and 1s
+  # Check that pvalues are smaller equal 1
   expect_true(all(result <= 1, na.rm = TRUE))
 }
 

@@ -33,7 +33,7 @@ result_df <- change_point_test(
 expect_true(is.data.frame(result_df))
 expect_equal(
   data_df,
-  result_df[, 1:(NCOL(result_df) - 2)],
+  result_df[, 1:(NCOL(result_df) - 1)],
   check.attributes = FALSE
 )
 # attributes(data_df)
@@ -58,7 +58,7 @@ result_tf <- change_point_test(
 expect_true(is.trackframe(result_tf))
 expect_equal(
   data_tf,
-  result_tf[, 1:(NCOL(result_tf) - 2)],
+  result_tf[, 1:(NCOL(result_tf) - 1)],
   check.attributes = FALSE
 )
 
@@ -81,8 +81,7 @@ result_move2 <- change_point_test(
 )
 class(result_move2)
 expect_inherits(result_move2, "move2")
-expect_equal(result_move2[["sig"]], result_tf[["sig"]])
-expect_equal(result_move2[["cp_no"]], result_tf[["cp_no"]])
+expect_equal(result_move2[["cp_id"]], result_tf[["cp_id"]])
 
 # sftrack
 library(sftrack)
@@ -101,4 +100,4 @@ result_sftrack <- change_point_test(
   min_move_dist = 0
 )
 expect_inherits(result_sftrack, "sftrack")
-expect_equal(result_sftrack[["cp_no"]], result_tf[["cp_no"]])
+expect_equal(result_sftrack[["cp_id"]], result_tf[["cp_id"]])
