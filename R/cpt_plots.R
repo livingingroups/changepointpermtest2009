@@ -44,7 +44,13 @@
 plot.change_point_test <- function(
   x,
   direction = FALSE,
-  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
+  direction_style = list(
+    length = 0.1,
+    code = 2,
+    col = "black",
+    lty = 3,
+    lwd = 1
+  ),
   cp_col = "black",
   facet = TRUE,
   nfacet_col = NULL,
@@ -66,7 +72,13 @@ plot.change_point_test <- function(
 plotcpt <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
+  direction_style = list(
+    length = 0.1,
+    code = 2,
+    col = "black",
+    lty = 3,
+    lwd = 1
+  ),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
@@ -80,107 +92,64 @@ plotcpt <- function(
 plotcpt.trackframe <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
+  direction_style = list(
+    length = 0.1,
+    code = 2,
+    col = "black",
+    lty = 3,
+    lwd = 1
+  ),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
   ...
 ) {
-  assert_class(cpt, "trackframe")
-  assert_logical(direction)
-  assert_list(direction_style)
-  assert_character(cp_col)
-  assert_logical(facet)
-  assert_integerish(nfacet_col, null.ok = TRUE)
-  x <- attr(cpt, "easting")
-  y <- attr(cpt, "northing")
-  id <- attr(cpt, "id")
-
-  if (is.null(id)) {
+  if (is.null(id(cpt))) {
     id <- "id_int"
     attr(cpt, "id") <- id
     cpt$id_int <- "id_1"
   }
-
-  n_id <- length(unique(id(cpt)))
-  nfacet_col <- nfacet_col %||% set_facet_ncol(n_id)
-
-  # delete restricted elements
-  restricted <- c("x", "y", "data")
-  args <- list(...) # args <- list()
-  if (any(names(args) %in% restricted)) {
-    warning(sprintf(
-      "argument %s is restricted and therefore ignored",
-      names(args)[names(args) %in% restricted]
+  class(cpt) <- class(cpt)[!class(cpt) == "change_point_test"]
+  plot(
+    cpt,
+    direction,
+    direction_style = direction_style,
+    marker = "cp_id",
+    marker_style = list(col = cp_col, cex = 3, pch = "*"),
+    facet = facet,
+    nfacet_col = nfacet_col,
+    main = paste("Change Points", "-", unique(id(cpt))),
+    ...
+  )
+  form <- if (length(unique(id(cpt))) > 1) {
+    as.formula(paste(
+      northing_col(cpt),
+      "~",
+      easting_col(cpt),
+      "|",
+      id_col(cpt)
     ))
-  }
-
-  if (length(unique(id(cpt))) > 1) {
-    form <- as.formula(paste(y, "~", x, "|", id))
-    default_options <- list(
-      type = "l",
-      grid = TRUE,
-      main = "Change Points"
-    )
-    if (facet) {
-      default_options <- c(default_options,
-        facet = "by",
-        facet.args = list("free" = FALSE, ncol = nfacet_col)
-      )
-      arrows_facet <- "by"
-    } else {
-      arrows_facet <- id
-    }
   } else {
     # single id
-    form <- as.formula(paste(y, "~", x))
-    default_options <- list(
-      type = "l",
-      grid = TRUE,
-      main = paste("Change Points", "-", unique(id(cpt)))
-    )
-    arrows_facet <- id
+    as.formula(paste(northing_col(cpt), "~", easting_col(cpt)))
   }
-  control <- modifyList(default_options, args[!names(args) %in% restricted])
-  do.call(tinyplot, c(list(form, data = cpt), control))
-  # add change points
-  tinyplot_add(data = cpt[cpt[["cp_id"]] != 0, ], type = "p", cex = 3, pch = "*",
-    col = cp_col) # NOTE: do we want to add cp numbers?
-  # add starting point
-  tinyplot_add(data = cpt[!duplicated(cpt[[id]]), ], type = "p", cex = 1,
-    pch = "|", col = "green")
+  tinyplot_add(
+    form,
+    data = cpt[!duplicated(id(cpt)), ],
+    type = "p",
+    cex = 1,
+    pch = "|",
+    col = "green"
+  )
   # add end point
-  tinyplot_add(data = cpt[!duplicated(cpt[[id]], fromLast = TRUE), ], type = "p",
-    cex = 1, pch = 4, col = "red")
-
-  if (isTRUE(direction)) {
-    # add arrow in path direction from (x1, y1) to (x2, y2)
-    starting_points <- get_starting_points(cpt)
-    direction_points <- get_direction_points(cpt)
-    if (NROW(starting_points) != NROW(direction_points)) {
-      stop("direction points do not exist for all IDs. Set direction = FALSE.")
-    }
-    # needed to match ids to ensure correct ordering in id's
-    uids <- unique(id(cpt))
-    direction_style_defaults <- list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1)
-    direction_style <- modifyList(direction_style_defaults, direction_style)
-    tinyplot_add(
-      data = cpt,
-      add = TRUE,
-      type = type_arrows(
-        x0 = easting(starting_points)[match(uids, id(starting_points))],
-        y0 = northing(starting_points)[match(uids, id(starting_points))],
-        x1 = easting(direction_points)[match(uids, id(direction_points))],
-        y1 = northing(direction_points)[match(uids, id(direction_points))],
-        length = direction_style[["length"]],
-        code = direction_style[["code"]]
-      ),
-      col = direction_style[["col"]],
-      lty = direction_style[["lty"]],
-      lwd = direction_style[["lwd"]],
-      facet = arrows_facet
-    )
-  }
+  tinyplot_add(
+    form,
+    data = cpt[!duplicated(id(cpt), fromLast = TRUE), ],
+    type = "p",
+    cex = 1,
+    pch = 4,
+    col = "red"
+  )
 }
 
 
@@ -188,7 +157,13 @@ plotcpt.trackframe <- function(
 plotcpt.sftrack <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
+  direction_style = list(
+    length = 0.1,
+    code = 2,
+    col = "black",
+    lty = 3,
+    lwd = 1
+  ),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
@@ -214,7 +189,13 @@ plotcpt.move2 <- plotcpt.sftrack
 plotcpt.data.frame <- function(
   cpt,
   direction = FALSE,
-  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
+  direction_style = list(
+    length = 0.1,
+    code = 2,
+    col = "black",
+    lty = 3,
+    lwd = 1
+  ),
   cp_col = "red",
   facet = TRUE,
   nfacet_col = NULL,
