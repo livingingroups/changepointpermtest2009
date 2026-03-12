@@ -27,5 +27,5 @@ P = change_point_test_pvalue(data, q_max = 10, n = 100)
 
 tinytheme("clean2")
 
-plot(P)
+plot(P[[1]])
 }

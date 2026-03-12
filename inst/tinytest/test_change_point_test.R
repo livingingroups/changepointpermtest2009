@@ -103,7 +103,7 @@ test_basic_functionality <- function() {
   t <- as.POSIXct(1:40)
 
   # Create data frame with the required columns
-  data <- data.frame(x = x, y = y, t = t)
+  data <- data.frame(x = x, y = y, t = t, id = "id_1")
 
   # Run change point detection
   set.seed(2025L)
@@ -129,10 +129,10 @@ test_input_formats <- function() {
   t <- 1:10
 
   # Test with data frame
-  data_df <- data.frame(x = x, y = y, t = t)
+  data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
   result_df <- change_point_test(data_df, alpha = 0.05, q = 3, N = 100, tol = 0)
   t <- as.POSIXct(1:40)
-  data_df <- data.frame(x = x, y = y, t = t)
+  data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
   set.seed(2025L)
   result_df <- change_point_test(data_df, alpha = 0.05, q = 2, N = 50, tol = 0)
   expect_true(is.data.frame(result_df))

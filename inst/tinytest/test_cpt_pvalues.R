@@ -10,6 +10,7 @@ data("paths_trackframe", package = "trackframe")
 data("paths_sftrack", package = "trackframe")
 data("cpttestdata", package = "cpt")
 projected_crs <- "EPSG:32632"
+small_n <- 3
 
 # To please the lintr.
 path_trackframe <- path_trackframe # nolint: object_usage_linter
@@ -27,13 +28,20 @@ test_xytdata <- function() {
     y = xyt[, "northing"],
     time = xyt[, "time"],
     q_max = 3,
+    # changing n will cause this to fail unless the standard is updated
     n = 100,
     min_move_dist = 0
   )
   expect_inherits(cpt_xyt, "matrix")
   expect_inherits(cpt_xyt, "change_point_test_pvalue")
   set.seed(2025L)
-  cpt_tf <- change_point_test_pvalue(xyt, q_max = 3, n = 100, min_move_dist = 0)
+  cpt_tf <- change_point_test_pvalue(
+    xyt,
+    q_max = 3,
+    # changing n will cause this to fail unless the standard is updated
+    n = 100,
+    min_move_dist = 0
+  )[[1]]
   expect_inherits(cpt_tf, "change_point_test_pvalue")
   expect_equal(cpt_xyt, cpt_tf)
   # cat(deparse(cpt_xyt))
@@ -213,7 +221,7 @@ test_basic_functionality <- function() {
   t <- as.POSIXct(1:40)
 
   # Create data frame with the required columns
-  data <- data.frame(x = x, y = y, t = t)
+  data <- data.frame(x = x, y = y, t = t, id = "id_1")
 
   # Run change point detection
   set.seed(2025L)
@@ -222,7 +230,7 @@ test_basic_functionality <- function() {
     q_max = 3,
     n = 100,
     min_move_dist = 0
-  )
+  )[[1]]
 
   # Check that the result is a data frame
   expect_true(is.matrix(result))
@@ -247,28 +255,29 @@ test_input_formats <- function() {
   t <- 1:10
 
   # Test with data frame
-  data_df <- data.frame(x = x, y = y, t = t)
+  data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
   result_df <- change_point_test_pvalue(
     data_df,
     q_max = 3,
-    n = 100,
+    n = small_n,
     min_move_dist = 0
-  )
+  )[[1]]
   expect_equal(NCOL(result_df), 3)
   t <- as.POSIXct(1:10)
-  data_df <- data.frame(x = x, y = y, t = t)
+  data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
+
   set.seed(2025L)
   result_df <- change_point_test_pvalue(
     data_df,
     q_max = 2,
-    n = 50,
+    n = small_n,
     min_move_dist = 0
-  )
+  )[[1]]
   expect_equal(NCOL(result_df), 2)
 
   # Test with trackframe
   data_tf <- as.trackframe(
-    data.frame(t = as.POSIXct(t), x = x, y = y),
+    data.frame(t = as.POSIXct(t), x = x, y = y, id = "id_1"),
     "t",
     "x",
     "y",
@@ -278,9 +287,9 @@ test_input_formats <- function() {
   result_tf <- change_point_test_pvalue(
     data_tf,
     q_max = 2,
-    n = 50,
+    n = small_n,
     min_move_dist = 0
-  )
+  )[[1]]
   expect_inherits(result_tf, "change_point_test_pvalue")
   expect_equal(result_df, result_tf)
 
@@ -297,9 +306,9 @@ test_input_formats <- function() {
   result_move2 <- change_point_test_pvalue(
     data_move2,
     q_max = 2,
-    n = 50,
+    n = small_n,
     min_move_dist = 0
-  )
+  )[[1]]
   expect_inherits(result_move2, "change_point_test_pvalue")
 
   # sftrack
@@ -314,9 +323,9 @@ test_input_formats <- function() {
   result_sftrack <- change_point_test_pvalue(
     data_sftrack,
     q_max = 2,
-    n = 50,
+    n = small_n,
     min_move_dist = 0
-  )
+  )[[1]]
   expect_inherits(result_sftrack, "change_point_test_pvalue")
   expect_equal(result_move2, result_sftrack)
 }
@@ -347,7 +356,7 @@ test_colnames <- function() {
     crs = NA
   )
   set.seed(2025L)
-  cpt_tf <- change_point_test_pvalue(tf, n = 100)
+  cpt_tf <- change_point_test_pvalue(tf, n = small_n)[[1]]
   expect_inherits(cpt_tf, "change_point_test_pvalue")
   expect_equal(colnames(cpt_tf), c("q=1", "q=2", "q=3", "q=4"))
 }
@@ -359,7 +368,7 @@ test_multiple_paths <- function() {
   cpt_mpaths <- change_point_test_pvalue(
     data = paths_trackframe,
     q_max = 3,
-    n = 10,
+    n = small_n,
     min_move_dist = 0
   )
 
@@ -369,11 +378,11 @@ test_multiple_paths <- function() {
   cpt_path1 <- change_point_test_pvalue(
     data = track1,
     q_max = 3,
-    n = 10,
+    n = small_n,
     min_move_dist = 0
   )
 
-  expect_equal(cpt_path1, cpt_mpaths[[1]])
+  expect_equal(cpt_path1[[1]], cpt_mpaths[[1]])
 
   # sftrack
   expect_inherits(paths_sftrack, "sftrack")
@@ -381,7 +390,7 @@ test_multiple_paths <- function() {
   cpt_mpaths_sftrack <- change_point_test_pvalue(
     data = sf::st_transform(paths_sftrack, projected_crs),
     q_max = 3,
-    n = 10,
+    n = small_n,
     min_move_dist = 0
   )
 

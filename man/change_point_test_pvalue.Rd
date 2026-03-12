@@ -60,7 +60,7 @@ change_point_test_pvalue(
 )
 }
 \arguments{
-\item{data}{a matrix or data frame with columns for x-coordinates, y-coordinates, and time.
+\item{data}{a matrix or data frame with columns for x-coordinates, y-coordinates, time, and track id.
 For the default method, this should be a matrix or data frame with at least 3 columns.}
 
 \item{q_max}{an integer specifying the maximum value of q.}
@@ -91,7 +91,7 @@ used.
 \item{tf_args}{args passed to as.trackframe in the case \code{"data"} is not}
 }
 \value{
-An augmented data frame containing the original data with additional columns:
+a list with one element per track id and a matrix an additional column indicating
   \item{cp_id}{Sequential numbering of detected change points}
 }
 \description{

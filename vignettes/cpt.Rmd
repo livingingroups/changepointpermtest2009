@@ -30,7 +30,6 @@ install_github('livingingroups/travelpaths-devel/pkgs/cpt')
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 library("cpt")
 library("trackframe")
-# library(ggplot2)
 ```
 
 

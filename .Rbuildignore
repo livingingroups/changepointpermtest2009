@@ -13,4 +13,5 @@ Taskfile.yml
 ^air.toml$
 ^run_lintr.R$
 ^Meta$
+.lintr
 .vscode

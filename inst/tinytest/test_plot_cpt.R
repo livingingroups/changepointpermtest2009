@@ -36,7 +36,7 @@ y <- 1:10
 t <- 1:10
 
 # Test with data frame
-data_df <- data.frame(x = x, y = y, t = t)
+data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
 result_df <- change_point_test(
   data_df,
   alpha = 0.05,
@@ -45,7 +45,7 @@ result_df <- change_point_test(
   min_move_dist = 0
 )
 t <- as.POSIXct(1:10)
-data_df <- data.frame(x = x, y = y, t = t)
+data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
 set.seed(2025L)
 result_df <- change_point_test(
   data_df,
@@ -59,7 +59,7 @@ expect_snapshot_plot(f, label = "plot_df")
 
 # Test with trackframe
 data_tf <- as.trackframe(
-  data.frame(t = as.POSIXct(t), x = x, y = y),
+  data.frame(t = as.POSIXct(t), x = x, y = y, id = "id_1"),
   "t",
   "x",
   "y",

@@ -187,7 +187,8 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 #' approach. This function identifies locations where the movement pattern significantly changes,
 #' which can represent behavioral transitions or responses to environmental stimuli.
 #'
-#' @param data a matrix or data frame with columns for x-coordinates, y-coordinates, and time.
+#' @param data a matrix or data frame with columns for
+#' x-coordinates, y-coordinates, time, and track id.
 #'   For the default method, this should be a matrix or data frame with at least 3 columns.
 #' @param q_max an integer specifying the maximum value of q.
 #' @param n an integer specifying the number of random permutations for the permutation test
@@ -209,7 +210,7 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 #' @param seed seed to be passed to random number generator
 #' @param ... additional arguments passed to methods.
 #'
-#' @return An augmented data frame containing the original data with additional columns:
+#' @return a list with one element per track id and a matrix an additional column indicating
 #'   \item{cp_id}{Sequential numbering of detected change points}
 #'
 #' @details This function implements a sequential change point detection algorithm that uses
@@ -260,55 +261,39 @@ change_point_test_pvalue.trackframe <- function(
   checkmate::assert_true(NROW(data) > 2L)
   verify <- list(...)[["verify"]]
   clu <- refine_cluster_input(clu)
-  tf_ids <- unique_ids(data)
-  if (length(tf_ids) <= 1) {
-    if (!is.null(seed)) {
-      set.seed(seed)
-    }
-    cpt <- change_point_test_pvalue_xyt(
-      x = data[[easting_col(data)]],
-      y = data[[northing_col(data)]],
-      time = data[[time_col(data)]],
+  cpt <- split(data, id(data))
+  if (is.null(clu)) {
+    cpt <- lapply(
+      cpt,
+      change_point_test_pvalue_internal,
       q_max = q_max,
       n = n,
-      min_move_dist = min_move_dist
+      min_move_dist = min_move_dist,
+      seed = seed,
+      verify = verify
     )
   } else {
-    cpt <- split(data, data[[id_col(data)]])
-    if (is.null(clu)) {
-      cpt <- lapply(
-        cpt,
-        change_point_test_pvalue_internal,
-        q_max = q_max,
-        n = n,
-        min_move_dist = min_move_dist,
-        seed = seed,
-        verify = verify
-      )
-    } else {
-      if (is.numeric(clu)) {
-        if (clu <= 0L) {
-          ncores <- as.integer(max(1, parallel::detectCores() - 1))
-        } else {
-          ncores <- as.integer(clu)
-        }
-        clu <- makePSOCKcluster(as.integer(ncores))
-        on.exit(stopCluster(clu), add = TRUE)
+    if (is.numeric(clu)) {
+      if (clu <= 0L) {
+        ncores <- as.integer(max(1, parallel::detectCores() - 1))
+      } else {
+        ncores <- as.integer(clu)
       }
-      cpt <- parLapply(
-        clu,
-        cpt,
-        change_point_test_pvalue_internal,
-        q_max = q_max,
-        n = n,
-        min_move_dist = min_move_dist,
-        seed = seed,
-        verify = verify
-      )
+      clu <- makePSOCKcluster(as.integer(ncores))
+      on.exit(stopCluster(clu), add = TRUE)
     }
-    # cpt <- do_rbind(cpt)
+    cpt <- parLapply(
+      clu,
+      cpt,
+      change_point_test_pvalue_internal,
+      q_max = q_max,
+      n = n,
+      min_move_dist = min_move_dist,
+      seed = seed,
+      verify = verify
+    )
   }
-  rownames(cpt) <- NULL
+  class(cpt) <- c("change_point_test_pvalue_collection", class(cpt))
   return(cpt)
 }
 

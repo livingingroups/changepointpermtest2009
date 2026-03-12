@@ -104,11 +104,6 @@ plotcpt.trackframe <- function(
   nfacet_col = NULL,
   ...
 ) {
-  if (is.null(id(cpt))) {
-    id <- "id_int"
-    attr(cpt, "id") <- id
-    cpt$id_int <- "id_1"
-  }
   class(cpt) <- class(cpt)[!class(cpt) == "change_point_test"]
   plot(
     cpt,
@@ -118,37 +113,12 @@ plotcpt.trackframe <- function(
     marker_style = list(col = cp_col, cex = 3, pch = "*"),
     facet = facet,
     nfacet_col = nfacet_col,
+    start_point = TRUE,
+    start_point_style = list(col = "green", pch = "|", cex = 1),
+    end_point = TRUE,
+    end_point_style = list(col = "red", pch = 4, cex = 1),
     main = paste("Change Points", "-", unique(id(cpt))),
     ...
-  )
-  form <- if (length(unique(id(cpt))) > 1) {
-    as.formula(paste(
-      northing_col(cpt),
-      "~",
-      easting_col(cpt),
-      "|",
-      id_col(cpt)
-    ))
-  } else {
-    # single id
-    as.formula(paste(northing_col(cpt), "~", easting_col(cpt)))
-  }
-  tinyplot_add(
-    form,
-    data = cpt[!duplicated(id(cpt)), ],
-    type = "p",
-    cex = 1,
-    pch = "|",
-    col = "green"
-  )
-  # add end point
-  tinyplot_add(
-    form,
-    data = cpt[!duplicated(id(cpt), fromLast = TRUE), ],
-    type = "p",
-    cex = 1,
-    pch = 4,
-    col = "red"
   )
 }
 

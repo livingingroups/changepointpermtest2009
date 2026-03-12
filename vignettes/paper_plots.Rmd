@@ -77,7 +77,7 @@ p <- change_point_test_pvalue(
   tf_4a,
   q_max = 10,
   N = n
-)
+)[[1]]
 
 # plot results (- log(P) vs k for q = 1, .. , q_max)
 
@@ -174,7 +174,7 @@ p <- change_point_test_pvalue( #gives different result due to different calculat
   data,
   q_max = 6,
   N = n
-)
+)[[1]]
 
 
 # plot results (- log(P) vs k for q = 1, .. , q_max)

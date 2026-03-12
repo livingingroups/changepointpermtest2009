@@ -12,7 +12,7 @@ y <- cpttestdata$y
 t <- cpttestdata$t
 
 # Test with data frame
-data_df <- data.frame(x = x, y = y, t = t)
+data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
 result_df <- change_point_test(
   data_df,
   alpha = 0.05,
@@ -21,7 +21,7 @@ result_df <- change_point_test(
   min_move_dist = 0
 )
 # t <- as.POSIXct(1:10)
-data_df <- data.frame(x = x, y = y, t = t)
+data_df <- data.frame(x = x, y = y, t = t, id = "id_1")
 set.seed(2025L)
 result_df <- change_point_test(
   data_df,
@@ -41,7 +41,7 @@ expect_equal(
 
 # Test with trackframe
 data_tf <- as.trackframe(
-  data.frame(t = as.POSIXct(t), x = x, y = y),
+  data.frame(t = as.POSIXct(t), x = x, y = y, id = "id_1"),
   "t",
   "x",
   "y",
@@ -65,7 +65,7 @@ expect_equal(
 # move2
 library(move2)
 data_move2 <- mt_as_move2(
-  data.frame(t = as.POSIXct(t), x = x, y = y, id = 1),
+  data.frame(t = as.POSIXct(t), x = x, y = y, id = 1, id = "id_1"),
   coords = c("x", "y"),
   time_column = "t",
   track_id_column = "id",

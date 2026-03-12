@@ -128,7 +128,8 @@ summary(cpt)
 library("trackframe")
 df <- data.frame(x = cpttestdata[, 1],
                  y = cpttestdata[, 2],
-                 t = as.POSIXct(seq_along(cpttestdata[, 3])))
+                 t = as.POSIXct(seq_along(cpttestdata[, 3])),
+                 id = "track_1")
 tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y', crs = NA)
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
@@ -136,7 +137,7 @@ summary(cpt_tf)
 
 # Get probability values instead of binary indicators
 pvalues <- change_point_test_pvalue(
-  cpttestdata[, c("x", "y", "t")], q_max = 3, n = 500)
+  cpttestdata[, c("x", "y", "t", "track_id")], q_max = 3, n = 500)
 pvalues
 set.seed(2025L)
 cpt_tf <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)

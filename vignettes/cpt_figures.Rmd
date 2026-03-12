@@ -90,7 +90,8 @@ p <- change_point_test_pvalue(
   tf_4a,
   q_max = 10,
   n = n
-)
+)[[1]]
+class(p)
 ```
 
 ```{r}
@@ -169,7 +170,7 @@ p <- change_point_test_pvalue(
   data,
   q_max = 6,
   n = n
-)
+)[[1]]
 ```
 
 

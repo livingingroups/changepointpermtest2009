@@ -250,7 +250,8 @@ refine_cluster_input <- function(clu) {
 #' library("trackframe")
 #' df <- data.frame(x = cpttestdata[, 1],
 #'                  y = cpttestdata[, 2],
-#'                  t = as.POSIXct(seq_along(cpttestdata[, 3])))
+#'                  t = as.POSIXct(seq_along(cpttestdata[, 3])),
+#'                  id = "track_1")
 #' tf <- as.trackframe(df, time_col = 't', easting_col = 'x', northing_col = 'y', crs = NA)
 #' set.seed(2025L)
 #' cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
@@ -258,7 +259,7 @@ refine_cluster_input <- function(clu) {
 #'
 #' # Get probability values instead of binary indicators
 #' pvalues <- change_point_test_pvalue(
-#'   cpttestdata[, c("x", "y", "t")], q_max = 3, n = 500)
+#'   cpttestdata[, c("x", "y", "t", "track_id")], q_max = 3, n = 500)
 #' pvalues
 #' @rdname change_point_test
 change_point_test <- function(
@@ -295,10 +296,11 @@ change_point_test.trackframe <- function(
   checkmate::assert_true(NROW(data) > 2L)
   verify <- list(...)[["verify"]]
   clu <- refine_cluster_input(clu)
-  tf_ids <- unique_ids(data)
-  if (length(tf_ids) <= 1) {
-    cpt <- change_point_test_trackframe_single_id(
-      data,
+  cpt <- split(data, data[[id_col(data)]])
+  if (is.null(clu)) {
+    cpt <- lapply(
+      cpt,
+      change_point_test_trackframe_single_id,
       alpha = alpha,
       q = q,
       n = n,
@@ -308,44 +310,29 @@ change_point_test.trackframe <- function(
       ...
     )
   } else {
-    cpt <- split(data, data[[id_col(data)]])
-    if (is.null(clu)) {
-      cpt <- lapply(
-        cpt,
-        change_point_test_trackframe_single_id,
-        alpha = alpha,
-        q = q,
-        n = n,
-        min_move_dist = min_move_dist,
-        seed = seed,
-        verify = verify,
-        ...
-      )
-    } else {
-      if (is.numeric(clu)) {
-        if (clu <= 0L) {
-          ncores <- as.integer(max(1, parallel::detectCores() - 1))
-        } else {
-          ncores <- as.integer(min(clu, parallel::detectCores()))
-        }
-        clu <- makePSOCKcluster(as.integer(ncores))
-        on.exit(stopCluster(clu), add = TRUE)
+    if (is.numeric(clu)) {
+      if (clu <= 0L) {
+        ncores <- as.integer(max(1, parallel::detectCores() - 1))
+      } else {
+        ncores <- as.integer(min(clu, parallel::detectCores()))
       }
-      cpt <- parLapply(
-        clu,
-        cpt,
-        change_point_test_trackframe_single_id,
-        alpha = alpha,
-        q = q,
-        n = n,
-        min_move_dist = min_move_dist,
-        seed = seed,
-        verify = verify,
-        ...
-      )
+      clu <- makePSOCKcluster(as.integer(ncores))
+      on.exit(stopCluster(clu), add = TRUE)
     }
-    cpt <- do_rbind(cpt)
+    cpt <- parLapply(
+      clu,
+      cpt,
+      change_point_test_trackframe_single_id,
+      alpha = alpha,
+      q = q,
+      n = n,
+      min_move_dist = min_move_dist,
+      seed = seed,
+      verify = verify,
+      ...
+    )
   }
+  cpt <- do_rbind(cpt)
   rownames(cpt) <- NULL
   class(cpt) <- c("change_point_test", class(cpt))
   return(cpt)
@@ -468,53 +455,34 @@ change_point_test.sftrack <- change_point_test.move2
 #' summary(cpt)
 summary.change_point_test <- function(object, ...) {
   if (inherits(object, "trackframe")) {
-    tf_ids <- unlist(unique_ids(object))
-    if (length(tf_ids) <= 1) {
-      xyt_cp <- object[object$cp_id != 0, ]
-      xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
-      summary <- do.call(
-        "rbind",
-        lapply(xyt_cp_split, function(x) {
-          cbind.data.frame(
-            "first" = min(x[, time_col(object)]),
-            "last" = max(x[, time_col(object)]),
-            "east" = x[, easting_col(object)][1],
-            "north" = x[, northing_col(object)][1]
-          )
-        })
-      )
-    } else {
-      tf_split <- split(object, f = object[, id_col(object)])
-      summary <- do.call(
-        "rbind",
-        lapply(tf_split, function(xyt) {
-          xyt_cp <- xyt[xyt$cp_id != 0, ]
-          xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
+    tf_split <- split(object, f = object[, id_col(object)])
+    summary <- do.call(
+      "rbind",
+      lapply(tf_split, function(xyt) {
+        xyt_cp <- xyt[xyt$cp_id != 0, ]
+        xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
 
-          summary_i <- do.call(
-            "rbind",
-            lapply(xyt_cp_split, function(x) {
-              # x <- xyt_cp_split[[1]]
-              cbind.data.frame(
-                "first" = min(x[, time_col(xyt)]),
-                "last" = max(x[, time_col(xyt)]),
-                "east" = x[, easting_col(xyt)][1],
-                "north" = x[, northing_col(xyt)][1],
-                "id" = x[, id_col(xyt)][1]
-              )
-            })
-          )
-          summary_i
-        })
-      )
-    }
+        summary_i <- do.call(
+          "rbind",
+          lapply(xyt_cp_split, function(x) {
+            cbind.data.frame(
+              "first" = min(x[, time_col(xyt)]),
+              "last" = max(x[, time_col(xyt)]),
+              "east" = x[, easting_col(xyt)][1],
+              "north" = x[, northing_col(xyt)][1],
+              "id" = x[, id_col(xyt)][1]
+            )
+          })
+        )
+        summary_i
+      })
+    )
   } else if (inherits(object, c("move2", "sftrack"))) {
     if (inherits(object, c("move2"))) {
       ids <- unique(object[[attr(object, "track_id_column")]])
     } else {
       ids <- unique(object[["id"]])
     }
-    # tf_ids <- unlist(unique_ids(object))
     if (length(ids) <= 1) {
       xyt_cp <- object[object$cp_id != 0, ]
       xyt_cp_split <- split(xyt_cp, f = xyt_cp$cp_id)
@@ -545,7 +513,6 @@ summary.change_point_test <- function(object, ...) {
           summary_i <- do.call(
             "rbind",
             lapply(xyt_cp_split, function(x) {
-              # x <- xyt_cp_split[[1]]
               cbind.data.frame(
                 "first" = min(x[[attr(xyt, "time")]]),
                 "last" = max(x[[attr(xyt, "time")]]),
