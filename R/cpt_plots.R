@@ -205,7 +205,7 @@ plotcpt.data.frame <- function(
 #'
 #' tinytheme("clean2")
 #'
-#' plot(P)
+#' plot(P[[1]])
 plot.change_point_test_pvalue <- function(x, ...) {
   assert_class(x, "change_point_test_pvalue")
   p_long <- reshape2::melt(x)

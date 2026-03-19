@@ -296,7 +296,7 @@ test_input_formats <- function() {
   # move2
   library(move2)
   data_move2 <- mt_as_move2(
-    cbind(data_tf, id = 1),
+    as.data.frame(data_tf),
     coords = c("x", "y"),
     time_column = "t",
     track_id_column = "id",
@@ -314,7 +314,7 @@ test_input_formats <- function() {
   # sftrack
   library(sftrack)
   data_sftrack <- as_sftrack(
-    cbind(data_tf, id = 1),
+    as.data.frame(data_tf),
     coords = c("x", "y"),
     time = "t",
     crs = projected_crs

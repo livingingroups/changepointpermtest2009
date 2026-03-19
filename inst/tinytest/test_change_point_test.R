@@ -179,7 +179,7 @@ test_colnames <- function() {
   )
   set.seed(2025L)
   cpt_tf <- change_point_test(tf, N = 100)
-  expect_equal(colnames(cpt_tf[1:3]), c('tnew', 'x2', 'y2'))
+  expect_equal(colnames(cpt_tf[, 1:3]), c('tnew', 'x2', 'y2'))
 }
 
 # Run all tests
