@@ -60,8 +60,9 @@ change_point_test_pvalue(
 )
 }
 \arguments{
-\item{data}{a matrix or data frame with columns for x-coordinates, y-coordinates, time, and track id.
-For the default method, this should be a matrix or data frame with at least 3 columns.}
+\item{data}{a matrix or data frame with columns for
+x-coordinates, y-coordinates, time, and track id.
+  For the default method, this should be a matrix or data frame with at least 3 columns.}
 
 \item{q_max}{an integer specifying the maximum value of q.}
 
