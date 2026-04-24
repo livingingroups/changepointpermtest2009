@@ -95,7 +95,7 @@ class(p)
 ```
 
 ```{r}
-plot(p)
+plot(p[[1]])
 ```
 
 
@@ -175,7 +175,7 @@ p <- change_point_test_pvalue(
 
 
 ```{r}
-plot(p)
+plot(p[[1]])
 ```
 
 
