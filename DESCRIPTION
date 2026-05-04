@@ -1,7 +1,7 @@
 Package: cpt
 Type: Package
 Title: Directional Change Point Test for Animal Tracking Data
-Version: 2.0.1
+Version: 2.0.2
 Authors@R: c(
     person("Peter", "Jupp", email = "pej@st-andrews.ac.uk", role = "aut", comment=c(ORCID="0000-0003-0973-8434")),
     person("Rainer", "Hirk", email = "Rainer.Hirk@quintik.at", role = "aut"),
@@ -13,7 +13,7 @@ Description: Implements a permutation-based approach for detecting directional c
     Methodology published in "How did they get here from there? Detecting changes of direction in terrestrial ranging"
     by R.W. Byrne, R. Noser, L.A. Bates, P.E. Jupp (2009, <doi:10.1016/j.anbehav.2008.11.014>).
 License: GPL (>= 2)
-Imports: checkmate, Rcpp (>= 1.0.14), trackframe (>= 0.1.6), tinyplot (>= 0.6.0), reshape2
+Imports: checkmate, Rcpp (>= 1.0.14), trackframe (>= 0.1.7), tinyplot (>= 0.6.0), reshape2
 Depends: R (>= 4.0.0), zoo
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: tinytest, knitr, markdown, ggplot2, sf, move2, sftrack, travelpaths, withr, tinysnapshot,
