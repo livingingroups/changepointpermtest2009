@@ -6,34 +6,72 @@
 \usage{
 \method{plot}{change_point_test}(
   x,
-  direction = FALSE,
-  direction_style = list(length = 0.1, code = 2, col = "black", lty = 3, lwd = 1),
-  cp_col = "black",
+  cp_style = list(col = "black", cex = 3, pch = "*"),
+  lines = TRUE,
+  lines_style = list(col = "black"),
+  points = FALSE,
+  points_style = list(pch = 19),
+  start_indicator = TRUE,
+  start_indicator_style = list(col = "green"),
+  end_indicator = TRUE,
+  end_indicator_style = list(col = "red"),
   facet = TRUE,
-  nfacet_col = NULL,
+  facet.args = list(),
+  theme = NULL,
+  asp = 1,
   ...
 )
 }
 \arguments{
 \item{x}{an object of class \code{change_point_test}}
 
-\item{direction}{logical indicator if the path direction should be added to the plot}
+\item{cp_style}{list graphical parameters to apply to change points}
 
-\item{direction_style}{a list of length, code, col, lty, lwd of the arrow of the direction
-(argument passed to \code{\link[graphics]{arrows}}) specifying the style of the arrows}
+\item{lines}{logical should lines be plotted?}
 
-\item{cp_col}{color of the change points}
+\item{lines_style}{list of graphical parameters
+passed to [tinyplot::tinyplot()] when plotting lines}
 
-\item{facet}{logical if facets should be used (TRUE is default). If FALSE all lines are plotted
-in a single plot.}
+\item{points}{logical should track data be plotted as points?}
 
-\item{nfacet_col}{number of columns used in facet.args argument ncol}
+\item{points_style}{graphical parameters
+passed to [tinyplot::tinyplot()] when plotting points}
 
-\item{...}{other arguments used in \code{\link[tinyplot]{tinyplot}}}
+\item{start_indicator}{logical indicator if arrows indicating
+start point of each track should be added}
+
+\item{start_indicator_style}{list of graphical parameters for start indicator.
+See section 'x_indicator_style'.}
+
+\item{end_indicator}{logical indicator if arrows indicating
+endpoint of each track should be added}
+
+\item{end_indicator_style}{list of graphical parameters for end indicator.
+See section 'x_indicator_style'.}
+
+\item{facet}{logical should the plot be facetted by track?}
+
+\item{facet.args}{list of arguments controlling facet behavior.
+If `ncol` is unspecified, an attempt is made chose a visually pleasing value.
+See \code{\link[tinyplot]{tinyplot}}}
+
+\item{theme}{character or list:
+1) `NULL` (default): Use currently set `tinyplot` theme if one is set.
+  Otherwise use trackframe default.
+2) a string naming a built-in tinyplot theme `vignette("themes", package = "tinyplot")` or
+3) a list of graphical parameters defining a custom theme}
+
+\item{asp}{numeric y/x aspect ratio}
+
+\item{...}{additional graphical parameters passed to \code{\link[tinyplot]{tinyplot}}}
 }
 \description{
 Plots change points of objects of class \code{\link[cpt]{change_point_test}}
 based on \code{\link[tinyplot]{tinyplot}} functionality.
+}
+\details{
+all args passed on to [plot::trackframe] (`cp_style`` passed as `marker_style`)
+This method exists to provide different defaults
 }
 \examples{
 library(cpt)
@@ -53,12 +91,12 @@ cpt <- change_point_test(data, alpha = .01, n = 10000, q = 6)
 class(cpt)
 
 plot(cpt)
-# with path directions
-plot(cpt, direction = TRUE)
+# without path directions
+plot(cpt, start_indicator = FALSE, end_indicator = FALSE)
 
 # only one track
 cpt4a <- select_id(cpt, "4a")
 plot(cpt4a)
-# with path direction
-plot(cpt4a, direction = TRUE)
+# without path direction
+plot(cpt4a, start_indicator = FALSE, end_indicator = FALSE)
 }

@@ -4,14 +4,36 @@
 #' based on \code{\link[tinyplot]{tinyplot}} functionality.
 #'
 #' @param x an object of class \code{change_point_test}
-#' @param direction logical indicator if the path direction should be added to the plot
-#' @param direction_style a list of length, code, col, lty, lwd of the arrow of the direction
-#' (argument passed to \code{\link[graphics]{arrows}}) specifying the style of the arrows
-#' @param cp_col color of the change points
-#' @param facet logical if facets should be used (TRUE is default). If FALSE all lines are plotted
-#' in a single plot.
-#' @param nfacet_col number of columns used in facet.args argument ncol
-#' @param ... other arguments used in \code{\link[tinyplot]{tinyplot}}
+#' @param cp_style list graphical parameters to apply to change points
+#' @param lines logical should lines be plotted?
+#' @param lines_style list of graphical parameters
+#'  passed to [tinyplot::tinyplot()] when plotting lines
+#' @param points logical should track data be plotted as points?
+#' @param points_style graphical parameters
+#'  passed to [tinyplot::tinyplot()] when plotting points
+#' @param start_indicator logical indicator if arrows indicating
+#' start point of each track should be added
+#' @param start_indicator_style list of graphical parameters for start indicator.
+#'  See section 'x_indicator_style'.
+#' @param end_indicator logical indicator if arrows indicating
+#' endpoint of each track should be added
+#' @param end_indicator_style list of graphical parameters for end indicator.
+#'  See section 'x_indicator_style'.
+#' @param facet logical should the plot be facetted by track?
+#' @param facet.args list of arguments controlling facet behavior.
+#'  If `ncol` is unspecified, an attempt is made chose a visually pleasing value.
+#'  See \code{\link[tinyplot]{tinyplot}}
+#' @param asp numeric y/x aspect ratio
+#' @param theme character or list:
+#'   1) `NULL` (default): Use currently set `tinyplot` theme if one is set.
+#'     Otherwise use trackframe default.
+#'   2) a string naming a built-in tinyplot theme `vignette("themes", package = "tinyplot")` or
+#'   3) a list of graphical parameters defining a custom theme
+#'
+#' @param ... additional graphical parameters passed to \code{\link[tinyplot]{tinyplot}}
+#'
+#' @details all args passed on to [plot::trackframe] (`cp_style`` passed as `marker_style`)
+#' This method exists to provide different defaults
 #'
 #' @export
 #'
@@ -33,155 +55,59 @@
 #' class(cpt)
 #'
 #' plot(cpt)
-#' # with path directions
-#' plot(cpt, direction = TRUE)
+#' # without path directions
+#' plot(cpt, start_indicator = FALSE, end_indicator = FALSE)
 #'
 #' # only one track
 #' cpt4a <- select_id(cpt, "4a")
 #' plot(cpt4a)
-#' # with path direction
-#' plot(cpt4a, direction = TRUE)
+#' # without path direction
+#' plot(cpt4a, start_indicator = FALSE, end_indicator = FALSE)
 plot.change_point_test <- function(
   x,
-  direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
-  cp_col = "black",
+  cp_style = list(col = "black", cex = 3, pch = "*"),
+  lines = TRUE,
+  lines_style = list(col = "black"),
+  points = FALSE,
+  points_style = list(pch = 19),
+  start_indicator = TRUE,
+  start_indicator_style = list(col = "green"),
+  end_indicator = TRUE,
+  end_indicator_style = list(col = "red"),
   facet = TRUE,
-  nfacet_col = NULL,
+  facet.args = list(), # nolint: object_name_linter
+  theme = NULL,
+  asp = 1,
   ...
 ) {
-  # method dispatch for trackframe, sftrack, move2 +? data.frame
-  plotcpt(
-    cpt = x,
-    direction = direction,
-    direction_style = direction_style,
-    cp_col = cp_col,
-    facet = facet,
-    nfacet_col = nfacet_col
-  )
-}
-
-
-#' @keywords internal
-plotcpt <- function(
-  cpt,
-  direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
-  cp_col = "red",
-  facet = TRUE,
-  nfacet_col = NULL,
-  ...
-) {
-  UseMethod("plotcpt")
-}
-
-
-#' @keywords internal
-plotcpt.trackframe <- function(
-  cpt,
-  direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
-  cp_col = "red",
-  facet = TRUE,
-  nfacet_col = NULL,
-  ...
-) {
-  class(cpt) <- class(cpt)[!class(cpt) == "change_point_test"]
+  assert_class(x, "change_point_test")
+  tf_options("crs", NA)
+  cpt_tf <- as.trackframe(x)
+  if (is.null(id(cpt_tf))) {
+    id <- "id_int"
+    attr(cpt_tf, "id") <- id
+    cpt_tf$id_int <- "id_1"
+  }
+  cpt_tf$marker <- cpt_tf$cp_id != 0
+  class(cpt_tf) <- class(cpt_tf)[!class(cpt_tf) == "change_point_test"]
   plot(
-    cpt,
-    direction,
-    direction_style = direction_style,
-    marker = "cp_id",
-    marker_style = list(col = cp_col, cex = 3, pch = "*"),
+    cpt_tf,
+    points = points,
+    lines_style = lines_style,
+    start_indicator = start_indicator,
+    start_indicator_style = start_indicator_style,
+    end_indicator = end_indicator,
+    end_indicator_style = end_indicator_style,
+    marker = "marker",
+    marker_style = cp_style,
     facet = facet,
-    nfacet_col = nfacet_col,
-    start_point = TRUE,
-    start_point_style = list(col = "green", pch = "|", cex = 1),
-    end_point = TRUE,
-    end_point_style = list(col = "red", pch = 4, cex = 1),
-    main = paste("Change Points", "-", unique(id(cpt))),
+    facet.args = facet.args,
+    theme = theme,
+    asp = asp,
     ...
   )
 }
 
-
-#' @keywords internal
-plotcpt.sftrack <- function(
-  cpt,
-  direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
-  cp_col = "red",
-  facet = TRUE,
-  nfacet_col = NULL,
-  ...
-) {
-  assert_class(cpt, "change_point_test")
-  cpt_tf <- as.trackframe(cpt)
-  plotcpt(
-    cpt = cpt_tf,
-    direction = direction,
-    direction_style = direction_style,
-    cp_col = cp_col,
-    facet = facet,
-    nfacet_col = nfacet_col
-  )
-}
-
-
-#' @keywords internal
-plotcpt.move2 <- plotcpt.sftrack
-
-#' @keywords internal
-plotcpt.data.frame <- function(
-  cpt,
-  direction = FALSE,
-  direction_style = list(
-    length = 0.1,
-    code = 2,
-    col = "black",
-    lty = 3,
-    lwd = 1
-  ),
-  cp_col = "red",
-  facet = TRUE,
-  nfacet_col = NULL,
-  ...
-) {
-  assert_class(cpt, "change_point_test")
-  cpt_tf <- as.trackframe(cpt, crs = NA)
-  plotcpt(
-    cpt = cpt_tf,
-    direction = direction,
-    direction_style = direction_style,
-    cp_col = cp_col,
-    facet = facet,
-    nfacet_col = nfacet_col
-  )
-}
 
 #' Plot Change point test pvalues
 #'
@@ -281,7 +207,7 @@ plot_n_cp_by_q <- function(data, id_col, ...) {
 
   # delete restricted elements
   restricted <- c("x", "y", "data")
-  args <- list(...) # args = list()
+  args <- list(...)
   if (any(names(args) %in% restricted)) {
     warning(sprintf(
       "argument %s is restricted and therefore ignored",

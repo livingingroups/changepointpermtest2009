@@ -2,7 +2,6 @@ source("plot_testing_helpers.R")
 using("tinysnapshot")
 
 # run to create plots (delete plots if new plots should be created)
-# tinytest::run_test_file("inst/tinytest/test_plot_cpt.R")
 
 library(trackframe)
 library(tinytest)
@@ -11,8 +10,6 @@ library(cpt)
 data("path_trackframe", package = "trackframe")
 xyt <- path_trackframe[1:50, ] #nolint
 xyt$time <- 1:50
-# data("cpttestdata", package = "cpt")
-# xyt <- cpttestdata
 set.seed(2025L)
 cpt_xyt <- change_point_test_xyt(
   easting = xyt[, "easting"],

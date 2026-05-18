@@ -4,7 +4,7 @@ cptfiguredata <- read.csv(system.file(
   package = "cpt"
 ))
 cptfiguredata$time <- as.POSIXct(seq_len(nrow(cptfiguredata)))
-cptfiguredata_tf <- trackframe::as.trackframe(cptfiguredata)
+cptfiguredata_tf <- trackframe::as.trackframe(cptfiguredata, crs = NA)
 cpttestdata <- as.data.frame(scan(
   system.file("extdata", "cpttestdata.txt", package = "cpt"),
   list(x1 = 0, x2 = 0)
@@ -14,6 +14,32 @@ save(cptfiguredata, file = "data/cptfiguredata.rda")
 save(cptfiguredata_tf, file = "data/cptfiguredata_tf.rda")
 save(cpttestdata, file = "data/cpttestdata.rda")
 
-cpttestdata_tiny <- cpttestdata[c(1, 2, 3, 4, 5, 11, 12, 13, 30, 31, 34, 35, 36, 40, 41, 50, 51,
-    78, 97, 128, 129, 135, 142, 150), ]
+cpttestdata_tiny <- cpttestdata[
+  c(
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    12,
+    13,
+    30,
+    31,
+    34,
+    35,
+    36,
+    40,
+    41,
+    50,
+    51,
+    78,
+    97,
+    128,
+    129,
+    135,
+    142,
+    150
+  ),
+]
 save(cpttestdata_tiny, file = "data/cpttestdata_tiny.rda")
