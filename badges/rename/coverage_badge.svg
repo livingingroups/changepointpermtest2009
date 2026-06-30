@@ -1,17 +1,17 @@
   <svg xmlns="http://www.w3.org/2000/svg"
-        width="90"
+        width="95"
         height="20"
         role="img"
-        aria-label="coverage: 0%">
+        aria-label="coverage: 37%">
 
     <title>
-        coverage: 0%
+        coverage: 37%
     </title>
 
     <defs>
         <!-- rounded corners -->
         <clipPath id="clipr">
-            <rect width="90"
+            <rect width="95"
                     height="20"
                     rx="3"
                     fill="#fff"/>
@@ -34,10 +34,10 @@
                 height="20"
                 fill="#555"/>
         <rect x="60"
-                width="30"
+                width="35"
                 height="20"
-                fill="#D9534F"/>
-        <rect width="90"
+                fill="#E4804E"/>
+        <rect width="95"
                 height="20"
                 fill="url(#gradient)"/>
     </g>
@@ -69,20 +69,20 @@
 
         <!-- value shadow -->
         <text aria-hidden="true"
-                x="75"
+                x="77.5"
                 y="15"
                 fill="#010101"
                 fill-opacity="0.3"
-                textLength="20">
-          0%
+                textLength="26">
+          37%
         </text>
 
         <!-- value text -->
-        <text x="75"
+        <text x="77.5"
                 y="14"
                 fill="#fff"
-                textLength="20">
-          0%
+                textLength="26">
+          37%
         </text>
     </g>
 </svg>
