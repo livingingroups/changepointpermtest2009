@@ -43,7 +43,7 @@
 #' library(tinyplot)
 #'
 #' data("cpttestdata")
-#' data <- as.trackframe(cpttestdata, crs = NA)
+#' data <- trackframe::as.trackframe(cpttestdata, crs = NA)
 #' class(data)
 #' tinytheme("clean2")
 #' plot(data)
@@ -125,7 +125,7 @@ plot.change_point_test <- function(
 #' library(tinyplot)
 #'
 #' data("cpttestdata")
-#' data <- as.trackframe(cpttestdata, crs = NA)
+#' data <- trackframe::as.trackframe(cpttestdata, crs = NA)
 #' set.seed(2025)
 #' P = change_point_test_pvalue(data, q_max = 10, n = 100)
 #'
@@ -178,7 +178,7 @@ plot.change_point_test_pvalue <- function(x, ...) {
 #' @examples
 #' library(tinyplot)
 #' data("cpttestdata")
-#' data <- as.trackframe(cpttestdata, crs = NA)
+#' data <- trackframe::as.trackframe(cpttestdata, crs = NA)
 #'
 #' calculate_n_cp_by_q <- function(tf, q=seq_len(10), alpha = 0.01) {
 #'  if(length(attr(tf, 'id'))!=1) stop('only implemented for 1 id col')
