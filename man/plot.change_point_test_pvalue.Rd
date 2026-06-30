@@ -16,7 +16,7 @@ Plots change points of objects of class \code{\link[cpt]{change_point_test_pvalu
 \code{\link[tinyplot]{tinyplot}} functionality.
 }
 \examples{
-library(cpt)
+library(changepointpermtest2009)
 library(trackframe)
 library(tinyplot)
 

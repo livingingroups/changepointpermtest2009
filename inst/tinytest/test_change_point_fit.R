@@ -1,6 +1,6 @@
 # Test cases for change_point_fit function
 library(tinytest)
-library(cpt)
+library(changepointpermtest2009)
 library(trackframe)
 attach(getNamespace("cpt"))
 

@@ -8,7 +8,7 @@
 #' @importFrom stats runif setNames as.formula time
 #' @importFrom zoo na.fill na.locf
 #' @importFrom parallel parLapply stopCluster makePSOCKcluster
-#' @useDynLib cpt, .registration = TRUE
+#' @useDynLib changepointpermtest2009, .registration = TRUE
 NULL
 
 #' Test Data

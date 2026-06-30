@@ -38,7 +38,7 @@
 #' @export
 #'
 #' @examples
-#' library(cpt)
+#' library(changepointpermtest2009)
 #' library(trackframe)
 #' library(tinyplot)
 #'
@@ -120,7 +120,7 @@ plot.change_point_test <- function(
 #' @export
 #'
 #' @examples
-#' library(cpt)
+#' library(changepointpermtest2009)
 #' library(trackframe)
 #' library(tinyplot)
 #'

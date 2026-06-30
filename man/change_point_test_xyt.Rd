@@ -46,7 +46,7 @@ which can represent behavioral transitions or responses to environmental stimuli
 }
 \examples{
 
-library("cpt")
+library(changepointpermtest2009)
 cpttestdata <- cpt::cpttestdata
 cpt <- change_point_test_xyt(cpttestdata[, "x"],
                              cpttestdata[, "y"],
