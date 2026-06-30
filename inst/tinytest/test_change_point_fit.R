@@ -2,7 +2,6 @@
 library(tinytest)
 library(changepointpermtest2009)
 library(trackframe)
-attach(getNamespace("cpt"))
 
 
 # Tests core functionality with a trajectory containing a clear change point
