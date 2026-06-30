@@ -74,7 +74,7 @@ all args passed on to [plot::trackframe] (`cp_style`` passed as `marker_style`)
 This method exists to provide different defaults
 }
 \examples{
-library(cpt)
+library(changepointpermtest2009)
 library(trackframe)
 library(tinyplot)
 

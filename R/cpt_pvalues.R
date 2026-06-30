@@ -224,7 +224,7 @@ change_point_fit_pvalue <- function(bx, by, q_max, n) {
 #' @export
 #'
 #' @examples
-#' library(cpt)
+#' library(changepointpermtest2009)
 #' data("cpttestdata", package = "cpt")
 #'
 #' pvalues <- change_point_test_pvalue(cpttestdata, q_max = 6, n = 100)

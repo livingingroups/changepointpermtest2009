@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // rcpparma_change_point_test_fit
 arma::dvec rcpparma_change_point_test_fit(arma::dvec bx, arma::dvec by, int32_t q, int32_t N, double alpha);
-RcppExport SEXP _cpt_rcpparma_change_point_test_fit(SEXP bxSEXP, SEXP bySEXP, SEXP qSEXP, SEXP NSEXP, SEXP alphaSEXP) {
+RcppExport SEXP _changepointpermtest2009_rcpparma_change_point_test_fit(SEXP bxSEXP, SEXP bySEXP, SEXP qSEXP, SEXP NSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -28,7 +28,7 @@ END_RCPP
 }
 // rcpparma_change_point_test_pvalue
 arma::mat rcpparma_change_point_test_pvalue(arma::dvec bx, arma::dvec by, int32_t q_max, int32_t N);
-RcppExport SEXP _cpt_rcpparma_change_point_test_pvalue(SEXP bxSEXP, SEXP bySEXP, SEXP q_maxSEXP, SEXP NSEXP) {
+RcppExport SEXP _changepointpermtest2009_rcpparma_change_point_test_pvalue(SEXP bxSEXP, SEXP bySEXP, SEXP q_maxSEXP, SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,12 +42,12 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_cpt_rcpparma_change_point_test_fit", (DL_FUNC) &_cpt_rcpparma_change_point_test_fit, 5},
-    {"_cpt_rcpparma_change_point_test_pvalue", (DL_FUNC) &_cpt_rcpparma_change_point_test_pvalue, 4},
+    {"_changepointpermtest2009_rcpparma_change_point_test_fit", (DL_FUNC) &_changepointpermtest2009_rcpparma_change_point_test_fit, 5},
+    {"_changepointpermtest2009_rcpparma_change_point_test_pvalue", (DL_FUNC) &_changepointpermtest2009_rcpparma_change_point_test_pvalue, 4},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_cpt(DllInfo *dll) {
+RcppExport void R_init_changepointpermtest2009(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

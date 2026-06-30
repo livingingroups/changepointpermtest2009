@@ -1,6 +1,6 @@
 library(tinytest)
 # Test Suite for change_point_test Function
-library(cpt)
+library(changepointpermtest2009)
 library(trackframe)
 
 data("path_trackframe", package = "trackframe")

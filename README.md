@@ -30,7 +30,7 @@ by R.W. Byrne, R. Noser, L.A. Bates, P.E. Jupp (2009, DOI: 10.1016/j.anbehav.200
 ### Basic Example
 
 ```r
-library(cpt)
+library(changepointpermtest2009)
 data("cpttestdata", package = "cpt")
 
 # First detect change points

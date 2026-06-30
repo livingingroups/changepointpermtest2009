@@ -30,7 +30,7 @@ class(tf)
 
 
 ```{r}
-library(cpt)
+library(changepointpermtest2009)
 set.seed(2025L)
 cpt_tf <- change_point_test(tf, alpha = 0.05, q = 3, n = 500, min_move_dist = 0)
 class(cpt_tf)

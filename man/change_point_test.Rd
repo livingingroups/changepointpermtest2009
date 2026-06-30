@@ -116,7 +116,7 @@ This function implements a sequential change point detection algorithm that uses
          the starting location.
 }
 \examples{
-library("cpt")
+library(changepointpermtest2009)
 # First detect change points
 set.seed(2025L)
 cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500)

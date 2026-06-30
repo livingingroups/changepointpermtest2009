@@ -1,6 +1,6 @@
 library(tinytest)
 # Test Suite for change_point_test clu functionality
-library(cpt)
+library(changepointpermtest2009)
 library(trackframe)
 library(parallel)
 

@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rcpparma_change_point_test_fit <- function(bx, by, q, N, alpha) {
-    .Call(`_cpt_rcpparma_change_point_test_fit`, bx, by, q, N, alpha)
+    .Call(`_changepointpermtest2009_rcpparma_change_point_test_fit`, bx, by, q, N, alpha)
 }
 
 rcpparma_change_point_test_pvalue <- function(bx, by, q_max, N) {
-    .Call(`_cpt_rcpparma_change_point_test_pvalue`, bx, by, q_max, N)
+    .Call(`_changepointpermtest2009_rcpparma_change_point_test_pvalue`, bx, by, q_max, N)
 }
 

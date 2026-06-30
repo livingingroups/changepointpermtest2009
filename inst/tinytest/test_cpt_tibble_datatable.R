@@ -1,6 +1,6 @@
 library(tinytest)
 library(trackframe)
-library(cpt)
+library(changepointpermtest2009)
 
 projected_crs <- "EPSG:32632"
 

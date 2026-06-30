@@ -5,7 +5,7 @@ using("tinysnapshot")
 
 library(trackframe)
 library(tinytest)
-library(cpt)
+library(changepointpermtest2009)
 
 data("path_trackframe", package = "trackframe")
 xyt <- path_trackframe[1:50, ] #nolint

@@ -23,7 +23,7 @@
 #'
 #' @examples
 #'
-#' library("cpt")
+#' library(changepointpermtest2009)
 #' cpttestdata <- cpt::cpttestdata
 #' cpt <- change_point_test_xyt(cpttestdata[, "x"],
 #'                              cpttestdata[, "y"],
@@ -238,7 +238,7 @@ refine_cluster_input <- function(clu) {
 #' @export
 #'
 #' @examples
-#' library("cpt")
+#' library(changepointpermtest2009)
 #' # First detect change points
 #' set.seed(2025L)
 #' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500)
@@ -446,7 +446,7 @@ change_point_test.sftrack <- change_point_test.move2
 #' @export
 #'
 #' @examples
-#' library("cpt")
+#' library(changepointpermtest2009)
 #'
 #' # First detect change points
 #' cpt <- change_point_test(cpttestdata, alpha = 0.05, q = 3, n = 500)
