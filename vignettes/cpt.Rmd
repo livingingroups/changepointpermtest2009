@@ -28,8 +28,8 @@ install_github('livingingroups/travelpaths-devel/pkgs/cpt')
 ## Load packages
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
-library("cpt")
-library("trackframe")
+library(changepointpermtest2009)
+library(trackframe)
 ```
 
 
