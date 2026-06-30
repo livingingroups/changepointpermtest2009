@@ -16,8 +16,8 @@ License: GPL (>= 2)
 Imports: checkmate, Rcpp (>= 1.0.14), trackframe (>= 0.1.7), tinyplot (>= 0.6.0), reshape2
 Depends: R (>= 4.0.0), zoo
 LinkingTo: Rcpp, RcppArmadillo
-Suggests: tinytest, knitr, markdown, ggplot2, sf, move2, sftrack, travelpaths, withr, tinysnapshot,
-  rsvg, svglite, fontquiver
+Suggests: tinytest, knitr, markdown, withr, tinysnapshot, rsvg, svglite
+Remotes: livingingroups/trackframe
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
