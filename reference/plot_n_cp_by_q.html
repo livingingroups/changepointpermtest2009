@@ -81,7 +81,9 @@
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"cptfiguredata_tf"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘cptfiguredata_tf’ not found</span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">cptfiguredata_tf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="va">cptfiguredata_tf</span><span class="op">$</span><span class="va">track_id</span>, <span class="st">'4'</span><span class="op">)</span>,<span class="op">]</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'cptfiguredata_tf' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">calculate_n_cp_by_q</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tf</span>, <span class="va">q</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, <span class="va">alpha</span> <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span> <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">tf</span>, <span class="st">'id'</span><span class="op">)</span><span class="op">)</span><span class="op">!=</span><span class="fl">1</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">'only implemented for 1 id col'</span><span class="op">)</span></span></span>
@@ -101,9 +103,10 @@
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">n_cp_by_q</span> <span class="op">&lt;-</span> <span class="fu">calculate_n_cp_by_q</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in calculate_n_cp_by_q(data):</span> only implemented for 1 id col</span>
 <span class="r-in"><span><span class="fu"><a href="https://grantmcdermott.com/tinyplot/man/tinytheme.html" class="external-link">tinytheme</a></span><span class="op">(</span><span class="st">"clean2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">plot_n_cp_by_q</span><span class="op">(</span>data <span class="op">=</span> <span class="va">n_cp_by_q</span>, id_col <span class="op">=</span> <span class="st">"track_id"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="plot_n_cp_by_q-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'n_cp_by_q' not found</span>
 </code></pre></div>
     </div>
   </div>
