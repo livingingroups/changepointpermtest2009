@@ -21,7 +21,7 @@ library(trackframe)
 library(tinyplot)
 
 data("cpttestdata")
-data <- as.trackframe(cpttestdata, crs = NA)
+data <- trackframe::as.trackframe(cpttestdata, crs = NA)
 set.seed(2025)
 P = change_point_test_pvalue(data, q_max = 10, n = 100)
 

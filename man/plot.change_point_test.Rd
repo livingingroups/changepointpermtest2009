@@ -79,7 +79,7 @@ library(trackframe)
 library(tinyplot)
 
 data("cpttestdata")
-data <- as.trackframe(cpttestdata, crs = NA)
+data <- trackframe::as.trackframe(cpttestdata, crs = NA)
 class(data)
 tinytheme("clean2")
 plot(data)
