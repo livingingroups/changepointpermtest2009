@@ -18,8 +18,8 @@ Plots number of change points given different values of q
 }
 \examples{
 library(tinyplot)
-data("cptfiguredata_tf")
-data <- cptfiguredata_tf[startsWith(cptfiguredata_tf$track_id, '4'),]
+data("cpttestdata")
+data <- as.trackframe(cpttestdata, crs = NA)
 
 calculate_n_cp_by_q <- function(tf, q=seq_len(10), alpha = 0.01) {
  if(length(attr(tf, 'id'))!=1) stop('only implemented for 1 id col')

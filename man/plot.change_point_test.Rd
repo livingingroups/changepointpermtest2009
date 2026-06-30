@@ -78,13 +78,13 @@ library(cpt)
 library(trackframe)
 library(tinyplot)
 
-data("cptfiguredata_tf")
-data <- cptfiguredata_tf[startsWith(cptfiguredata_tf$track_id, '4'),]
+data("cpttestdata")
+data <- as.trackframe(cpttestdata, crs = NA)
 class(data)
 tinytheme("clean2")
 plot(data)
 # single track
-plot(select_id(data, "4a"))
+plot(select_id(data, "track_1"))
 
 # calculate change points
 cpt <- change_point_test(data, alpha = .01, n = 10000, q = 6)
@@ -95,8 +95,8 @@ plot(cpt)
 plot(cpt, start_indicator = FALSE, end_indicator = FALSE)
 
 # only one track
-cpt4a <- select_id(cpt, "4a")
-plot(cpt4a)
+cpt1 <- select_id(cpt, "track_1")
+plot(cpt1)
 # without path direction
-plot(cpt4a, start_indicator = FALSE, end_indicator = FALSE)
+plot(cpt1, start_indicator = FALSE, end_indicator = FALSE)
 }

@@ -20,8 +20,8 @@ library(cpt)
 library(trackframe)
 library(tinyplot)
 
-data("cptfiguredata_tf")
-data <- select_id(cptfiguredata_tf, "4a")
+data("cpttestdata")
+data <- as.trackframe(cpttestdata, crs = NA)
 set.seed(2025)
 P = change_point_test_pvalue(data, q_max = 10, n = 100)
 

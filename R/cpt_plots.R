@@ -42,13 +42,13 @@
 #' library(trackframe)
 #' library(tinyplot)
 #'
-#' data("cptfiguredata_tf")
-#' data <- cptfiguredata_tf[startsWith(cptfiguredata_tf$track_id, '4'),]
+#' data("cpttestdata")
+#' data <- as.trackframe(cpttestdata, crs = NA)
 #' class(data)
 #' tinytheme("clean2")
 #' plot(data)
 #' # single track
-#' plot(select_id(data, "4a"))
+#' plot(select_id(data, "track_1"))
 #'
 #' # calculate change points
 #' cpt <- change_point_test(data, alpha = .01, n = 10000, q = 6)
@@ -59,10 +59,10 @@
 #' plot(cpt, start_indicator = FALSE, end_indicator = FALSE)
 #'
 #' # only one track
-#' cpt4a <- select_id(cpt, "4a")
-#' plot(cpt4a)
+#' cpt1 <- select_id(cpt, "track_1")
+#' plot(cpt1)
 #' # without path direction
-#' plot(cpt4a, start_indicator = FALSE, end_indicator = FALSE)
+#' plot(cpt1, start_indicator = FALSE, end_indicator = FALSE)
 plot.change_point_test <- function(
   x,
   cp_style = list(col = "black", cex = 3, pch = "*"),
@@ -124,8 +124,8 @@ plot.change_point_test <- function(
 #' library(trackframe)
 #' library(tinyplot)
 #'
-#' data("cptfiguredata_tf")
-#' data <- select_id(cptfiguredata_tf, "4a")
+#' data("cpttestdata")
+#' data <- as.trackframe(cpttestdata, crs = NA)
 #' set.seed(2025)
 #' P = change_point_test_pvalue(data, q_max = 10, n = 100)
 #'
@@ -177,8 +177,8 @@ plot.change_point_test_pvalue <- function(x, ...) {
 #'
 #' @examples
 #' library(tinyplot)
-#' data("cptfiguredata_tf")
-#' data <- cptfiguredata_tf[startsWith(cptfiguredata_tf$track_id, '4'),]
+#' data("cpttestdata")
+#' data <- as.trackframe(cpttestdata, crs = NA)
 #'
 #' calculate_n_cp_by_q <- function(tf, q=seq_len(10), alpha = 0.01) {
 #'  if(length(attr(tf, 'id'))!=1) stop('only implemented for 1 id col')
