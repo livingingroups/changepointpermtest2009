@@ -1,0 +1,23 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/articles/acceptable_inputs.html</loc></url>
+<url><loc>/articles/cpt.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/change_point_fit_pvalue.html</loc></url>
+<url><loc>/reference/change_point_test.html</loc></url>
+<url><loc>/reference/change_point_test_pvalue.html</loc></url>
+<url><loc>/reference/change_point_test_pvalue_xyt.html</loc></url>
+<url><loc>/reference/change_point_test_xyt.html</loc></url>
+<url><loc>/reference/cptfiguredata.html</loc></url>
+<url><loc>/reference/cptfiguredata_tf.html</loc></url>
+<url><loc>/reference/cpttestdata.html</loc></url>
+<url><loc>/reference/cpttestdata_tiny.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/plot.change_point_test.html</loc></url>
+<url><loc>/reference/plot.change_point_test_pvalue.html</loc></url>
+<url><loc>/reference/plot_n_cp_by_q.html</loc></url>
+<url><loc>/reference/summary.change_point_test.html</loc></url>
+</urlset>
+
